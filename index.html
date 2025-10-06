@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sugandhmaya - The Art of Ritual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header id="main-header" class="fixed top-0 w-full z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center">
+                 <span style="font-family: var(--font-ui);" class="text-xl font-bold tracking-widest text-brand-text">SUGANDHMAYA</span>
+            </a>
+            <div class="flex items-center">
+                <nav class="hidden md:flex space-x-8 items-center">
+                    <a href="#collection" class="nav-link">Collection</a>
+                    <a href="#our-promise" class="nav-link">Our Promise</a>
+                </nav>
+                 <div class="hidden md:block border-l border-black/10 h-6 mx-8"></div>
+                <a href="#contact" class="hidden md:inline-block nav-link">Contact</a>
+                <button class="ml-8 relative" id="open-cart-button">
+                    <svg class="w-6 h-6 text-brand-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                    <span id="cart-counter"
+                        class="absolute -top-2 -right-2 bg-brand-accent text-black text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div id="cart-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden opacity-0">
+        <div id="cart-panel"
+            class="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col transform translate-x-full">
+            <div class="flex justify-between items-center p-6 border-b"><h2 class="text-2xl font-serif">Your Cart</h2><button id="close-cart-button"
+                    class="text-gray-500 hover:text-black text-3xl">&times;</button>
+            </div>
+            <div id="cart-items" class="flex-grow p-6 overflow-y-auto">
+                <p id="empty-cart-message" class="text-gray-500">Your cart is empty.</p>
+            </div>
+            <div class="p-6 border-t bg-gray-50">
+                <div class="flex justify-between items-center mb-4"><span class="text-lg">Subtotal</span><span
+                        id="cart-subtotal" class="text-lg font-semibold">₹0.00</span></div>
+                <button id="checkout-button" class="w-full btn">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <section class="hero-section min-h-screen flex items-center">
+            <div class="container mx-auto px-6">
+                <div class="max-w-3xl reveal-on-scroll">
+                    <h1 class="hero-title text-5xl md:text-7xl lg:text-8xl font-bold text-brand-text">
+                        The <span class="text-brand-accent">Art</span> of Modern Ritual
+                    </h1>
+                    <p class="mt-8 text-lg max-w-md text-brand-text/70">
+                        Pure, artisanal puja essentials crafted to bring tranquility and intention to your sacred space.
+                    </p>
+                    <a href="#collection" class="mt-12 btn">
+                        <span>Explore The Collection</span>
+                        <div class="btn-icon">
+                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <div class="dark-panel">
+            <section id="collection" class="py-24 md:py-32">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-16 reveal-on-scroll">
+                        <p class="subheading text-brand-accent">Artisanal Craft</p>
+                        <h2 class="text-4xl md:text-5xl mt-4">The Collection</h2>
+                    </div>
+                    <div id="collection-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
+                        </div>
+                </div>
+            </section>
+
+            <section id="our-promise" class="py-24 md:py-32">
+                <div class="container mx-auto px-6">
+                    <div class="grid md:grid-cols-2 gap-16 items-center">
+                        <div class="reveal-on-scroll">
+                             <p class="subheading text-brand-accent">Our Philosophy</p>
+                            <h2 class="text-4xl md:text-5xl mt-4">A Promise of <br>Purity & Craft.</h2>
+                            <div class="space-y-6 text-lg leading-relaxed mt-8">
+                                <p>At Sugandhmaya, we believe spirituality is an art form. Our mission is to craft products
+                                    that not only honor ancient traditions but also inspire beauty and peace in the modern
+                                    world.</p>
+                                <p>Each item is made with intention, using pure, natural ingredients sourced ethically. This
+                                    is our promise of purity, quality, and connection.</p>
+                            </div>
+                        </div>
+                        <div class="reveal-on-scroll folded-corner" style="transition-delay: 150ms;">
+                             <img src="https://images.unsplash.com/photo-154153243F003-81a333a8a3a8?q=80&w=800&auto=format&fit=crop" alt="Craftsmanship" class="w-full aspect-[4/5] object-cover">
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <footer id="contact" class="main-footer py-24 text-center">
+                <div class="container mx-auto px-6 reveal-on-scroll">
+                    <p class="subheading text-brand-accent">Get In Touch</p>
+                    <h2 class="text-4xl md:text-5xl mt-4">Start a Conversation</h2>
+                    <p class="mt-4 mx-auto text-lg max-w-2xl">For any inquiry, feedback,
+                        or collaboration, we welcome the connection.</p>
+                    <a href="mailto:contact@indiaonroaming.com" class="mt-8 btn">
+                         <span>Email Us</span>
+                        <div class="btn-icon">
+                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                        </div>
+                    </a>
+                </div>
+            </footer>
+        </div>
+    </main>
+    
+    <div class="bg-brand-background">
+         <div class="container mx-auto px-6 py-6 border-t border-brand-text/10 text-center text-sm text-brand-text/60">
+            <p>&copy; 2025 Sugandhmaya. A Brand by <a href="https://indiaonroaming.com" target="_blank"
+                    class="hover:text-brand-accent font-semibold">indiaonroaming.com</a></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
