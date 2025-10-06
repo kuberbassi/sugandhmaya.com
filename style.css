@@ -293,3 +293,26 @@ h1, h2, h3, h4, h5, h6 {
 .product-page-body #main-header {
     display: none;
 }
+/* Add these to the bottom of style.css */
+
+/* --- CHECKOUT PAGE STYLES --- */
+.checkout-label {
+    font-family: var(--font-ui);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--brand-text);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+.checkout-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.375rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.checkout-input:focus {
+    outline: none;
+    border-color: var(--brand-accent);
+    box-shadow: 0 0 0 3px rgba(229, 164, 78, 0.3);
+}
