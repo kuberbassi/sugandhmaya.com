@@ -1,0 +1,28 @@
+{
+  "name": "sugandhmaya",
+  "version": "1.0.0",
+  "description": "This repository contains the source code for the official product website of Sugandhmaya, a brand by indiaonroaming.com. It's a clean and simple static site built with HTML, CSS, and vanilla JavaScript.",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kuberbassi/sugandhmaya.com.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/kuberbassi/sugandhmaya.com/issues"
+  },
+  "homepage": "https://github.com/kuberbassi/sugandhmaya.com#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "mongodb": "^6.20.0",
+    "mongoose": "^8.19.1"
+  }
+}
