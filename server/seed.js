@@ -15,20 +15,20 @@ const productsToSeed = [
             {
                 size: "12 Sticks",
                 price: 91, // CHANGE THIS PRICE
-                image: '/images/products/sugandhmaya_chandan_agarbatti/1.jpg', // CHANGE to your 12-stick box image
+                image: '/images/products/sugandhmaya_chandan_agarbatti/1.webp', // CHANGE to your 12-stick box image
                 thumbnails: [
-                    '/images/products/sugandhmaya_chandan_agarbatti/1.jpg', // CHANGE to your 12-stick thumbnails
-                    '/images/products/sugandhmaya_chandan_agarbatti/2.jpg',
+                    '/images/products/sugandhmaya_chandan_agarbatti/1.webp', // CHANGE to your 12-stick thumbnails
+                    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
                 ]
             },
             {
                 size: "40 Sticks",
                 price: 330, // CHANGE THIS PRICE
-                image: '/images/products/sugandhmaya_chandan_agarbatti/3.jpg', // CHANGE to your 40-stick box image
+                image: '/images/products/sugandhmaya_chandan_agarbatti/3.webp', // CHANGE to your 40-stick box image
                 thumbnails: [
-                    '/images/products/sugandhmaya_chandan_agarbatti/3.jpg', // CHANGE to your 40-stick thumbnails
-                    '/images/products/sugandhmaya_chandan_agarbatti/4.jpg',
-                    '/images/products/sugandhmaya_chandan_agarbatti/5.jpg',
+                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp', // CHANGE to your 40-stick thumbnails
+                    '/images/products/sugandhmaya_chandan_agarbatti/4.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/5.webp',
                 ]
             }
         ]
@@ -45,17 +45,17 @@ const productsToSeed = [
             {
                 size: "12 Sticks",
                 price: 150, // CHANGE THIS PRICE
-                image: '/images/products/oudh_premium/12_stick_main.jpg', // ADD YOUR IMAGE PATH
+                image: '/images/products/oudh_premium/12_stick_main.webp', // ADD YOUR IMAGE PATH
                 thumbnails: [
-                    '/images/products/oudh_premium/12_stick_thumb1.jpg', // ADD YOUR IMAGE PATHS
+                    '/images/products/oudh_premium/12_stick_thumb1.webp', // ADD YOUR IMAGE PATHS
                 ]
             },
             {
                 size: "40 Sticks",
                 price: 500, // CHANGE THIS PRICE
-                image: '/images/products/oudh_premium/40_stick_main.jpg', // ADD YOUR IMAGE PATH
+                image: '/images/products/oudh_premium/40_stick_main.webp', // ADD YOUR IMAGE PATH
                 thumbnails: [
-                    '/images/products/oudh_premium/40_stick_thumb1.jpg', // ADD YOUR IMAGE PATHS
+                    '/images/products/oudh_premium/40_stick_thumb1.webp', // ADD YOUR IMAGE PATHS
                 ]
             }
         ]
