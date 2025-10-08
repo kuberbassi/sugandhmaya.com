@@ -93,7 +93,9 @@ h6 {
 .hero-section {
     padding-top: 8rem;
     padding-bottom: 8rem;
-    background: linear-gradient(135deg, #f8f4ee 0%, #fdfbf7 100%);
+    background-image: url('./images/hero-bg.jpg');
+    background-size: cover;
+    background-position: center;
 }
 
 .hero-media-grid {
@@ -102,7 +104,6 @@ h6 {
     grid-template-rows: repeat(2, 1fr);
     gap: 1.5rem;
     height: 500px;
-    /* Adjust height as needed */
 }
 
 .hero-media-item {
@@ -113,14 +114,13 @@ h6 {
 }
 
 .hero-media-item:hover {
-    transform: scale(1.05);
+    transform: scale(1.05) rotate(1deg);
     z-index: 10;
 }
 
 .media-item-1 {
     grid-column: 1 / 2;
     grid-row: 1 / 3;
-    /* Span 2 rows */
 }
 
 .media-item-2 {
@@ -214,37 +214,26 @@ h6 {
     color: var(--brand-accent);
 }
 
-/* --- NEW Immersive "Promise" Section --- */
-.promise-section {
-    position: relative;
-    padding: 8rem 0;
-    background-image: url('./images/products/sugandhmaya_chandan_agarbatti/12-stick-box-agarbatti.png');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    /* Parallax effect */
-    color: white;
+/* --- "Promise" Section Video --- */
+.promise-video-wrapper {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 20px 40px rgba(61, 53, 46, 0.1);
+    overflow: hidden;
 }
 
-.promise-section::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-color: rgba(44, 42, 41, 0.8);
-    /* Dark overlay */
-    z-index: 1;
-}
-
-.promise-section h2,
-.promise-section p {
-    color: white;
+.promise-video {
+    width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
 }
 
 
 /* --- MODERN FOOTER --- */
 .main-footer {
     background-color: var(--brand-dark);
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .main-footer h3,
@@ -253,7 +242,7 @@ h6 {
 }
 
 .footer-link {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.7);
     transition: color 0.3s ease;
 }
 
@@ -261,6 +250,9 @@ h6 {
     color: var(--brand-accent);
 }
 
+.footer-contact-info p {
+    line-height: 1.6;
+}
 
 /* --- Generic Styles for other pages --- */
 #shop-grid {
