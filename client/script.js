@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
         // --- UTILITY FUNCTIONS ---
         async function fetchProducts() {
             try {
-                // Fetch from your backend API
                 const response = await fetch('http://localhost:5000/api/products');
                 if (!response.ok) throw new Error('Network response was not ok');
                 products = await response.json();
@@ -23,12 +22,11 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.setItem('cart', JSON.stringify(cart));
         }
 
-        // NEW: Function to display a custom toast notification
         function showToast(message) {
             const toastContainer = document.getElementById('toast-container');
             if (!toastContainer) {
                 console.error('Toast container not found!');
-                alert(message); // Fallback to alert
+                alert(message);
                 return;
             }
 
@@ -37,7 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
             toast.textContent = message;
             toastContainer.appendChild(toast);
 
-            // Animate in and out
             setTimeout(() => {
                 toast.classList.add('opacity-100');
             }, 100);
@@ -86,34 +83,37 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (emptyCartMessage) cartItemsContainer.appendChild(emptyCartMessage);
             } else {
                 cart.forEach((item) => {
-                    const product = products.find(p => p.id === item.id);
+                    const product = products.find(p => p.id === item.productId);
                     if (!product) return;
+                    const variant = product.variants.find(v => v.size === item.size);
+                    if (!variant) return;
                     const itemEl = document.createElement("div");
                     itemEl.className = "flex items-center gap-4 py-3 border-b border-gray-100";
                     itemEl.innerHTML = `
-                        <img src="http://localhost:5000${product.image}" alt="${product.name}" class="w-16 h-20 object-cover rounded">
+                        <img src="http://localhost:5000${variant.image}" alt="${product.name}" class="w-16 h-20 object-cover rounded">
                         <div class="flex-grow">
                             <h3 class="font-semibold">${product.name}</h3>
-                            <p class="text-sm text-gray-500">₹${product.price}</p>
+                            <p class="text-sm text-gray-500">${item.scent} / ${item.size}</p>
                             <div class="flex items-center mt-2">
-                                <button class="quantity-change h-6 w-6 border rounded text-gray-600" data-id="${item.id}" data-change="-1">-</button>
+                                <button class="quantity-change h-6 w-6 border rounded text-gray-600" data-id="${item.cartItemId}" data-change="-1">-</button>
                                 <span class="mx-3 text-sm">${item.quantity}</span>
-                                <button class="quantity-change h-6 w-6 border rounded text-gray-600" data-id="${item.id}" data-change="1">+</button>
+                                <button class="quantity-change h-6 w-6 border rounded text-gray-600" data-id="${item.cartItemId}" data-change="1">+</button>
                             </div>
                         </div>
-                        <button class="remove-item text-gray-400 hover:text-red-500" data-id="${item.id}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                        </button>`;
+                        <div>
+                           <p class="font-semibold">₹${(variant.price * item.quantity).toFixed(2)}</p>
+                           <button class="remove-item text-gray-400 hover:text-red-500 float-right mt-2" data-id="${item.cartItemId}">Remove</button>
+                        </div>`;
                     cartItemsContainer.appendChild(itemEl);
                 });
             }
 
             const subtotal = cart.reduce((total, item) => {
-                const product = products.find(p => p.id === item.id);
-                return total + (product ? product.price * item.quantity : 0);
+                const product = products.find(p => p.id === item.productId);
+                const variant = product ? product.variants.find(v => v.size === item.size) : null;
+                return total + (variant ? variant.price * item.quantity : 0);
             }, 0);
             const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
-
             if (cartSubtotalEl) cartSubtotalEl.textContent = `₹${subtotal.toFixed(2)}`;
             if (cartCounter) cartCounter.textContent = totalItems;
         }
@@ -129,7 +129,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // --- PAGE-SPECIFIC RENDER FUNCTIONS ---
-
         function renderHomePage() {
             const collectionGrid = document.getElementById("collection-grid");
             if (!collectionGrid) return;
@@ -139,42 +138,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            collectionGrid.innerHTML = "";
-            products.forEach((product, index) => {
-                const productSlide = document.createElement('div');
-                productSlide.className = "swiper-slide";
+            let gridHTML = "";
+            const topProducts = products.slice(0, 3);
 
-                productSlide.innerHTML = `
+            topProducts.forEach((product) => {
+                const displayImage = product.variants && product.variants.length > 0 ? product.variants[0].image : product.image;
+                gridHTML += `
                     <a href="product.html?id=${product.id}" class="product-card-link group block">
-                        <div class="folded-corner"><img src="http://localhost:5000${product.image}" loading="lazy" alt="${product.name}" class="product-image" style="width: 300px;"></div>
-                        <div class="pt-8 text-center">
-                            <h3 class="text-2xl font-serif">${product.name}</h3>
-                            <p class="text-base mt-1">${product.category}</p>
-                            <p class="text-lg font-bold font-sans mt-2 text-brand-accent">₹${product.price}</p>
+                        <div class="product-image-container"><img src="http://localhost:5000${displayImage}" loading="lazy" alt="${product.name}" class="product-image"></div>
+                        <div class="pt-6 text-center">
+                            <h3 class="text-xl font-serif">${product.name}</h3>
+                            <p class="text-base mt-1 text-gray-500">${product.category}</p>
+                            <p class="text-lg font-bold font-sans mt-2 text-brand-accent">Starting from ₹${product.variants[0].price}</p>
                         </div>
                     </a>`;
-                collectionGrid.appendChild(productSlide);
             });
 
-            initSwiper();
-        }
-
-        function initSwiper() {
-            if (typeof Swiper === 'undefined') return;
-            const swiper = new Swiper('.collection-slider', {
-                loop: true,
-                slidesPerView: 'auto',
-                spaceBetween: 40,
-                centeredSlides: true,
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-                autoplay: {
-                    delay: 3000,
-                    disableOnInteraction: false,
-                },
-            });
+            collectionGrid.innerHTML = gridHTML;
         }
 
         function renderShopPage() {
@@ -183,40 +163,29 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!shopGrid || !categoryFilter) return;
 
             const categories = [...new Set(products.map(p => p.category))];
-            categoryFilter.innerHTML = `
-                <label class="filter-label">
-                    <input type="radio" name="category" value="all" checked>
-                    <span>All Products</span>
-                </label>
-            `;
+            categoryFilter.innerHTML = `<label class="filter-label"><input type="radio" name="category" value="all" checked><span>All Products</span></label>`;
             categories.forEach(category => {
-                categoryFilter.innerHTML += `
-                    <label class="filter-label">
-                        <input type="radio" name="category" value="${category}">
-                        <span>${category}</span>
-                    </label>
-                `;
+                categoryFilter.innerHTML += `<label class="filter-label"><input type="radio" name="category" value="${category}"><span>${category}</span></label>`;
             });
 
             function displayProducts(filter) {
                 shopGrid.innerHTML = '';
                 const filteredProducts = products.filter(p => filter === 'all' || p.category === filter);
-
                 if (filteredProducts.length === 0) {
                     shopGrid.innerHTML = `<p class="col-span-full">No products found in this category.</p>`;
                     return;
                 }
-
                 filteredProducts.forEach(product => {
+                    const displayImage = product.variants && product.variants.length > 0 ? product.variants[0].image : product.image;
                     const productCard = document.createElement('a');
                     productCard.href = `product.html?id=${product.id}`;
                     productCard.className = "product-card-link group block";
                     productCard.innerHTML = `
-                        <div class="folded-corner"><img src="http://localhost:5000${product.image}" loading="lazy" alt="${product.name}" class="product-image"></div>
+                        <div class="product-image-container"><img src="http://localhost:5000${displayImage}" loading="lazy" alt="${product.name}" class="product-image"></div>
                         <div class="pt-8 text-center">
                             <h3 class="text-2xl font-serif">${product.name}</h3>
                             <p class="text-base mt-1">${product.category}</p>
-                            <p class="text-lg font-bold font-sans mt-2 text-brand-accent">₹${product.price}</p>
+                            <p class="text-lg font-bold font-sans mt-2 text-brand-accent">Starting from ₹${product.variants[0].price}</p>
                         </div>`;
                     shopGrid.appendChild(productCard);
                 });
@@ -235,42 +204,121 @@ document.addEventListener("DOMContentLoaded", () => {
             const productId = params.get('id');
             const product = products.find(p => p.id === productId);
 
-            if (product) {
-                document.title = `${product.name} - Sugandhmaya`;
-                document.getElementById('product-name').textContent = product.name;
-                document.getElementById('product-category').textContent = product.category;
-                document.getElementById('product-price').textContent = `₹${product.price}`;
-                document.getElementById('product-description').textContent = product.description;
-                const mainImageEl = document.getElementById('main-product-image');
-                mainImageEl.src = `http://localhost:5000${product.image}`;
-                mainImageEl.alt = product.name;
+            if (!product) {
+                if (productId && products.length > 0) {
+                    document.querySelector('.product-page-main').innerHTML = '<h1 class="text-center text-2xl p-10">Product not found</h1>';
+                }
+                return;
+            }
 
-                const thumbnailGrid = document.getElementById('thumbnail-grid');
+            let selectedSize = product.variants[0].size;
+            let selectedScent = product.scents[0];
+
+            const nameEl = document.getElementById('product-name');
+            const categoryEl = document.getElementById('product-category');
+            const priceEl = document.getElementById('product-price');
+            const descriptionEl = document.getElementById('product-description');
+            const mainImageEl = document.getElementById('main-product-image');
+            const thumbnailGrid = document.getElementById('thumbnail-grid');
+            const scentOptionsContainer = document.getElementById('scent-options');
+            const sizeOptionsContainer = document.getElementById('size-options');
+
+            function renderScents() {
+                if (!product.scents || product.scents.length <= 1) {
+                    scentOptionsContainer.style.display = 'none';
+                    return;
+                }
+                let scentHtml = '<label class="block subheading mb-2">Scent</label><div class="flex flex-wrap gap-3">';
+                product.scents.forEach((scent, index) => {
+                    scentHtml += `<label class="cursor-pointer"><input type="radio" name="scent" value="${scent}" class="sr-only" ${index === 0 ? 'checked' : ''}><span class="inline-block px-4 py-2 border rounded-full text-sm font-semibold">${scent}</span></label>`;
+                });
+                scentHtml += '</div>';
+                scentOptionsContainer.innerHTML = scentHtml;
+            }
+
+            function renderSizes() {
+                let sizeHtml = '<label class="block subheading mb-2">Size</label><div class="flex flex-wrap gap-3">';
+                product.variants.forEach((variant, index) => {
+                    sizeHtml += `<label class="cursor-pointer"><input type="radio" name="size" value="${variant.size}" class="sr-only" ${index === 0 ? 'checked' : ''}><span class="inline-block px-4 py-2 border rounded-full text-sm font-semibold">${variant.size}</span></label>`;
+                });
+                sizeHtml += '</div>';
+                sizeOptionsContainer.innerHTML = sizeHtml;
+            }
+
+            function updateVariantUI() {
+                const variant = product.variants.find(v => v.size === selectedSize);
+                if (!variant) return;
+
+                priceEl.textContent = `₹${variant.price}`;
+                mainImageEl.src = `http://localhost:5000${variant.image}`;
+
                 thumbnailGrid.innerHTML = '';
-                product.thumbnails.forEach((thumbSrc, index) => {
+                variant.thumbnails.forEach((thumbSrc) => {
                     const thumbImg = document.createElement('img');
                     thumbImg.src = `http://localhost:5000${thumbSrc}`;
-                    thumbImg.alt = `Thumbnail ${index + 1}`;
+                    thumbImg.alt = `Thumbnail for ${variant.size}`;
                     thumbImg.className = 'thumbnail-image';
-                    if (index === 0) thumbImg.classList.add('active');
+                    if (thumbSrc === variant.image) thumbImg.classList.add('active');
                     thumbnailGrid.appendChild(thumbImg);
                 });
 
-                // Use event delegation for the thumbnails
-                thumbnailGrid.addEventListener('click', (e) => {
-                    const clickedThumbnail = e.target.closest('.thumbnail-image');
-                    if (!clickedThumbnail) return;
-
-                    mainImageEl.src = clickedThumbnail.src;
-
-                    document.querySelectorAll('.thumbnail-image').forEach(t => t.classList.remove('active'));
-                    clickedThumbnail.classList.add('active');
+                document.querySelectorAll('input[name="size"]').forEach(radio => {
+                    const span = radio.nextElementSibling;
+                    if (radio.value === selectedSize) {
+                        span.style.backgroundColor = 'var(--brand-text)';
+                        span.style.borderColor = 'var(--brand-text)';
+                        span.style.color = 'var(--brand-background)';
+                    } else {
+                        span.style.backgroundColor = 'transparent';
+                        span.style.borderColor = 'rgba(61, 53, 46, 0.2)';
+                        span.style.color = 'var(--brand-text)';
+                    }
                 });
-
-                document.getElementById('add-to-cart-product').dataset.productId = product.id;
-            } else if (productId && products.length > 0) {
-                document.querySelector('.product-page-main').innerHTML = '<h1 class="text-center text-2xl p-10">Product not found</h1>';
+                document.querySelectorAll('input[name="scent"]').forEach(radio => {
+                    const span = radio.nextElementSibling;
+                    if (radio.value === selectedScent) {
+                        span.style.backgroundColor = 'var(--brand-text)';
+                        span.style.borderColor = 'var(--brand-text)';
+                        span.style.color = 'var(--brand-background)';
+                    } else {
+                        span.style.backgroundColor = 'transparent';
+                        span.style.borderColor = 'rgba(61, 53, 46, 0.2)';
+                        span.style.color = 'var(--brand-text)';
+                    }
+                });
             }
+
+            document.title = `${product.name} - Sugandhmaya`;
+            nameEl.textContent = product.name;
+            categoryEl.textContent = product.category;
+            descriptionEl.textContent = product.description;
+            renderScents();
+            renderSizes();
+            updateVariantUI();
+
+            sizeOptionsContainer.addEventListener('change', e => {
+                if (e.target.name === 'size') {
+                    selectedSize = e.target.value;
+                    updateVariantUI();
+                }
+            });
+            scentOptionsContainer.addEventListener('change', e => {
+                if (e.target.name === 'scent') {
+                    selectedScent = e.target.value;
+                    updateVariantUI();
+                }
+            });
+            thumbnailGrid.addEventListener('click', e => {
+                const clickedThumbnail = e.target.closest('.thumbnail-image');
+                if (!clickedThumbnail || clickedThumbnail.classList.contains('active')) return;
+                mainImageEl.style.opacity = '0';
+                setTimeout(() => {
+                    mainImageEl.src = clickedThumbnail.src;
+                    mainImageEl.style.opacity = '1';
+                }, 200);
+                document.querySelectorAll('.thumbnail-image').forEach(t => t.classList.remove('active'));
+                clickedThumbnail.classList.add('active');
+            });
         }
 
         function renderCheckoutPage() {
@@ -282,34 +330,29 @@ document.addEventListener("DOMContentLoaded", () => {
             let total = 0;
 
             cart.forEach(item => {
-                const product = products.find(p => p.id === item.id);
-                if (product) {
+                const product = products.find(p => p.id === item.productId);
+                const variant = product ? product.variants.find(v => v.size === item.size) : null;
+                if (variant) {
                     const itemEl = document.createElement('div');
                     itemEl.className = "flex justify-between items-center";
                     itemEl.innerHTML = `
                         <div>
                             <p class="font-semibold">${product.name} <span class="text-sm font-normal">x ${item.quantity}</span></p>
-                            <p class="text-sm text-white/60">${product.category}</p>
+                            <p class="text-sm text-gray-500">${item.scent} / ${item.size}</p>
                         </div>
-                        <span>₹${(product.price * item.quantity).toFixed(2)}</span>`;
+                        <span>₹${(variant.price * item.quantity).toFixed(2)}</span>`;
                     summaryItems.appendChild(itemEl);
-                    total += product.price * item.quantity;
+                    total += variant.price * item.quantity;
                 }
             });
-            summaryTotal.textContent = `₹${total.toFixed(2)}`;
+            if (summaryTotal) summaryTotal.textContent = `₹${total.toFixed(2)}`;
         }
 
         function renderConfirmationPage() {
-            console.log('Rendering confirmation page...');
             const confirmationDetails = document.getElementById('confirmation-details');
-            if (!confirmationDetails) {
-                console.error('Confirmation details element not found!');
-                return;
-            }
+            if (!confirmationDetails) return;
 
             const orderData = JSON.parse(localStorage.getItem('latestOrder'));
-            console.log('Order data from localStorage:', orderData);
-
             if (orderData) {
                 confirmationDetails.innerHTML = `
                     <p><strong>Order for:</strong> ${orderData.customer.name}</p>
@@ -317,64 +360,40 @@ document.addEventListener("DOMContentLoaded", () => {
                     <p><strong>Total Amount:</strong> ₹${orderData.total.toFixed(2)} (Cash on Delivery)</p>
                 `;
             } else {
-                console.warn('No order data found in localStorage.');
-                confirmationDetails.innerHTML = '<p class="text-gray-500">Order details not found. Please try placing your order again.</p>';
+                confirmationDetails.innerHTML = '<p>Order details not found.</p>';
             }
-
-            // Clear localStorage after displaying to prevent old data from showing up on refresh
+            localStorage.removeItem('cart');
             localStorage.removeItem('latestOrder');
         }
 
         function setupFormValidation() {
             const phoneInput = document.getElementById('phone');
-            const emailInput = document.getElementById('email');
-
             phoneInput?.addEventListener('input', () => {
-                phoneInput.value = phoneInput.value.replace(/[^0-9]/g, '');
-                if (phoneInput.value.length > 10) {
-                    phoneInput.value = phoneInput.value.slice(0, 10);
-                }
-            });
-
-            emailInput?.addEventListener('blur', () => {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(emailInput.value) && emailInput.value.length > 0) {
-                    emailInput.style.borderColor = 'red';
-                } else {
-                    emailInput.style.borderColor = '';
-                }
+                phoneInput.value = phoneInput.value.replace(/[^0-9]/g, '').slice(0, 10);
             });
         }
 
-        // NEW: Function to handle product page quantity buttons
         function setupProductPageListeners() {
             const quantityInput = document.getElementById("quantity-input");
             const decreaseBtn = document.getElementById("decrease-quantity");
             const increaseBtn = document.getElementById("increase-quantity");
-
-            if (quantityInput && decreaseBtn && increaseBtn) {
-                decreaseBtn.addEventListener('click', () => {
-                    let currentValue = parseInt(quantityInput.value);
-                    if (currentValue > 1) {
-                        quantityInput.value = currentValue - 1;
-                    }
-                });
-
-                increaseBtn.addEventListener('click', () => {
-                    let currentValue = parseInt(quantityInput.value);
-                    quantityInput.value = currentValue + 1;
-                });
-            }
-
-            // NEW: Function to set up accordions
             const accordionHeaders = document.querySelectorAll('.accordion-header');
+
+            decreaseBtn?.addEventListener('click', () => {
+                let currentValue = parseInt(quantityInput.value);
+                if (currentValue > 1) quantityInput.value = currentValue - 1;
+            });
+
+            increaseBtn?.addEventListener('click', () => {
+                let currentValue = parseInt(quantityInput.value);
+                quantityInput.value = currentValue + 1;
+            });
+
             accordionHeaders.forEach(header => {
                 header.addEventListener('click', () => {
                     const accordionItem = header.parentElement;
                     const content = header.nextElementSibling;
-
                     accordionItem.classList.toggle('active');
-
                     if (accordionItem.classList.contains('active')) {
                         content.style.maxHeight = content.scrollHeight + 'px';
                     } else {
@@ -396,22 +415,22 @@ document.addEventListener("DOMContentLoaded", () => {
         cartItemsContainer?.addEventListener("click", (e) => {
             const target = e.target.closest("button");
             if (!target) return;
-            const itemId = target.dataset.id;
-            const itemInCart = cart.find(i => i.id === itemId);
+            const cartItemId = target.dataset.id;
+            const itemInCart = cart.find(i => i.cartItemId === cartItemId);
             if (!itemInCart) return;
 
             if (target.classList.contains("quantity-change")) {
                 itemInCart.quantity += parseInt(target.dataset.change);
                 if (itemInCart.quantity <= 0) {
-                    cart = cart.filter(i => i.id !== itemId);
+                    cart = cart.filter(i => i.cartItemId !== cartItemId);
                 }
             }
             if (target.classList.contains("remove-item")) {
-                cart = cart.filter(i => i.id !== itemId);
+                cart = cart.filter(i => i.cartItemId !== cartItemId);
             }
             saveCart();
             updateCartUI();
-            if (document.querySelector(".checkout-page")) renderCheckoutPage(); // Update checkout summary
+            if (document.body.classList.contains("checkout-page")) renderCheckoutPage();
         });
 
         checkoutBtn?.addEventListener("click", () => {
@@ -423,45 +442,65 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         document.getElementById('add-to-cart-product')?.addEventListener('click', (e) => {
-            const productId = e.currentTarget.dataset.productId;
-            if (!productId) return;
+            const productId = new URLSearchParams(window.location.search).get('id');
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const selectedSize = document.querySelector('input[name="size"]:checked').value;
+            const selectedScent = document.querySelector('input[name="scent"]:checked').value;
             const quantity = parseInt(document.getElementById("quantity-input").value);
-            const existingItem = cart.find(item => item.id === productId);
+            const cartItemId = `${productId}_${selectedSize}_${selectedScent}`;
+
+            const mainImage = document.getElementById('main-product-image');
+            const flyer = mainImage.cloneNode();
+
+            flyer.style.cssText = `
+                position: fixed; left: ${mainImage.getBoundingClientRect().left}px; top: ${mainImage.getBoundingClientRect().top}px;
+                width: 100px; height: 100px; object-fit: cover; border-radius: 0.5rem; z-index: 1000;
+                transition: all 0.8s cubic-bezier(0.5, 0, 1, 0.5);
+            `;
+            document.body.appendChild(flyer);
+
+            const cartIcon = document.getElementById('open-cart-button');
+            const cartIconRect = cartIcon.getBoundingClientRect();
+
+            requestAnimationFrame(() => {
+                flyer.style.left = `${cartIconRect.left + 10}px`;
+                flyer.style.top = `${cartIconRect.top + 10}px`;
+                flyer.style.transform = 'scale(0.1)';
+                flyer.style.opacity = '0';
+            });
+
+            flyer.addEventListener('transitionend', () => flyer.remove());
+
+            const existingItem = cart.find(item => item.cartItemId === cartItemId);
+
             if (existingItem) {
                 existingItem.quantity += quantity;
             } else {
-                cart.push({ id: productId, quantity: quantity });
+                cart.push({ cartItemId, productId, size: selectedSize, scent: selectedScent, quantity });
             }
             saveCart();
             updateCartUI();
-            openCart();
             showToast(`${quantity} item(s) added to cart.`);
         });
 
         if (checkoutForm) {
             checkoutForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-
                 const submitButton = e.target.querySelector('button[type="submit"]');
                 const buttonText = submitButton.querySelector('span');
-
                 submitButton.disabled = true;
                 buttonText.textContent = 'Placing Order...';
-
                 const formData = new FormData(e.target);
                 const customerDetails = Object.fromEntries(formData.entries());
-
-                const total = cart.reduce((total, item) => {
-                    const product = products.find(p => p.id === item.id);
-                    return total + (product ? product.price * item.quantity : 0);
-                }, 0);
-
-                const detailedCartItems = cart.map(item => {
-                    const productDetails = products.find(p => p.id === item.id);
-                    return { ...item, name: productDetails.name, price: productDetails.price };
-                });
-
-                const orderData = { customer: customerDetails, items: detailedCartItems, total: total };
+                const itemsForBackend = cart.map(item => ({
+                    productId: item.productId,
+                    size: item.size,
+                    scent: item.scent,
+                    quantity: item.quantity
+                }));
+                const orderData = { customer: customerDetails, items: itemsForBackend };
 
                 try {
                     const response = await fetch('http://localhost:5000/api/orders', {
@@ -469,11 +508,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(orderData)
                     });
-
                     if (response.ok) {
-                        localStorage.setItem('latestOrder', JSON.stringify(orderData));
-                        cart = [];
-                        saveCart();
+                        const result = await response.json();
+                        const finalOrderData = { customer: customerDetails, total: result.total };
+                        localStorage.setItem('latestOrder', JSON.stringify(finalOrderData));
                         window.location.href = 'confirmation.html';
                     } else {
                         const result = await response.json();
@@ -483,7 +521,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 } catch (error) {
                     console.error('Error submitting order:', error);
-                    showToast('An unexpected error occurred. Please make sure the server is running and try again.');
+                    showToast('An unexpected error occurred. Please try again.');
                     submitButton.disabled = false;
                     buttonText.textContent = 'Place Order';
                 }
@@ -491,25 +529,23 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // --- INITIALIZE APP ---
-        await fetchProducts();
+        async function run() {
+            await fetchProducts();
 
-        // Determine which page we are on and render its specific content
-        if (document.body.classList.contains("shop-page")) renderShopPage();
-        else if (document.getElementById("collection-grid")) renderHomePage();
+            if (document.body.classList.contains("shop-page")) renderShopPage();
+            else if (document.getElementById("collection-grid")) renderHomePage();
 
-        if (document.querySelector(".product-page-main")) renderProductPage();
-        if (document.body.classList.contains("checkout-page")) renderCheckoutPage();
-        if (document.getElementById('confirmation-details')) renderConfirmationPage();
+            if (document.querySelector(".product-page-main")) renderProductPage();
+            if (document.body.classList.contains("checkout-page")) renderCheckoutPage();
+            if (document.getElementById('confirmation-details')) renderConfirmationPage();
 
-        // NEW: Call the function to set up product page listeners
-        setupProductPageListeners();
+            setupProductPageListeners();
+            updateCartUI();
+            setupScrollObserver();
+            setupFormValidation();
+        }
 
-        // Update UI components that are on every page
-        updateCartUI();
-
-        // Set up animations and form validation
-        setupScrollObserver();
-        setupFormValidation();
+        run();
     }
 
     initializeApp();

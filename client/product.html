@@ -61,48 +61,50 @@
     </div>
 
     <main class="product-page-main">
-        <div class="grid md:grid-cols-2 min-h-screen">
-            <div class="product-gallery p-8 lg:p-12 pt-16 md:pt-32 relative">
-                <div class="main-image-container mb-4 folded-corner">
-                    <img src="" id="main-product-image" alt="Main product view" class="w-full h-full object-cover">
-                </div>
-
-                <button id="prev-image"
-                    class="absolute left-4 md:left-10 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/50 hover:bg-white transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
-                        </path>
+        <div class="container mx-auto px-6">
+            <div class="py-12 md:py-24">
+                <a href="shop.html" class="back-link">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
-                </button>
-                <button id="next-image"
-                    class="absolute right-4 md:right-10 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/50 hover:bg-white transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                </button>
-                <div id="thumbnail-grid" class="thumbnail-grid grid grid-cols-4 gap-4">
-                </div>
+                    Back to Collection
+                </a>
             </div>
+            <div class="grid md:grid-cols-2 gap-12 lg:gap-24">
+                <div class="product-gallery relative">
+                    <div class="main-image-container mb-4 folded-corner">
+                        <img src="" id="main-product-image" alt="Main product view" class="w-full h-full object-cover">
+                    </div>
 
-            <div class="dark-panel p-8 lg:p-12 pt-16 md:pt-32 flex flex-col">
-                <div class="product-details">
-                    <a href="index.html#collection" class="back-link">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    <button id="prev-image"
+                        class="absolute left-4 md:left-10 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/50 hover:bg-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                            </path>
                         </svg>
-                        Back to Collection
-                    </a>
+                    </button>
+                    <button id="next-image"
+                        class="absolute right-4 md:right-10 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/50 hover:bg-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                    <div id="thumbnail-grid" class="thumbnail-grid grid grid-cols-4 gap-4">
+                    </div>
+                </div>
+
+                <div class="product-details flex flex-col">
                     <p id="product-category" class="subheading text-brand-accent mt-4"></p>
                     <h1 id="product-name" class="text-4xl lg:text-5xl font-serif mt-2"></h1>
                     <p id="product-price" class="text-3xl font-bold font-sans mt-4 text-brand-accent"></p>
                     <p id="product-description" class="mt-6 text-lg leading-relaxed"></p>
-                    
+
                     <div id="scent-options" class="mt-8">
-                        </div>
+                    </div>
 
                     <div id="size-options" class="mt-8">
-                        </div>
+                    </div>
 
                     <div class="mt-8">
                         <label class="block subheading mb-2">Quantity</label>

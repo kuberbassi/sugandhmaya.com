@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sugandhmaya - The Art of Ritual</title>
-    <link rel="icon" type="image/png" href="./images/Sugandhmaya.png">
+    <link rel="icon" type="image/png" href="./images/Sugandhmaya-icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,12 +13,9 @@
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
-    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 </head>
 
 <body>
-
     <header id="main-header" class="fixed top-0 w-full z-50">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <a href="index.html" class="flex items-center">
@@ -63,101 +60,165 @@
     </div>
 
     <main>
-        <section class="hero-section min-h-screen flex items-center">
+        <section class="hero-section">
             <div class="container mx-auto px-6">
-                <div class="max-w-3xl reveal-on-scroll">
-                    <h1 class="hero-title text-5xl md:text-7xl lg:text-8xl font-bold text-brand-text">
-                        The <span class="text-brand-accent">Art</span> of Modern Ritual
-                    </h1>
-                    <p class="mt-8 text-lg max-w-md text-brand-text/70">
-                        Pure, artisanal puja essentials crafted to bring tranquility and intention to your sacred space.
-                    </p>
-                    <a href="#collection" class="mt-12 btn">
-                        <span>Explore The Collection</span>
-                        <div class="btn-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                    d="M12 4v16m8-8H4"></path>
-                            </svg>
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="max-w-md reveal-on-scroll">
+                        <h1 class="hero-title text-5xl md:text-6xl lg:text-7xl font-bold text-brand-text">
+                            The <span class="text-brand-accent">Art</span> of Modern Ritual
+                        </h1>
+                        <p class="mt-8 text-lg text-brand-text/70">
+                            Pure, artisanal puja essentials crafted to bring tranquility and intention to your
+                            sacred space.
+                        </p>
+                        <a href="#collection" class="mt-12 btn">
+                            <span>Explore The Collection</span>
+                        </a>
+                    </div>
+                    <div class="hero-media-grid">
+                        <div class="hero-media-item media-item-1">
+                            <video autoplay loop muted playsinline src="./images/agarbatti-video.mp4"
+                                class="hero-media"></video>
                         </div>
-                    </a>
+                        <div class="hero-media-item media-item-2">
+                            <img src="./images/products/sugandhmaya_chandan_agarbatti/12-stick-box-agarbatti.png"
+                                alt="Agarbatti sticks in smoke" class="hero-media">
+                        </div>
+                        <div class="hero-media-item media-item-3">
+                            <img src="./images/products/sugandhmaya_chandan_agarbatti/40-stick-box-agarbatti.png"
+                                alt="Agarbatti box" class="hero-media">
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <div class="dark-panel">
-            <section id="collection" class="py-24 md:py-32">
+        <div class="main-content-area">
+            <section id="collection" class="py-24 md:py-32 section-bordered">
                 <div class="container mx-auto px-6">
                     <div class="text-center mb-16 reveal-on-scroll">
                         <p class="subheading text-brand-accent">Artisanal Craft</p>
-                        <h2 class="text-4xl md:text-5xl mt-4">The Collection</h2>
+                        <h2 class="text-4xl md:text-5xl mt-4">Featured Collection</h2>
                     </div>
-
-                    <div class="swiper-container collection-slider">
-                        <div class="swiper-wrapper" id="collection-grid">
-                        </div>
-                        <div class="swiper-pagination"></div>
+                    <div id="collection-grid">
                     </div>
-
                     <div class="text-center mt-16">
                         <a href="shop.html" class="btn">
-                            <span>Explore The Full Shop</span>
+                            <span>View All Products</span>
                         </a>
                     </div>
                 </div>
             </section>
 
-            <section id="our-promise" class="py-24 md:py-32">
+            <section class="py-24 md:py-32 bg-white/50 section-bordered">
                 <div class="container mx-auto px-6">
-                    <div class="grid md:grid-cols-2 gap-16 items-center">
+                    <div class="text-center mb-16 reveal-on-scroll">
+                        <p class="subheading text-brand-accent">Our Commitment</p>
+                        <h2 class="text-4xl md:text-5xl mt-4">Our Core Values</h2>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-12 text-center">
                         <div class="reveal-on-scroll">
-                            <p class="subheading text-brand-accent">Our Philosophy</p>
-                            <h2 class="text-4xl md:text-5xl mt-4">A Promise of <br>Purity & Craft.</h2>
-                            <div class="space-y-6 text-lg leading-relaxed mt-8">
-                                <p>At Sugandhmaya, we believe spirituality is an art form. Our mission is to craft
-                                    products
-                                    that not only honor ancient traditions but also inspire beauty and peace in the
-                                    modern
-                                    world.</p>
-                                <p>Each item is made with intention, using pure, natural ingredients sourced ethically.
-                                    This
-                                    is our promise of purity, quality, and connection.</p>
+                            <div class="icon-wrapper">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
                             </div>
+                            <h3 class="text-2xl font-serif mt-6">Handcrafted Tradition</h3>
+                            <p class="mt-2 text-brand-text/70">Each product is crafted with meticulous care, honoring
+                                age-old techniques passed down through generations.</p>
                         </div>
-                        <div class="reveal-on-scroll folded-corner" style="transition-delay: 150ms;">
-                            <img src="https://images.unsplash.com/photo-154153243F003-81a333a8a3a8?q=80&w=800&auto=format&fit=crop"
-                                alt="Craftsmanship" class="w-full aspect-[4/5] object-cover">
+                        <div class="reveal-on-scroll" style="transition-delay: 150ms;">
+                            <div class="icon-wrapper">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-serif mt-6">Pure & Natural</h3>
+                            <p class="mt-2 text-brand-text/70">We use only the finest natural ingredients, free from
+                                harmful additives, to ensure a pure and authentic experience.</p>
+                        </div>
+                        <div class="reveal-on-scroll" style="transition-delay: 300ms;">
+                            <div class="icon-wrapper">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-serif mt-6">Ethically Sourced</h3>
+                            <p class="mt-2 text-brand-text/70">Our materials are sourced responsibly, supporting local
+                                communities and preserving the environment.</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <footer id="contact" class="main-footer py-24 text-center">
-                <div class="container mx-auto px-6 reveal-on-scroll">
-                    <p class="subheading text-brand-accent">Get In Touch</p>
-                    <h2 class="text-4xl md:text-5xl mt-4">Start a Conversation</h2>
-                    <p class="mt-4 mx-auto text-lg max-w-2xl">For any inquiry, feedback,
-                        or collaboration, we welcome the connection.</p>
-                    <a href="mailto:contact@indiaonroaming.com" class="mt-8 btn">
-                        <span>Email Us</span>
-                        <div class="btn-icon">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                    d="M12 4v16m8-8H4"></path>
-                            </svg>
+            <section id="our-promise" class="promise-section">
+                <div class="container mx-auto px-6 relative z-10">
+                    <div class="max-w-2xl reveal-on-scroll">
+                        <p class="subheading text-brand-accent">Our Philosophy</p>
+                        <h2 class="text-4xl md:text-5xl mt-4">A Promise of <br>Purity & Craft.</h2>
+                        <div class="space-y-6 text-lg leading-relaxed mt-8">
+                            <p>At Sugandhmaya, we believe spirituality is an art form. Our mission is to
+                                craft products that not only honor ancient traditions but also inspire beauty and peace
+                                in
+                                the modern world.</p>
+                            <p>Each item is made with intention, using pure, natural ingredients sourced
+                                ethically. This is our promise of purity, quality, and connection.</p>
                         </div>
-                    </a>
+                    </div>
                 </div>
-            </footer>
+            </section>
         </div>
     </main>
 
-    <div class="bg-brand-background">
-        <div class="container mx-auto px-6 py-6 border-t border-brand-text/10 text-center text-sm text-brand-text/60">
-            <p>&copy; 2025 Sugandhmaya. A Brand by <a href="https://indiaonroaming.com" target="_blank"
-                    class="hover:text-brand-accent font-semibold">indiaonroaming.com</a></p>
+    <footer id="contact" class="main-footer">
+        <div class="container mx-auto px-6 py-16">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="md:col-span-2">
+                    <h3 class="text-2xl font-bold font-ui tracking-widest">SUGANDHMAYA</h3>
+                    <p class="mt-4 max-w-md">Crafting moments of tranquility and peace through the ancient art of
+                        incense. Pure, artisanal essentials for your sacred space.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold font-ui tracking-wider">Navigate</h4>
+                    <nav class="mt-4 flex flex-col space-y-2">
+                        <a href="#collection" class="footer-link">Collection</a>
+                        <a href="#our-promise" class="footer-link">Our Promise</a>
+                        <a href="shop.html" class="footer-link">Full Shop</a>
+                    </nav>
+                </div>
+                <div>
+                    <h4 class="font-bold font-ui tracking-wider">Connect</h4>
+                    <div class="mt-4 flex flex-col space-y-2">
+                        <a href="mailto:contact@indiaonroaming.com" class="footer-link">Email Us</a>
+                        <div class="flex space-x-4 mt-2">
+                            <a href="#" class="footer-link"><svg class="w-6 h-6" fill="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.011-3.584.069-4.85c.149-3.225 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163zm0 1.441c-3.171 0-3.542.012-4.78.069-2.776.126-4.004 1.348-4.131 4.131-.057 1.237-.068 1.608-.068 4.78s.011 3.542.068 4.78c.127 2.783 1.355 4.004 4.131 4.131 1.237.057 1.608.068 4.78.068s3.542-.011 4.78-.068c2.776-.127 4.004-1.348 4.131-4.131.057-1.237.068-1.608.068-4.78s-.011-3.542-.068-4.78c-.127-2.783-1.355-4.004-4.131-4.131-1.237-.057-1.608-.068-4.78-.068zm0 5.838a4.498 4.498 0 100 8.997 4.498 4.498 0 000-8.997zm0 7.282a2.784 2.784 0 110-5.568 2.784 2.784 0 010 5.568zm5.235-8.06a1.1 1.1 0 100-2.2 1.1 1.1 0 000 2.2z">
+                                    </path>
+                                </svg></a>
+                            <a href="#" class="footer-link"><svg class="w-6 h-6" fill="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path
+                                        d="M22.46 6c-.77.35-1.6.58-2.46.67.88-.53 1.56-1.37 1.88-2.38-.83.49-1.74.85-2.7 1.03A4.5 4.5 0 0016.1 4c-2.38 0-4.31 1.93-4.31 4.31 0 .34.04.67.11.98-3.58-.18-6.76-1.9-8.89-4.51-.37.63-.58 1.37-.58 2.15 0 1.5.76 2.82 1.92 3.6- .71-.02-1.37-.22-1.95-.53v.05c0 2.09 1.49 3.84 3.46 4.23-.36.1-.74.15-1.13.15-.28 0-.55-.03-.81-.08.55 1.71 2.15 2.96 4.05 3a4.5 4.5 0 01-2.8 1c-.18 0-.36-.01-.54-.03 2.7 1.74 5.92 2.76 9.39 2.76 7.07 0 10.94-5.86 10.94-10.94 0-.17 0-.33-.01-.5.75-.54 1.4-1.22 1.92-1.98z">
+                                    </path>
+                                </svg></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 border-t border-white/10 pt-6 text-center text-sm text-white/60">
+                <p>&copy; 2025 Sugandhmaya. A Brand by <a href="https://indiaonroaming.com" target="_blank"
+                        class="hover:text-brand-accent font-semibold">indiaonroaming.com</a></p>
+            </div>
         </div>
-    </div>
+    </footer>
 
     <script src="script.js"></script>
 </body>
