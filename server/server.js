@@ -15,6 +15,8 @@ app.use(cors());
 app.use(express.json());
 app.use('/images', express.static('../client/images'));
 
+console.log('--- DEBUG: Connecting with MONGO_URI:', process.env.MONGO_URI);
+
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("MongoDB connected successfully"))
     .catch(err => console.log("MongoDB connection error:", err));
