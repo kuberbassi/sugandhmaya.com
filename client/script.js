@@ -205,6 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
+        // --- Replace this entire function ---
         function renderProductPage() {
             const params = new URLSearchParams(window.location.search);
             const productId = params.get('id');
@@ -232,21 +233,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
             function renderScents() {
                 if (!product.scents || product.scents.length <= 1) {
-                    scentOptionsContainer.style.display = 'none';
+                    scentOptionsContainer.parentElement.style.display = 'none';
                     return;
                 }
-                let scentHtml = '<label class="block subheading mb-2">Scent</label><div class="flex flex-wrap gap-3">';
+                let scentHtml = '<label class="block subheading mb-3">Scent</label><div class="flex flex-wrap gap-3">';
                 product.scents.forEach((scent, index) => {
-                    scentHtml += `<label class="cursor-pointer"><input type="radio" name="scent" value="${scent}" class="sr-only" ${index === 0 ? 'checked' : ''}><span class="inline-block px-4 py-2 border rounded-full text-sm font-semibold">${scent}</span></label>`;
+                    scentHtml += `<label><input type="radio" name="scent" value="${scent}" ${index === 0 ? 'checked' : ''}><span>${scent}</span></label>`;
                 });
                 scentHtml += '</div>';
                 scentOptionsContainer.innerHTML = scentHtml;
             }
 
             function renderSizes() {
-                let sizeHtml = '<label class="block subheading mb-2">Size</label><div class="flex flex-wrap gap-3">';
+                let sizeHtml = '<label class="block subheading mb-3">Size</label><div class="flex flex-wrap gap-3">';
                 product.variants.forEach((variant, index) => {
-                    sizeHtml += `<label class="cursor-pointer"><input type="radio" name="size" value="${variant.size}" class="sr-only" ${index === 0 ? 'checked' : ''}><span class="inline-block px-4 py-2 border rounded-full text-sm font-semibold">${variant.size}</span></label>`;
+                    sizeHtml += `<label><input type="radio" name="size" value="${variant.size}" ${index === 0 ? 'checked' : ''}><span>${variant.size}</span></label>`;
                 });
                 sizeHtml += '</div>';
                 sizeOptionsContainer.innerHTML = sizeHtml;
@@ -265,8 +266,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     thumbImg.src = `http://localhost:5000${thumbSrc}`;
                     thumbImg.alt = `Thumbnail for ${variant.size}`;
                     thumbImg.className = 'thumbnail-image';
-                    if (thumbSrc === variant.image) thumbImg.classList.add('active');
+                    thumbImg.dataset.src = thumbSrc;
                     thumbnailGrid.appendChild(thumbImg);
+                });
+                updateActiveThumbnail(variant.image);
+            }
+
+            function updateActiveThumbnail(src) {
+                document.querySelectorAll('.thumbnail-image').forEach(t => {
+                    if (t.dataset.src === src) {
+                        t.classList.add('active');
+                    } else {
+                        t.classList.remove('active');
+                    }
                 });
             }
 
@@ -297,11 +309,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     mainImageEl.src = clickedThumbnail.src;
                     mainImageEl.style.opacity = '1';
                 }, 200);
-                document.querySelectorAll('.thumbnail-image').forEach(t => t.classList.remove('active'));
-                clickedThumbnail.classList.add('active');
+                updateActiveThumbnail(clickedThumbnail.dataset.src);
             });
         }
 
+        
         function renderCheckoutPage() {
             const summaryItems = document.getElementById('summary-items');
             if (!summaryItems) return;
@@ -385,11 +397,15 @@ document.addEventListener("DOMContentLoaded", () => {
             popoverClose.addEventListener('click', closePopover);
         }
 
+        // --- Also, replace this entire function ---
         function setupProductPageListeners() {
             const quantityInput = document.getElementById("quantity-input");
             const decreaseBtn = document.getElementById("decrease-quantity");
             const increaseBtn = document.getElementById("increase-quantity");
             const accordionHeaders = document.querySelectorAll('.accordion-header');
+            const scrollLeftBtn = document.getElementById('scroll-left');
+            const scrollRightBtn = document.getElementById('scroll-right');
+            const thumbnailTrack = document.getElementById('thumbnail-grid');
 
             decreaseBtn?.addEventListener('click', () => {
                 let currentValue = parseInt(quantityInput.value);
@@ -405,14 +421,32 @@ document.addEventListener("DOMContentLoaded", () => {
                 header.addEventListener('click', () => {
                     const accordionItem = header.parentElement;
                     const content = header.nextElementSibling;
-                    accordionItem.classList.toggle('active');
-                    if (accordionItem.classList.contains('active')) {
+                    const wasActive = accordionItem.classList.contains('active');
+
+                    // Optional: Close other accordions
+                    // document.querySelectorAll('.accordion-item').forEach(item => {
+                    //     item.classList.remove('active');
+                    //     item.querySelector('.accordion-content').style.maxHeight = '0';
+                    // });
+
+                    if (!wasActive) {
+                        accordionItem.classList.add('active');
                         content.style.maxHeight = content.scrollHeight + 'px';
                     } else {
+                        accordionItem.classList.remove('active');
                         content.style.maxHeight = '0';
                     }
                 });
             });
+
+            const scrollThumbnails = (direction) => {
+                if (!thumbnailTrack) return;
+                const scrollAmount = 3 * (80 + 12); // 3 thumbnails + gaps
+                thumbnailTrack.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+            };
+
+            scrollLeftBtn?.addEventListener('click', () => scrollThumbnails(-1));
+            scrollRightBtn?.addEventListener('click', () => scrollThumbnails(1));
         }
 
         // --- EVENT LISTENERS ---
