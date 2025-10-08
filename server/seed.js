@@ -3,58 +3,78 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const Product = require('./models/product');
 
-// --- YOUR PRODUCT DATA GOES HERE ---
 const productsToSeed = [
-
-    // --- PRODUCT 1 ---
+    // --- PRODUCT 1: The Main Agarbatti Product ---
     {
-        id: 'sugandhmaya-chandan-agarbatti',
-        name: 'Sugandhmaya Chandan Agarbatti',
+        id: 'sugandhmaya-agarbatti-collection',
+        name: 'Sugandhmaya Agarbatti',
         category: 'Agarbatti',
-        price: 91,
-        description: 'Scent: Chandan (Sandalwood), Material: Wood, Type: Pooja Samagri, Dimensions: 10 inches long, 0.5 inches wide and deep, Quantity: 1 pack.',
-        image: '/images/products/sugandhmaya_chandan_agarbatti/1.jpg',
-        thumbnails: [
-            '/images/products/sugandhmaya_chandan_agarbatti/1.jpg',
-            '/images/products/sugandhmaya_chandan_agarbatti/2.jpg',
-            '/images/products/sugandhmaya_chandan_agarbatti/3.jpg',
-            '/images/products/sugandhmaya_chandan_agarbatti/4.jpg',
-            '/images/products/sugandhmaya_chandan_agarbatti/5.jpg',
-            '/images/products/sugandhmaya_chandan_agarbatti/6.jpg',
+        description: 'Experience a symphony of divine fragrances with our artisanal agarbatti collection. Each stick is crafted to elevate your spiritual practices and bring tranquility to your space. Select your preferred scent and size.',
+        scents: ["Chandan", "Rose", "Orchid", "Oudh Regular"],
+        variants: [
+            {
+                size: "12 Sticks",
+                price: 91, // CHANGE THIS PRICE
+                image: '/images/products/sugandhmaya_chandan_agarbatti/1.jpg', // CHANGE to your 12-stick box image
+                thumbnails: [
+                    '/images/products/sugandhmaya_chandan_agarbatti/1.jpg', // CHANGE to your 12-stick thumbnails
+                    '/images/products/sugandhmaya_chandan_agarbatti/2.jpg',
+                ]
+            },
+            {
+                size: "40 Sticks",
+                price: 330, // CHANGE THIS PRICE
+                image: '/images/products/sugandhmaya_chandan_agarbatti/3.jpg', // CHANGE to your 40-stick box image
+                thumbnails: [
+                    '/images/products/sugandhmaya_chandan_agarbatti/3.jpg', // CHANGE to your 40-stick thumbnails
+                    '/images/products/sugandhmaya_chandan_agarbatti/4.jpg',
+                    '/images/products/sugandhmaya_chandan_agarbatti/5.jpg',
+                ]
+            }
         ]
-
     },
 
-    // --- PRODUCT 2 ---
+    // --- PRODUCT 2: The Oudh Premium Product ---
     {
-        id: 'camphor-dhoop-cones',
-        name: 'Camphor Dhoop Cones',
-        category: 'Dhoop',
-        price: 280,
-        description: 'Purifying camphor dhoop cones that cleanse the air and create a sacred atmosphere for your rituals.',
-        image: '/images/camphor_main.jpg',
-        thumbnails: [
-            '/images/camphor_thumb1.jpg',
-            '/images/camphor_thumb2.jpg',
+        id: 'sugandhmaya-oudh-premium',
+        name: 'Oudh Premium Agarbatti',
+        category: 'Agarbatti',
+        description: 'Indulge in the luxurious and captivating aroma of our Oudh Premium Agarbatti. Sourced from the finest ingredients, this is an experience reserved for the connoisseur of fine fragrances.',
+        scents: ["Oudh Premium"], // This product only has one scent
+        variants: [
+            {
+                size: "12 Sticks",
+                price: 150, // CHANGE THIS PRICE
+                image: '/images/products/oudh_premium/12_stick_main.jpg', // ADD YOUR IMAGE PATH
+                thumbnails: [
+                    '/images/products/oudh_premium/12_stick_thumb1.jpg', // ADD YOUR IMAGE PATHS
+                ]
+            },
+            {
+                size: "40 Sticks",
+                price: 500, // CHANGE THIS PRICE
+                image: '/images/products/oudh_premium/40_stick_main.jpg', // ADD YOUR IMAGE PATH
+                thumbnails: [
+                    '/images/products/oudh_premium/40_stick_thumb1.jpg', // ADD YOUR IMAGE PATHS
+                ]
+            }
         ]
-    },
-
-    // --- ADD MORE PRODUCTS HERE by copying the block above ---
-
+    }
 ];
-// -----------------------------------------
 
 const seedDB = async () => {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log('MongoDB connected for seeding...');
-    await Product.deleteMany({});
-    console.log('Existing products cleared.');
-    await Product.insertMany(productsToSeed);
-    console.log('Database has been successfully seeded with new products!');
-    mongoose.connection.close();
+    try {
+        await mongoose.connect(process.env.MONGO_URI);
+        console.log('MongoDB connected for seeding...');
+        await Product.deleteMany({});
+        console.log('Existing products cleared.');
+        await Product.insertMany(productsToSeed);
+        console.log('Database has been successfully seeded with new variant products!');
+    } catch (err) {
+        console.error("Seeding failed:", err);
+    } finally {
+        mongoose.connection.close();
+    }
 };
 
-seedDB().catch(err => {
-    console.error("Seeding failed:", err);
-    mongoose.connection.close();
-});
+seedDB();
