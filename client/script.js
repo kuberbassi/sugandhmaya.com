@@ -31,17 +31,18 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const toast = document.createElement('div');
-            toast.className = 'toast-message fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-lg opacity-0 transition-opacity duration-300 z-50';
+            toast.className = 'toast-message';
             toast.textContent = message;
+
+            toastContainer.innerHTML = ''; // Clear previous toasts
             toastContainer.appendChild(toast);
 
             setTimeout(() => {
-                toast.classList.add('opacity-100');
-            }, 100);
+                toast.classList.add('show');
+            }, 10);
             setTimeout(() => {
-                toast.classList.remove('opacity-100');
-                toast.classList.add('opacity-0');
-                setTimeout(() => toast.remove(), 300);
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
             }, 3000);
         }
 
@@ -62,6 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
         function openCart() {
             if (!cartModal) return;
             cartModal.classList.remove("hidden");
+            document.body.style.overflow = 'hidden';
             setTimeout(() => {
                 cartModal.classList.remove("opacity-0");
                 if (cartPanel) cartPanel.classList.remove("translate-x-full");
@@ -70,6 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         function closeCart() {
             if (!cartModal) return;
+            document.body.style.overflow = '';
             cartModal.classList.add("opacity-0");
             if (cartPanel) cartPanel.classList.add("translate-x-full");
             setTimeout(() => cartModal.classList.add("hidden"), 500);
@@ -102,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         </div>
                         <div>
                            <p class="font-semibold">₹${(variant.price * item.quantity).toFixed(2)}</p>
-                           <button class="remove-item text-gray-400 hover:text-red-500 float-right mt-2" data-id="${item.cartItemId}">Remove</button>
+                           <button class="remove-item text-xs text-gray-400 hover:text-red-500 float-right mt-2" data-id="${item.cartItemId}">Remove</button>
                         </div>`;
                     cartItemsContainer.appendChild(itemEl);
                 });
@@ -122,7 +125,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const revealElements = document.querySelectorAll(".reveal-on-scroll");
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
-                    if (entry.isIntersecting) entry.target.classList.add("is-visible");
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("is-visible");
+                        observer.unobserve(entry.target);
+                    }
                 });
             }, { threshold: 0.1 });
             revealElements.forEach((el) => observer.observe(el));
@@ -137,7 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 collectionGrid.innerHTML = '<p class="text-center col-span-full">Could not load products. Is the server running?</p>';
                 return;
             }
-            
+
             let gridHTML = "";
             const topProducts = products.slice(0, 3);
 
@@ -153,10 +159,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         </div>
                     </a>`;
             });
-            
+
             collectionGrid.innerHTML = gridHTML;
         }
-        
+
         function renderShopPage() {
             const shopGrid = document.getElementById('shop-grid');
             const categoryFilter = document.getElementById('category-filter');
@@ -202,10 +208,11 @@ document.addEventListener("DOMContentLoaded", () => {
         function renderProductPage() {
             const params = new URLSearchParams(window.location.search);
             const productId = params.get('id');
+            if (!productId) return;
             const product = products.find(p => p.id === productId);
 
             if (!product) {
-                if (productId && products.length > 0) {
+                if (products.length > 0) {
                     document.querySelector('.product-page-main').innerHTML = '<h1 class="text-center text-2xl p-10">Product not found</h1>';
                 }
                 return;
@@ -261,31 +268,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (thumbSrc === variant.image) thumbImg.classList.add('active');
                     thumbnailGrid.appendChild(thumbImg);
                 });
-
-                document.querySelectorAll('input[name="size"]').forEach(radio => {
-                    const span = radio.nextElementSibling;
-                    if (radio.value === selectedSize) {
-                        span.style.backgroundColor = 'var(--brand-text)';
-                        span.style.borderColor = 'var(--brand-text)';
-                        span.style.color = 'var(--brand-background)';
-                    } else {
-                        span.style.backgroundColor = 'transparent';
-                        span.style.borderColor = 'rgba(61, 53, 46, 0.2)';
-                        span.style.color = 'var(--brand-text)';
-                    }
-                });
-                document.querySelectorAll('input[name="scent"]').forEach(radio => {
-                    const span = radio.nextElementSibling;
-                    if (radio.value === selectedScent) {
-                        span.style.backgroundColor = 'var(--brand-text)';
-                        span.style.borderColor = 'var(--brand-text)';
-                        span.style.color = 'var(--brand-background)';
-                    } else {
-                        span.style.backgroundColor = 'transparent';
-                        span.style.borderColor = 'rgba(61, 53, 46, 0.2)';
-                        span.style.color = 'var(--brand-text)';
-                    }
-                });
             }
 
             document.title = `${product.name} - Sugandhmaya`;
@@ -305,7 +287,6 @@ document.addEventListener("DOMContentLoaded", () => {
             scentOptionsContainer.addEventListener('change', e => {
                 if (e.target.name === 'scent') {
                     selectedScent = e.target.value;
-                    updateVariantUI();
                 }
             });
             thumbnailGrid.addEventListener('click', e => {
@@ -322,7 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         function renderCheckoutPage() {
-           const summaryItems = document.getElementById('summary-items');
+            const summaryItems = document.getElementById('summary-items');
             if (!summaryItems) return;
 
             summaryItems.innerHTML = '';
@@ -373,6 +354,37 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
+        function setupContactBubbles() {
+            const container = document.getElementById('contact-bubbles-container');
+            const popover = document.getElementById('contact-popover');
+            const popoverContent = document.getElementById('contact-popover-content');
+            const popoverTitle = document.getElementById('popover-title');
+            const popoverBody = document.getElementById('popover-body');
+            const popoverClose = document.getElementById('popover-close');
+
+            if (!container || !popover) return;
+
+            container.addEventListener('click', (e) => {
+                const bubble = e.target.closest('.contact-bubble');
+                if (bubble) {
+                    popoverTitle.textContent = bubble.dataset.title;
+                    popoverBody.innerHTML = bubble.dataset.content;
+                    popover.classList.add('visible');
+                }
+            });
+
+            const closePopover = () => {
+                popover.classList.remove('visible');
+            };
+
+            popover.addEventListener('click', (e) => {
+                if (e.target === popover) {
+                    closePopover();
+                }
+            });
+            popoverClose.addEventListener('click', closePopover);
+        }
+
         function setupProductPageListeners() {
             const quantityInput = document.getElementById("quantity-input");
             const decreaseBtn = document.getElementById("decrease-quantity");
@@ -411,6 +423,10 @@ document.addEventListener("DOMContentLoaded", () => {
         openCartBtn?.addEventListener("click", openCart);
         closeCartBtn?.addEventListener("click", closeCart);
         cartModal?.addEventListener("click", (e) => { if (e.target === cartModal) closeCart(); });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape" && !cartModal.classList.contains('hidden')) closeCart();
+        });
+
 
         cartItemsContainer?.addEventListener("click", (e) => {
             const target = e.target.closest("button");
@@ -450,28 +466,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const selectedScent = document.querySelector('input[name="scent"]:checked').value;
             const quantity = parseInt(document.getElementById("quantity-input").value);
             const cartItemId = `${productId}_${selectedSize}_${selectedScent}`;
-            
-            const mainImage = document.getElementById('main-product-image');
-            const flyer = mainImage.cloneNode();
-
-            flyer.style.cssText = `
-                position: fixed; left: ${mainImage.getBoundingClientRect().left}px; top: ${mainImage.getBoundingClientRect().top}px;
-                width: 100px; height: 100px; object-fit: cover; border-radius: 0.5rem; z-index: 1000;
-                transition: all 0.8s cubic-bezier(0.5, 0, 1, 0.5);
-            `;
-            document.body.appendChild(flyer);
-
-            const cartIcon = document.getElementById('open-cart-button');
-            const cartIconRect = cartIcon.getBoundingClientRect();
-
-            requestAnimationFrame(() => {
-                flyer.style.left = `${cartIconRect.left + 10}px`;
-                flyer.style.top = `${cartIconRect.top + 10}px`;
-                flyer.style.transform = 'scale(0.1)';
-                flyer.style.opacity = '0';
-            });
-
-            flyer.addEventListener('transitionend', () => flyer.remove());
 
             const existingItem = cart.find(item => item.cartItemId === cartItemId);
 
@@ -483,6 +477,7 @@ document.addEventListener("DOMContentLoaded", () => {
             saveCart();
             updateCartUI();
             showToast(`${quantity} item(s) added to cart.`);
+            openCart();
         });
 
         if (checkoutForm) {
@@ -492,6 +487,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const buttonText = submitButton.querySelector('span');
                 submitButton.disabled = true;
                 buttonText.textContent = 'Placing Order...';
+
                 const formData = new FormData(e.target);
                 const customerDetails = Object.fromEntries(formData.entries());
                 const itemsForBackend = cart.map(item => ({
@@ -532,6 +528,7 @@ document.addEventListener("DOMContentLoaded", () => {
         async function run() {
             await fetchProducts();
 
+            // Run functions based on which page is currently loaded
             if (document.body.classList.contains("shop-page")) renderShopPage();
             else if (document.getElementById("collection-grid")) renderHomePage();
 
@@ -539,12 +536,16 @@ document.addEventListener("DOMContentLoaded", () => {
             if (document.body.classList.contains("checkout-page")) renderCheckoutPage();
             if (document.getElementById('confirmation-details')) renderConfirmationPage();
 
+            // Run functions that are needed on multiple pages
             setupProductPageListeners();
+            setupFormValidation();
+            setupContactBubbles();
+
+            // Global UI updates
             updateCartUI();
             setupScrollObserver();
-            setupFormValidation();
         }
-        
+
         run();
     }
 
