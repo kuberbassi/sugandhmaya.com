@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const itemEl = document.createElement("div");
                     itemEl.className = "flex items-center gap-4 py-3 border-b border-gray-100";
                     itemEl.innerHTML = `
-                        <img src="http://localhost:5000${variant.image}" alt="${product.name}" class="w-16 h-20 object-cover rounded">
+                        <img src="${variant.image}" alt="${product.name}" class="w-16 h-20 object-cover rounded">
                         <div class="flex-grow">
                             <h3 class="font-semibold">${product.name}</h3>
                             <p class="text-sm text-gray-500">${item.scent} / ${item.size}</p>
@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const displayImage = product.variants && product.variants.length > 0 ? product.variants[0].image : product.image;
                 gridHTML += `
                     <a href="product.html?id=${product.id}" class="product-card-link group block">
-                        <div class="product-image-container"><img src="http://localhost:5000${displayImage}" loading="lazy" alt="${product.name}" class="product-image"></div>
+                        <div class="product-image-container"><img src="${displayImage}" loading="lazy" alt="${product.name}" class="product-image"></div>
                         <div class="pt-6 text-center">
                             <h3 class="text-xl font-serif">${product.name}</h3>
                             <p class="text-base mt-1 text-gray-500">${product.category}</p>
@@ -187,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     productCard.href = `product.html?id=${product.id}`;
                     productCard.className = "product-card-link group block";
                     productCard.innerHTML = `
-                        <div class="product-image-container"><img src="http://localhost:5000${displayImage}" loading="lazy" alt="${product.name}" class="product-image"></div>
+                        <div class="product-image-container"><img src="${displayImage}" loading="lazy" alt="${product.name}" class="product-image"></div>
                         <div class="pt-8 text-center">
                             <h3 class="text-2xl font-serif">${product.name}</h3>
                             <p class="text-base mt-1">${product.category}</p>
@@ -258,12 +258,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!variant) return;
 
                 priceEl.textContent = `₹${variant.price}`;
-                mainImageEl.src = `http://localhost:5000${variant.image}`;
+                mainImageEl.src = variant.image; // Remove prefix
 
                 thumbnailGrid.innerHTML = '';
                 variant.thumbnails.forEach((thumbSrc) => {
                     const thumbImg = document.createElement('img');
-                    thumbImg.src = `http://localhost:5000${thumbSrc}`;
+                    thumbImg.src = thumbSrc; // Remove prefix
                     thumbImg.alt = `Thumbnail for ${variant.size}`;
                     thumbImg.className = 'thumbnail-image';
                     thumbImg.dataset.src = thumbSrc;
@@ -313,7 +313,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        
+
         function renderCheckoutPage() {
             const summaryItems = document.getElementById('summary-items');
             if (!summaryItems) return;
