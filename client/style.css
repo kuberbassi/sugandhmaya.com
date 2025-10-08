@@ -25,7 +25,6 @@ body {
 }
 
 .main-content-area {
-    background-color: var(--brand-background);
     position: relative;
     z-index: 2;
 }
@@ -56,6 +55,12 @@ h6 {
 #main-header.scrolled {
     background-color: rgba(248, 244, 238, 0.85);
     backdrop-filter: blur(10px);
+}
+
+#nav-icon {
+    width: 55px;
+    height: 55px;
+    padding-right: 5px;
 }
 
 .nav-link {
@@ -93,6 +98,7 @@ h6 {
 .hero-section {
     padding-top: 8rem;
     padding-bottom: 8rem;
+    position: relative;
     background-image: url('./images/hero-bg.jpg');
     background-size: cover;
     background-position: center;
@@ -229,11 +235,12 @@ h6 {
     border-radius: 0.5rem;
 }
 
-
 /* --- MODERN FOOTER --- */
 .main-footer {
     background-color: var(--brand-dark);
     color: rgba(255, 255, 255, 0.7);
+    position: relative;
+    overflow: hidden;
 }
 
 .main-footer h3,
@@ -250,8 +257,42 @@ h6 {
     color: var(--brand-accent);
 }
 
-.footer-contact-info p {
+.footer-contact-info p,
+.footer-contact-info a {
     line-height: 1.6;
+}
+
+/* --- Universal Graphic Background --- */
+.has-graphic-bg {
+    position: relative;
+    background-color: transparent;
+}
+
+.has-graphic-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: url('./images/Sugandhmaya-icon.png');
+    background-size: 500px;
+    background-repeat: repeat;
+    opacity: 0.02;
+}
+
+.main-footer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image: url('./images/Sugandhmaya-icon.png');
+    background-size: 500px;
+    background-repeat: repeat;
+    opacity: 0.02;
+}
+
+.main-footer .container {
+    position: relative;
+    z-index: 1;
 }
 
 /* --- Generic Styles for other pages --- */

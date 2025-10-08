@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 collectionGrid.innerHTML = '<p class="text-center col-span-full">Could not load products. Is the server running?</p>';
                 return;
             }
-
+            
             let gridHTML = "";
             const topProducts = products.slice(0, 3);
 
@@ -153,10 +153,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         </div>
                     </a>`;
             });
-
+            
             collectionGrid.innerHTML = gridHTML;
         }
-
+        
         function renderShopPage() {
             const shopGrid = document.getElementById('shop-grid');
             const categoryFilter = document.getElementById('category-filter');
@@ -322,7 +322,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         function renderCheckoutPage() {
-            const summaryItems = document.getElementById('summary-items');
+           const summaryItems = document.getElementById('summary-items');
             if (!summaryItems) return;
 
             summaryItems.innerHTML = '';
@@ -450,7 +450,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const selectedScent = document.querySelector('input[name="scent"]:checked').value;
             const quantity = parseInt(document.getElementById("quantity-input").value);
             const cartItemId = `${productId}_${selectedSize}_${selectedScent}`;
-
+            
             const mainImage = document.getElementById('main-product-image');
             const flyer = mainImage.cloneNode();
 
@@ -544,7 +544,7 @@ document.addEventListener("DOMContentLoaded", () => {
             setupScrollObserver();
             setupFormValidation();
         }
-
+        
         run();
     }
 
