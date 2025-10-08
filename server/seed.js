@@ -14,21 +14,24 @@ const productsToSeed = [
         variants: [
             {
                 size: "12 Sticks",
-                price: 91, // CHANGE THIS PRICE
-                image: '/images/products/sugandhmaya_chandan_agarbatti/1.webp', // CHANGE to your 12-stick box image
+                price: 91,
+                image: '/images/products/sugandhmaya_chandan_agarbatti/4.webp', // Main image for 12 sticks
                 thumbnails: [
-                    '/images/products/sugandhmaya_chandan_agarbatti/1.webp', // CHANGE to your 12-stick thumbnails
-                    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/4.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/5.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
                 ]
             },
             {
                 size: "40 Sticks",
-                price: 330, // CHANGE THIS PRICE
-                image: '/images/products/sugandhmaya_chandan_agarbatti/3.webp', // CHANGE to your 40-stick box image
+                price: 330,
+                image: '/images/products/sugandhmaya_chandan_agarbatti/1.webp', // Main image for 40 sticks
                 thumbnails: [
-                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp', // CHANGE to your 40-stick thumbnails
-                    '/images/products/sugandhmaya_chandan_agarbatti/4.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/5.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/1.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
                 ]
             }
         ]
@@ -44,18 +47,24 @@ const productsToSeed = [
         variants: [
             {
                 size: "12 Sticks",
-                price: 150, // CHANGE THIS PRICE
-                image: '/images/products/oudh_premium/12_stick_main.webp', // ADD YOUR IMAGE PATH
+                price: 150,
+                image: '/images/products/sugandhmaya_chandan_agarbatti/1.webp', // Using big box image set as default
                 thumbnails: [
-                    '/images/products/oudh_premium/12_stick_thumb1.webp', // ADD YOUR IMAGE PATHS
+                    '/images/products/sugandhmaya_chandan_agarbatti/1.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
                 ]
             },
             {
                 size: "40 Sticks",
-                price: 500, // CHANGE THIS PRICE
-                image: '/images/products/oudh_premium/40_stick_main.webp', // ADD YOUR IMAGE PATH
+                price: 500,
+                image: '/images/products/sugandhmaya_chandan_agarbatti/1.webp', // Using big box image set as default
                 thumbnails: [
-                    '/images/products/oudh_premium/40_stick_thumb1.webp', // ADD YOUR IMAGE PATHS
+                    '/images/products/sugandhmaya_chandan_agarbatti/1.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
                 ]
             }
         ]
