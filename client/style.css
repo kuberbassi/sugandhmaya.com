@@ -1,3 +1,4 @@
+/* client/style.css */
 /*
  * style.css - Refactored for maintainability
  * ----------------------------------------
@@ -415,10 +416,19 @@ button.btn:hover {
   padding-top: 8rem;
   padding-bottom: 6rem;
   position: relative;
-  background-image: url('images/yellowish-texure.webp');
+  background-image: url('images/hero-bg.webp');
   background-size: cover;
   background-position: center;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.shop-main {
+  background-image: none;
+  background-color: #fff;
+}
+
+.shop-main::before {
+  content: none;
 }
 
 .filter-label input {
@@ -431,27 +441,26 @@ button.btn:hover {
   display: inline-block;
   cursor: pointer;
   padding: 0.6rem 1.25rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--brand-text);
   border-radius: 999px;
   font-family: var(--font-ui);
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--brand-text);
-  background-color: #fff;
-  box-shadow: var(--shadow-sm);
+  background-color: var(--brand-background);
+  box-shadow: none;
   transition: all 0.2s ease-in-out;
 }
 
 .filter-label:hover {
-  border-color: rgba(0, 0, 0, 0.2);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
 }
 
 .filter-label:has(input:checked) {
-  background-color: var(--brand-accent);
-  border-color: var(--brand-accent);
-  color: var(--brand-dark);
+  background-color: var(--brand-dark);
+  border-color: var(--brand-dark);
+  color: #fff;
   font-weight: 700;
 }
 
@@ -460,17 +469,12 @@ button.btn:hover {
   padding-top: 8rem;
   padding-bottom: 6rem;
   position: relative;
-  background-image: url('images/antique-pattern.webp');
-  background-repeat: repeat;
-  background-attachment: fixed;
+  background-image: none;
+  background-color: var(--brand-background);
 }
 
 .product-page-main::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-color: rgba(248, 244, 238, 0.96);
-  z-index: 0;
+  content: none;
 }
 
 .product-page-main .container {
@@ -504,9 +508,7 @@ button.btn:hover {
 .thumbnail-track-container {
   overflow-x: auto;
   flex-grow: 1;
-  /* Added to enable smooth scrolling with buttons */
   scroll-behavior: smooth;
-  /* Added for a more modern scrolling effect */
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x mandatory;
 }
@@ -514,7 +516,6 @@ button.btn:hover {
 .thumbnail-track {
   display: flex;
   gap: 0.75rem;
-  /* Removed transition as it's now on the container */
 }
 
 .thumbnail-image {
@@ -922,14 +923,14 @@ button.btn:hover {
 
 #contact-popover-content {
   transition: transform 0.3s var(--ease-out-quart);
-  position: absolute; /* */
-  top: 50%; /* */
-  left: 50%; /* */
-  transform: translate(-50%, -50%); /* */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 #contact-popover.visible #contact-popover-content {
-  transform: scale(1) translate(-50%, -50%); /* */
+  transform: scale(1) translate(-50%, -50%);
 }
 
 #contact-popover-content a {
@@ -1048,4 +1049,120 @@ button.btn:hover {
   #cart-panel {
     max-width: 100%;
   }
+}
+
+/* client/style.css */
+
+/* --- 7. SECTIONS - SHOP PAGE --- */
+.shop-hero {
+  /* Sets the hero banner background to the correct soft image */
+  background-image: url('images/hero-bg.webp');
+  background-size: cover;
+  background-position: center;
+  padding-top: 8rem;
+  padding-bottom: 6rem;
+  position: relative;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.shop-main {
+  /* Removes the repeating pattern for a clean white background */
+  background-image: none;
+  background-color: #fff;
+}
+
+.shop-main::before {
+  /* Removes the unnecessary overlay */
+  content: none;
+}
+
+.filter-label input {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
+
+.filter-label {
+  display: inline-block;
+  cursor: pointer;
+  padding: 0.6rem 1.25rem;
+  border: 1px solid var(--brand-text); /* Clean border */
+  border-radius: 999px;
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--brand-text);
+  background-color: var(--brand-background); /* Subtle background for inactive state */
+  box-shadow: none; /* Flatter design */
+  transition: all 0.2s ease-in-out;
+}
+
+.filter-label:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm); /* Subtle hover effect */
+}
+
+.filter-label:has(input:checked) {
+  /* Clear style for the active filter */
+  background-color: var(--brand-dark);
+  border-color: var(--brand-dark);
+  color: #fff;
+  font-weight: 700;
+}
+
+/* --- 8. SECTIONS - PRODUCT PAGE --- */
+.product-page-main {
+  /* Gives the product page a clean white background */
+  background-image: none;
+  background-color: #fff;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.product-page-main::before {
+  /* Removes the unnecessary overlay */
+  content: none;
+}
+
+/* client/style.css */
+
+/* --- 7. SECTIONS - SHOP PAGE --- */
+.shop-hero {
+  /* Use the soft hero-bg.webp image for the banner */
+  background-image: url('images/hero-bg.webp');
+  background-size: cover;
+  background-position: center;
+  padding-top: 6rem; /* Decreased from 8rem */
+  padding-bottom: 6rem;
+  position: relative;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  margin-top: 1.6rem;
+}
+
+#filter-section {
+  margin-top: 2rem; /* Added to create space below the hero banner */
+  
+}
+
+/* client/style.css */
+
+/* Add this within the --- 8. SECTIONS - PRODUCT PAGE --- section */
+
+/* Hides the default radio button for a cleaner look */
+#scent-options input,
+#size-options input {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
+
+/* Options */
+#scent-options span,
+#size-options span {
+  display: block;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
