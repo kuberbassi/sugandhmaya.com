@@ -3,7 +3,7 @@
 // --- CONFIGURATION ---
 // This is the base URL for your API.
 // For local development, this should match the port your server is running on.
-const API_BASE_URL = '';
+const API_BASE_URL = 'http://localhost:5000';
 
 // This is the main function that runs the whole application
 async function initializeApp() {
