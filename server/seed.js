@@ -15,23 +15,23 @@ const productsToSeed = [
             {
                 size: "12 Sticks",
                 price: 91,
-                image: '/images/products/sugandhmaya_chandan_agarbatti/4.webp', // Main image for 12 sticks
+                image: './images/products/sugandhmaya_chandan_agarbatti/4.webp', // Main image for 12 sticks
                 thumbnails: [
-                    '/images/products/sugandhmaya_chandan_agarbatti/4.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/5.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
+                    './images/products/sugandhmaya_chandan_agarbatti/4.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/5.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/6.webp'
                 ]
             },
             {
                 size: "40 Sticks",
                 price: 330,
-                image: '/images/products/sugandhmaya_chandan_agarbatti/1.webp', // Main image for 40 sticks
+                image: './images/products/sugandhmaya_chandan_agarbatti/1.webp', // Main image for 40 sticks
                 thumbnails: [
-                    '/images/products/sugandhmaya_chandan_agarbatti/1.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
+                    './images/products/sugandhmaya_chandan_agarbatti/1.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/2.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/6.webp'
                 ]
             }
         ]
@@ -48,23 +48,23 @@ const productsToSeed = [
             {
                 size: "12 Sticks",
                 price: 150,
-                image: '/images/products/sugandhmaya_chandan_agarbatti/1.webp', // Using big box image set as default
+                image: './images/products/sugandhmaya_chandan_agarbatti/1.webp', // Using big box image set as default
                 thumbnails: [
-                    '/images/products/sugandhmaya_chandan_agarbatti/1.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
+                    './images/products/sugandhmaya_chandan_agarbatti/1.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/2.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/6.webp'
                 ]
             },
             {
                 size: "40 Sticks",
                 price: 500,
-                image: '/images/products/sugandhmaya_chandan_agarbatti/1.webp', // Using big box image set as default
+                image: './images/products/sugandhmaya_chandan_agarbatti/1.webp', // Using big box image set as default
                 thumbnails: [
-                    '/images/products/sugandhmaya_chandan_agarbatti/1.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
+                    './images/products/sugandhmaya_chandan_agarbatti/1.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/2.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/6.webp'
                 ]
             }
         ]
