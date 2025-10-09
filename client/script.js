@@ -3,18 +3,11 @@
 // --- 1. CONFIGURATION & STATE ---
 const config = {
     apiBaseUrl: 'http://localhost:5000',
-    storageKeys: {
-        cart: 'cart',
-        latestOrder: 'latestOrder'
-    },
+    storageKeys: { cart: 'cart', latestOrder: 'latestOrder' },
     headerPath: './_header.html',
     footerPath: './_footer.html'
 };
-
-const state = {
-    products: [],
-    cart: JSON.parse(localStorage.getItem(config.storageKeys.cart)) || []
-};
+const state = { products: [], cart: JSON.parse(localStorage.getItem(config.storageKeys.cart)) || [] };
 
 // --- 2. HTML COMPONENT LOADING UTILITIES ---
 async function loadComponent(elementId, filePath) {
@@ -42,13 +35,21 @@ async function loadFooter() {
 const utils = {
     async fetchProducts() {
         try {
+            console.log("Attempting to fetch products...");
             const response = await fetch(`${config.apiBaseUrl}/api/products`);
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             state.products = await response.json();
+            console.log("✅ Products fetched successfully:", state.products);
+            if (state.products.length === 0) {
+                console.warn("Warning: Fetched 0 products. Is the database seeded?");
+            }
         } catch (error) {
-            console.error("Could not fetch products:", error);
+            console.error("❌ Could not fetch products:", error);
+            // Display an error message to the user on the page
+            const shopGrid = document.getElementById('shop-grid');
+            if (shopGrid) shopGrid.innerHTML = `<p class="col-span-full text-center text-red-500">Could not load products. Please ensure the server is running and refresh the page.</p>`;
         }
     },
 
@@ -138,7 +139,6 @@ const utils = {
 
         cartModal.classList.remove("hidden");
         document.body.classList.add('cart-open');
-        // A small delay to allow the browser to register the class removal before applying transitions
         setTimeout(() => {
             cartModal.classList.remove("opacity-0");
             cartPanel.classList.remove("translate-x-full");
@@ -153,7 +153,6 @@ const utils = {
         cartModal.classList.add("opacity-0");
         cartPanel.classList.add("translate-x-full");
         document.body.classList.remove('cart-open');
-        // Wait for the transition to finish before hiding the modal
         setTimeout(() => cartModal.classList.add("hidden"), 500);
     },
 
@@ -176,15 +175,12 @@ const pages = {
     home() {
         const collectionGrid = document.getElementById("collection-grid");
         if (!collectionGrid) return;
-
         if (state.products.length === 0) {
             collectionGrid.innerHTML = '<p class="text-center col-span-full">Could not load products. Is the server running?</p>';
             return;
         }
-
         let gridHTML = "";
         const topProducts = state.products.slice(0, 3);
-
         topProducts.forEach((product) => {
             const displayImage = product.variants && product.variants.length > 0 ? product.variants[0].image : product.image;
             gridHTML += `
@@ -204,13 +200,11 @@ const pages = {
         const shopGrid = document.getElementById('shop-grid');
         const categoryFilter = document.getElementById('category-filter');
         if (!shopGrid || !categoryFilter) return;
-
         const categories = [...new Set(state.products.map(p => p.category))];
         categoryFilter.innerHTML = `<label class="filter-label"><input type="radio" name="category" value="all" checked><span>All Products</span></label>`;
         categories.forEach(category => {
             categoryFilter.innerHTML += `<label class="filter-label"><input type="radio" name="category" value="${category}"><span>${category}</span></label>`;
         });
-
         function displayProducts(filter) {
             shopGrid.innerHTML = '';
             const filteredProducts = state.products.filter(p => filter === 'all' || p.category === filter);
@@ -233,7 +227,6 @@ const pages = {
                 shopGrid.appendChild(productCard);
             });
         }
-
         displayProducts('all');
         categoryFilter.addEventListener('change', e => {
             if (e.target.name === 'category') {
@@ -250,15 +243,12 @@ const pages = {
 
         if (!product) {
             const mainContent = document.querySelector('.product-page-main');
-            if (mainContent) {
-                mainContent.innerHTML = '<h1 class="text-center text-2xl p-10">Product not found</h1>';
-            }
+            if (mainContent) mainContent.innerHTML = '<h1 class="text-center text-2xl p-10">Product not found</h1>';
             return;
         }
 
         let selectedSize = product.variants[0].size;
         let selectedScent = product.scents[0];
-
         const nameEl = document.getElementById('product-name');
         const categoryEl = document.getElementById('product-category');
         const priceEl = document.getElementById('product-price');
@@ -273,9 +263,7 @@ const pages = {
         const renderScents = () => {
             if (!scentOptionsContainer) return;
             if (!product.scents || product.scents.length <= 1) {
-                if (scentOptionsContainer.parentElement) {
-                    scentOptionsContainer.parentElement.style.display = 'none';
-                }
+                if (scentOptionsContainer.parentElement) scentOptionsContainer.parentElement.style.display = 'none';
                 return;
             }
             let scentHtml = '<label class="block subheading mb-3">Scent</label><div class="flex flex-wrap gap-3">';
@@ -285,7 +273,6 @@ const pages = {
             scentHtml += '</div>';
             scentOptionsContainer.innerHTML = scentHtml;
         };
-
         const renderSizes = () => {
             if (!sizeOptionsContainer) return;
             let sizeHtml = '<label class="block subheading mb-3">Size</label><div class="flex flex-wrap gap-3">';
@@ -295,14 +282,11 @@ const pages = {
             sizeHtml += '</div>';
             sizeOptionsContainer.innerHTML = sizeHtml;
         };
-
         const updateVariantUI = () => {
             const variant = product.variants.find(v => v.size === selectedSize);
             if (!variant) return;
-
             if (priceEl) priceEl.textContent = `₹${variant.price}`;
             if (mainImageEl) mainImageEl.src = variant.image;
-
             if (thumbnailGrid) {
                 thumbnailGrid.innerHTML = '';
                 variant.thumbnails.forEach((thumbSrc) => {
@@ -316,15 +300,8 @@ const pages = {
                 updateActiveThumbnail(variant.image);
             }
         };
-
         const updateActiveThumbnail = (src) => {
-            document.querySelectorAll('.thumbnail-image').forEach(t => {
-                if (t.dataset.src === src) {
-                    t.classList.add('active');
-                } else {
-                    t.classList.remove('active');
-                }
-            });
+            document.querySelectorAll('.thumbnail-image').forEach(t => t.classList.toggle('active', t.dataset.src === src));
         };
 
         document.title = `${product.name} - Sugandhmaya`;
@@ -336,42 +313,31 @@ const pages = {
         renderSizes();
         updateVariantUI();
 
-        if (sizeOptionsContainer) {
-            sizeOptionsContainer.addEventListener('change', e => {
-                if (e.target.name === 'size') {
-                    selectedSize = e.target.value;
-                    updateVariantUI();
+        sizeOptionsContainer?.addEventListener('change', e => {
+            if (e.target.name === 'size') {
+                selectedSize = e.target.value;
+                updateVariantUI();
+            }
+        });
+        scentOptionsContainer?.addEventListener('change', e => {
+            if (e.target.name === 'scent') selectedScent = e.target.value;
+        });
+        thumbnailGrid?.addEventListener('click', e => {
+            const clickedThumbnail = e.target.closest('.thumbnail-image');
+            if (!clickedThumbnail || clickedThumbnail.classList.contains('active')) return;
+            if (mainImageEl) mainImageEl.style.opacity = '0';
+            setTimeout(() => {
+                if (mainImageEl) {
+                    mainImageEl.src = clickedThumbnail.src;
+                    mainImageEl.style.opacity = '1';
                 }
-            });
-        }
-        if (scentOptionsContainer) {
-            scentOptionsContainer.addEventListener('change', e => {
-                if (e.target.name === 'scent') {
-                    selectedScent = e.target.value;
-                }
-            });
-        }
-        if (thumbnailGrid) {
-            thumbnailGrid.addEventListener('click', e => {
-                const clickedThumbnail = e.target.closest('.thumbnail-image');
-                if (!clickedThumbnail || clickedThumbnail.classList.contains('active')) return;
-                if (mainImageEl) mainImageEl.style.opacity = '0';
-                setTimeout(() => {
-                    if (mainImageEl) {
-                        mainImageEl.src = clickedThumbnail.src;
-                        mainImageEl.style.opacity = '1';
-                    }
-                }, 200);
-                updateActiveThumbnail(clickedThumbnail.dataset.src);
-            });
-        }
-
-        // Add listeners for thumbnail scroll buttons
+            }, 200);
+            updateActiveThumbnail(clickedThumbnail.dataset.src);
+        });
         const scrollThumbnails = (direction) => {
-            const thumbnailTrackContainer = document.getElementById('thumbnail-track-container');
-            if (!thumbnailTrackContainer) return;
-            const scrollAmount = 3 * (80 + 12); // 3 thumbnails + gaps (80px width, 12px gap)
-            thumbnailTrackContainer.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+            const scroller = document.getElementById('thumbnail-track-container');
+            if (!scroller) return;
+            scroller.scrollBy({ left: direction * (3 * (80 + 12)), behavior: 'smooth' });
         };
         scrollLeftBtn?.addEventListener('click', () => scrollThumbnails(-1));
         scrollRightBtn?.addEventListener('click', () => scrollThumbnails(1));
@@ -380,11 +346,9 @@ const pages = {
     checkout() {
         const summaryItems = document.getElementById('summary-items');
         if (!summaryItems) return;
-
         summaryItems.innerHTML = '';
         const summaryTotal = document.getElementById('summary-total');
         let total = 0;
-
         state.cart.forEach(item => {
             const product = state.products.find(p => p.id === item.productId);
             const variant = product ? product.variants.find(v => v.size === item.size) : null;
@@ -407,7 +371,6 @@ const pages = {
     confirmation() {
         const confirmationDetails = document.getElementById('confirmation-details');
         if (!confirmationDetails) return;
-
         const orderData = JSON.parse(localStorage.getItem(config.storageKeys.latestOrder));
         if (orderData) {
             confirmationDetails.innerHTML = `
@@ -419,6 +382,7 @@ const pages = {
             confirmationDetails.innerHTML = '<p>Order details not found.</p>';
         }
         localStorage.removeItem(config.storageKeys.cart);
+        state.cart = [];
         localStorage.removeItem(config.storageKeys.latestOrder);
     }
 };
@@ -452,22 +416,17 @@ function setupGlobalListeners() {
     const checkoutBtn = document.getElementById("checkout-button");
     const checkoutForm = document.getElementById('checkout-form');
 
-    // Header scroll effect
     if (header) {
         window.addEventListener("scroll", () => header.classList.toggle("scrolled", window.scrollY > 50));
     }
-
-    // Cart modal functionality
     openCartBtn?.addEventListener("click", utils.openCart);
     closeCartBtn?.addEventListener("click", utils.closeCart);
     cartModal?.addEventListener("click", (e) => {
         if (e.target === cartModal) utils.closeCart();
     });
     document.addEventListener('keydown', (e) => {
-        if (e.key === "Escape" && cartModal && !cartModal.classList.contains('hidden')) utils.closeCart();
+        if (e.key === "Escape" && !cartModal?.classList.contains('hidden')) utils.closeCart();
     });
-
-    // Cart item manipulation
     cartItemsContainer?.addEventListener("click", (e) => {
         const target = e.target.closest("button");
         if (!target) return;
@@ -488,16 +447,12 @@ function setupGlobalListeners() {
         utils.updateCartUI();
         if (document.body.classList.contains("checkout-page")) pages.checkout();
     });
-
-    // Checkout button functionality
     checkoutBtn?.addEventListener("click", (e) => {
         if (state.cart.length === 0) {
             e.preventDefault();
             utils.showToast("Your cart is empty.");
         }
     });
-
-    // Add to cart button on product page
     document.getElementById('add-to-cart-product')?.addEventListener('click', () => {
         const productId = new URLSearchParams(window.location.search).get('id');
         const product = state.products.find(p => p.id === productId);
@@ -506,14 +461,12 @@ function setupGlobalListeners() {
         const selectedSizeEl = document.querySelector('input[name="size"]:checked');
         const selectedScentEl = document.querySelector('input[name="scent"]:checked');
         const quantityEl = document.getElementById("quantity-input");
-
         if (!selectedSizeEl || !quantityEl) return;
 
         const selectedSize = selectedSizeEl.value;
         const selectedScent = selectedScentEl ? selectedScentEl.value : product.scents[0];
         const quantity = parseInt(quantityEl.value);
         const cartItemId = `${productId}_${selectedSize}_${selectedScent}`;
-
         const existingItem = state.cart.find(item => item.cartItemId === cartItemId);
 
         if (existingItem) {
@@ -527,49 +480,110 @@ function setupGlobalListeners() {
         utils.openCart();
     });
 
-    // Checkout form submission
     if (checkoutForm) {
+        let orderPayload = {};
+        const otpModal = document.getElementById('otp-modal');
+        const otpInput = document.getElementById('otp-input');
+        const verifyOtpBtn = document.getElementById('verify-otp-button');
+        const cancelOtpBtn = document.getElementById('cancel-otp-button');
+
         checkoutForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const submitButton = e.target.querySelector('button[type="submit"]');
-            if (!submitButton) return;
-            const buttonText = submitButton.querySelector('span');
-            submitButton.disabled = true;
-            if (buttonText) buttonText.textContent = 'Placing Order...';
+            console.log("Step 1: 'Place Order' button clicked.");
 
-            const formData = new FormData(e.target);
-            const customerDetails = Object.fromEntries(formData.entries());
-            const itemsForBackend = state.cart.map(item => ({
-                productId: item.productId,
-                size: item.size,
-                scent: item.scent,
-                quantity: item.quantity
-            }));
-            const orderData = { customer: customerDetails, items: itemsForBackend };
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            const buttonText = submitButton.querySelector('span');
+
+            try {
+                submitButton.disabled = true;
+                if (buttonText) buttonText.textContent = 'Sending Code...';
+
+                const formData = new FormData(e.target);
+                const customerDetails = Object.fromEntries(formData.entries());
+
+                orderPayload = {
+                    customer: customerDetails,
+                    items: state.cart.map(item => ({
+                        productId: item.productId,
+                        size: item.size,
+                        scent: item.scent,
+                        quantity: item.quantity
+                    }))
+                };
+
+                console.log("Step 2: Sending request to /api/send-otp...");
+                const response = await fetch(`${config.apiBaseUrl}/api/send-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: customerDetails.email })
+                });
+
+                console.log("Step 3: Received response from server. Status:", response.status);
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.message || 'Failed to send OTP.');
+                }
+
+                utils.showToast('Verification code sent!');
+
+                console.log("Step 4: Attempting to show OTP modal.");
+                const otpModal = document.getElementById('otp-modal');
+                if (otpModal) {
+                    console.log("✅ Modal element found. Making it visible.");
+                    otpModal.classList.remove('hidden');
+                    otpModal.classList.add('flex');
+                } else {
+                    console.error("❌ CRITICAL: Could not find #otp-modal element in your HTML!");
+                }
+
+            } catch (error) {
+                console.error("An error occurred during OTP sending:", error);
+                utils.showToast(`Error: ${error.message}`);
+            } finally {
+                submitButton.disabled = false;
+                if (buttonText) buttonText.textContent = 'Place Order';
+            }
+        });
+
+        verifyOtpBtn?.addEventListener('click', async () => {
+            const otp = otpInput.value;
+            if (!otp || otp.length !== 6) {
+                return utils.showToast("Please enter the 6-digit code.");
+            }
+
+            const buttonText = verifyOtpBtn.querySelector('span');
+            verifyOtpBtn.disabled = true;
+            if (buttonText) buttonText.textContent = 'Verifying...';
+
+            orderPayload.otp = otp;
 
             try {
                 const response = await fetch(`${config.apiBaseUrl}/api/orders`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(orderData)
+                    body: JSON.stringify(orderPayload)
                 });
+
                 if (response.ok) {
                     const result = await response.json();
-                    const finalOrderData = { customer: customerDetails, total: result.total };
+                    const finalOrderData = { customer: orderPayload.customer, total: result.total };
                     localStorage.setItem(config.storageKeys.latestOrder, JSON.stringify(finalOrderData));
                     window.location.href = 'confirmation.html';
                 } else {
                     const result = await response.json();
-                    utils.showToast(`There was a problem: ${result.message}`);
-                    submitButton.disabled = false;
-                    if (buttonText) buttonText.textContent = 'Place Order';
+                    throw new Error(result.message || 'Verification Failed.');
                 }
             } catch (error) {
-                console.error('Error submitting order:', error);
-                utils.showToast('An unexpected error occurred. Please try again.');
-                submitButton.disabled = false;
-                if (buttonText) buttonText.textContent = 'Place Order';
+                utils.showToast(`Error: ${error.message}`);
+            } finally {
+                verifyOtpBtn.disabled = false;
+                if (buttonText) buttonText.textContent = 'Verify & Place Order';
             }
+        });
+
+        cancelOtpBtn?.addEventListener('click', () => {
+            otpModal.classList.add('hidden');
+            otpModal.classList.remove('flex');
         });
     }
 }
@@ -587,20 +601,17 @@ function setupPageSpecificListeners() {
             let currentValue = parseInt(quantityInput.value);
             if (currentValue > 1) quantityInput.value = currentValue - 1;
         });
-
         increaseBtn?.addEventListener('click', () => {
             let currentValue = parseInt(quantityInput.value);
             quantityInput.value = currentValue + 1;
         });
     }
-
     accordionHeaders.forEach(header => {
         header.addEventListener('click', () => {
             const accordionItem = header.parentElement;
             const content = header.nextElementSibling;
             if (!accordionItem || !content) return;
             const wasActive = accordionItem.classList.contains('active');
-
             if (!wasActive) {
                 accordionItem.classList.add('active');
                 content.style.maxHeight = content.scrollHeight + 'px';
@@ -611,18 +622,11 @@ function setupPageSpecificListeners() {
         });
     });
 
-    const phoneInput = document.getElementById('phone');
-    phoneInput?.addEventListener('input', () => {
-        phoneInput.value = phoneInput.value.replace(/[^0-9]/g, '').slice(0, 10);
-    });
-
     const contactBubblesContainer = document.getElementById('contact-bubbles-container');
     const contactPopoverContent = document.getElementById('contact-popover-content');
-
     if (contactBubblesContainer && contactPopover && contactPopoverContent) {
         const popoverTitle = document.getElementById('popover-title');
         const popoverBody = document.getElementById('popover-body');
-
         contactBubblesContainer.addEventListener('click', (e) => {
             const bubble = e.target.closest('.contact-bubble');
             if (bubble) {
@@ -635,7 +639,6 @@ function setupPageSpecificListeners() {
                 }, 20);
             }
         });
-
         const closePopover = () => {
             contactPopover.classList.remove('visible');
             contactPopoverContent.classList.remove('scale-100');
@@ -643,7 +646,6 @@ function setupPageSpecificListeners() {
                 contactPopover.classList.add('hidden');
             }, 300);
         };
-
         contactPopover.addEventListener('click', (e) => {
             if (e.target === contactPopover) {
                 closePopover();

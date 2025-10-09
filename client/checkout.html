@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="./images/Sugandhmaya-icon.webp">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap"
         rel="stylesheet">
@@ -28,26 +28,25 @@
                     <span style="font-family: var(--font-ui);"
                         class="text-xl font-bold tracking-widest text-brand-dark">SUGANDHMAYA</span>
                 </a>
-
                 <h1 class="text-3xl font-serif font-bold mb-8">Shipping Information</h1>
                 <form id="checkout-form">
                     <div class="form-group">
                         <label for="name">Full Name</label>
-                        <input type="text" id="name" name="name" required class="w-full">
+                        <input type="text" id="name" name="name" required class="w-full" autocomplete="name">
                     </div>
                     <div class="form-group">
                         <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" required class="w-full">
+                        <input type="email" id="email" name="email" required class="w-full" autocomplete="email">
                     </div>
                     <div class="form-group">
                         <label for="address">Shipping Address</label>
-                        <textarea id="address" name="address" rows="3" required class="w-full"></textarea>
+                        <textarea id="address" name="address" rows="3" required class="w-full"
+                            autocomplete="street-address"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" required class="w-full">
+                        <input type="tel" id="phone" name="phone" required class="w-full" autocomplete="tel">
                     </div>
-
                     <h2 class="text-2xl font-serif font-bold mt-12 mb-6">Payment</h2>
                     <div class="payment-method">
                         <span>Cash on Delivery</span>
@@ -61,12 +60,10 @@
                 </form>
             </div>
         </section>
-
         <section class="checkout-summary-section flex items-start justify-center">
             <div class="summary-container">
                 <h2 class="text-2xl font-serif font-bold mb-6">Order Summary</h2>
-                <div id="summary-items" class="space-y-4">
-                    </div>
+                <div id="summary-items" class="space-y-4"></div>
                 <div class="summary-divider"></div>
                 <div class="flex justify-between items-center text-xl font-bold font-ui">
                     <span>Total</span>
@@ -78,16 +75,24 @@
 
     <div id="footer-container"></div>
 
-    <div id="contact-popover"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] hidden opacity-0">
-        <div id="contact-popover-content"
-            class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center transform scale-95 transition-transform duration-300">
-            <h3 id="popover-title" class="text-xl font-serif font-bold mb-3"></h3>
-            <div id="popover-body" class="text-brand-text/80"></div>
-            <button id="popover-close"
-                class="absolute -top-3 -right-3 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md">&times;</button>
+    <div id="otp-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] hidden items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-xl max-w-sm w-full text-center">
+            <h3 class="text-2xl font-serif font-bold mb-4">Verify Your Order</h3>
+            <p class="text-brand-text/80 mb-6">A 6-digit verification code has been sent to your email address.</p>
+            <div class="form-group">
+                <label for="otp-input">Enter Verification Code</label>
+                <input type="text" id="otp-input" name="otp" required
+                    class="w-full text-center text-2xl tracking-widest" maxlength="6">
+            </div>
+            <div class="mt-8 flex gap-4">
+                <button type="button" id="cancel-otp-button" class="w-full btn btn-secondary">Cancel</button>
+                <button type="button" id="verify-otp-button" class="w-full btn">
+                    <span>Verify & Place Order</span>
+                </button>
+            </div>
         </div>
     </div>
+
     <div id="toast-container" class="fixed bottom-0 left-0 w-full p-8 pointer-events-none z-[200]"></div>
     <script src="script.js"></script>
 </body>

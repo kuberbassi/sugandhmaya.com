@@ -1166,3 +1166,17 @@ button.btn:hover {
   cursor: pointer;
   transition: all 0.2s ease;
 }
+
+/* Add this to your style.css file, near your other .btn styles */
+
+a.btn-secondary,
+button.btn-secondary {
+  background-color: #A0A0A0; /* A neutral gray */
+  color: white;
+}
+a.btn-secondary:hover,
+button.btn-secondary:hover {
+  background-color: var(--brand-dark);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
