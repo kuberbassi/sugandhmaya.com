@@ -137,7 +137,7 @@ app.post('/api/orders', async (req, res) => {
 
 // --- Fallback Route ---
 // This sends index.html for any request that doesn't match a static file or API route
-app.get('*', (req, res) => {
+app.get(/.*/, (req, res) => {
     res.sendFile(path.join(__dirname, '../client/index.html'));
 });
 
