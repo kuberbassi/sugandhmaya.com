@@ -1,3 +1,4 @@
+// server/models/order.js
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
@@ -8,8 +9,10 @@ const orderSchema = new mongoose.Schema({
         phone: String,
     },
     items: [{
-        id: String,
+        productId: String,
         name: String,
+        scent: String,
+        size: String,
         quantity: Number,
         price: Number,
     }],

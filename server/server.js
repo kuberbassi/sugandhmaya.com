@@ -1,14 +1,16 @@
 // server/server.js
 require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 const otpGenerator = require('otp-generator');
-
+const connectDB = require('./db');
 const Product = require('./models/product');
 const Order = require('./models/order');
 const sendEmail = require('./utils/sendEmail');
+
+// Connect to the database
+connectDB();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -20,17 +22,12 @@ const otpStore = {};
 // --- Middleware ---
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../client')));
-
-// --- Database Connection ---
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('✅ MongoDB connected successfully.'))
-    .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // --- API Routes ---
+const apiRouter = express.Router();
 
 // GET all products
-app.get('/api/products', async (req, res) => {
+apiRouter.get('/products', async (req, res) => {
     try {
         const products = await Product.find({});
         res.json(products);
@@ -41,7 +38,7 @@ app.get('/api/products', async (req, res) => {
 });
 
 // POST to generate and send an OTP
-app.post('/api/send-otp', async (req, res) => {
+apiRouter.post('/send-otp', async (req, res) => {
     const { email } = req.body;
     if (!email) {
         return res.status(400).json({ message: 'Email is required.' });
@@ -72,7 +69,7 @@ app.post('/api/send-otp', async (req, res) => {
 });
 
 // POST a new order (with OTP verification)
-app.post('/api/orders', async (req, res) => {
+apiRouter.post('/orders', async (req, res) => {
     try {
         const { customer, items, otp } = req.body;
 
@@ -124,9 +121,6 @@ app.post('/api/orders', async (req, res) => {
         const newOrder = new Order({ customer, items: orderItems, total, orderDate: new Date() });
         await newOrder.save();
         
-        // You can send a final receipt email here if you want
-        // await sendEmail({ to: customer.email, subject: 'Your Sugandhmaya Order Confirmation', ... });
-
         res.status(201).json({ message: 'Order placed successfully!', orderId: newOrder._id, total });
 
     } catch (error) {
@@ -135,8 +129,12 @@ app.post('/api/orders', async (req, res) => {
     }
 });
 
-// --- Fallback Route ---
-// This sends index.html for any request that doesn't match a static file or API route
+app.use('/api', apiRouter);
+
+// --- Static Files ---
+app.use(express.static(path.join(__dirname, '../client')));
+
+// --- Fallback Route (SPA support) ---
 app.get(/.*/, (req, res) => {
     res.sendFile(path.join(__dirname, '../client/index.html'));
 });

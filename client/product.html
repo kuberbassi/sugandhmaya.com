@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product - Sugandhmaya</title>
+    <title>Product Details - Sugandhmaya</title>
     <link rel="icon" type="image/png" href="./images/Sugandhmaya-icon.webp">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,132 +12,94 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap"
         rel="stylesheet">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" as="style" crossorigin>
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="product-page">
+<body>
+    <div id="header-container"></div>
 
-    <header id="main-header" class="fixed top-0 w-full z-50">
-    </header>
-
-    <div id="cart-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden opacity-0">
-    </div>
-
-    <main>
-        <div class="product-page-main">
-            <div class="container mx-auto px-6">
-                <div class="grid lg:grid-cols-2 gap-12 lg:gap-24">
-
-                    <div class="product-gallery">
-                        <div class="main-image-wrapper">
-                            <img src="" alt="Main product image" id="main-product-image">
-                        </div>
-                        <div class="thumbnail-scroller">
-                            <button id="scroll-left" class="arrow-btn">&lt;</button>
-                            <div class="thumbnail-track-container">
-                                <div id="thumbnail-grid" class="thumbnail-track">
-                                </div>
-                            </div>
-                            <button id="scroll-right" class="arrow-btn">&gt;</button>
-                        </div>
+    <main class="product-page-main">
+        <div class="container mx-auto px-6 py-24">
+            <div class="grid lg:grid-cols-2 gap-16">
+                <div class="product-gallery">
+                    <div class="main-image-wrapper">
+                        <img id="main-product-image" src="" alt="Main product image" class="rounded-lg">
                     </div>
-
-                    <div class="product-info">
-                        <p id="product-category" class="subheading text-brand-accent"></p>
-                        <h1 id="product-name" class="text-4xl md:text-5xl font-serif mt-2"></h1>
-                        <p id="product-price" class="text-3xl font-sans font-bold mt-4"></p>
-                        <p id="product-description" class="mt-6 text-brand-text/70 leading-relaxed"></p>
-
-                        <div class="options-container mt-8 space-y-6">
-                            <div id="scent-options"></div>
-                            <div id="size-options"></div>
+                    <div class="thumbnail-scroller flex items-center mt-4">
+                        <button id="scroll-left" class="arrow-btn text-lg">&lt;</button>
+                        <div id="thumbnail-track-container" class="flex-grow overflow-hidden">
+                            <div id="thumbnail-grid" class="thumbnail-track flex gap-2">
+                                </div>
                         </div>
+                        <button id="scroll-right" class="arrow-btn text-lg">&gt;</button>
+                    </div>
+                </div>
 
-                        <div class="flex items-center gap-6 mt-8">
-                            <div class="quantity-selector">
-                                <button id="decrease-quantity">-</button>
-                                <input id="quantity-input" type="number" value="1" min="1" readonly>
-                                <button id="increase-quantity">+</button>
+                <div class="product-details">
+                    <p id="product-category" class="subheading text-brand-accent"></p>
+                    <h1 id="product-name" class="text-4xl font-serif font-bold mt-2"></h1>
+                    <p id="product-price" class="text-3xl font-bold font-sans mt-4 text-brand-accent">₹0.00</p>
+                    <p id="product-description" class="mt-6 text-lg text-brand-text/70"></p>
+
+                    <form id="product-form" class="mt-8">
+                        <div id="scent-options" class="mt-6">
                             </div>
-                            <button id="add-to-cart-product" class="btn flex-grow">
+
+                        <div id="size-options" class="mt-6">
+                            </div>
+
+                        <div class="flex items-center gap-4 mt-8">
+                            <div class="quantity-selector">
+                                <button type="button" id="decrease-quantity" class="text-2xl">-</button>
+                                <input type="number" id="quantity-input" value="1" min="1" readonly class="text-center w-12 border-none focus:ring-0">
+                                <button type="button" id="increase-quantity" class="text-2xl">+</button>
+                            </div>
+                            <button id="add-to-cart-product" type="button" class="btn flex-grow">
                                 <span>Add to Cart</span>
                             </button>
                         </div>
+                    </form>
 
-                        <div class="product-accordions mt-12">
-                            <div class="accordion-item">
-                                <button class="accordion-header">
-                                    <span>Product Details</span>
-                                    <span class="plus-minus"></span>
-                                </button>
-                                <div class="accordion-content">
-                                    <p>Details about materials, dimensions, and origin will go here.</p>
-                                </div>
-                            </div>
-                            <div class="accordion-item">
-                                <button class="accordion-header">
-                                    <span>How to Use</span>
-                                    <span class="plus-minus"></span>
-                                </button>
-                                <div class="accordion-content">
-                                    <p>Instructions on the best way to use and enjoy the product.</p>
-                                </div>
-                            </div>
-                            <div class="accordion-item">
-                                <button class="accordion-header">
-                                    <span>Shipping & Returns</span>
-                                    <span class="plus-minus"></span>
-                                </button>
-                                <div class="accordion-content">
-                                    <p>Our shipping policy and information about returns or exchanges.</p>
-                                </div>
+                    <div class="mt-12">
+                        <div class="accordion-item active">
+                            <button class="accordion-header">
+                                <span>Product Details</span>
+                                <div class="plus-minus"></div>
+                            </button>
+                            <div class="accordion-content">
+                                <p>This handcrafted product is made with 100% natural ingredients, including pure essential oils and sustainable wood powder. Our unique blend ensures a clean and long-lasting burn, perfect for meditation and daily rituals.</p>
                             </div>
                         </div>
-
+                        <div class="accordion-item">
+                            <button class="accordion-header">
+                                <span>Shipping & Returns</span>
+                                <div class="plus-minus"></div>
+                            </button>
+                            <div class="accordion-content">
+                                <p>We offer free shipping on all orders above ₹500. Orders are typically processed within 1-2 business days. We accept returns within 30 days of purchase for unused products in their original packaging.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <div id="footer-container"></div>
+
+    <div id="contact-popover"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] hidden opacity-0">
+        <div id="contact-popover-content"
+            class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center transform scale-95 transition-transform duration-300">
+            <h3 id="popover-title" class="text-xl font-serif font-bold mb-3"></h3>
+            <div id="popover-body" class="text-brand-text/80"></div>
+            <button id="popover-close"
+                class="absolute -top-3 -right-3 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md">&times;</button>
+        </div>
+    </div>
     <div id="toast-container" class="fixed bottom-0 left-0 w-full p-8 pointer-events-none z-[200]"></div>
-
-    <script>
-        // This function fetches content from another page and injects it.
-        async function fetchAndInject(sourceURL, targetSelector) {
-            try {
-                const response = await fetch(sourceURL);
-                const text = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(text, 'text/html');
-                const sourceContent = doc.querySelector(targetSelector).innerHTML;
-                document.querySelector(targetSelector).innerHTML = sourceContent;
-            } catch (error) {
-                console.error(`Failed to fetch and inject ${targetSelector}:`, error);
-            }
-        }
-
-        // This new function controls the page setup order.
-        async function setupPage() {
-            // 1. Wait for both the header and the cart modal to finish loading.
-            await Promise.all([
-                fetchAndInject('index.html', '#main-header'),
-                fetchAndInject('index.html', '#cart-modal')
-            ]);
-
-            // 2. NOW that the buttons exist in the HTML, create and load the main script file.
-            const mainScript = document.createElement('script');
-            mainScript.src = 'script.js';
-            document.body.appendChild(mainScript);
-        }
-
-        // Run the setup.
-        setupPage();
-    </script>
-
-
     <script src="script.js"></script>
-
 </body>
 
 </html>
