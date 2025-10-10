@@ -189,7 +189,7 @@ const cartActions = {
             existing.quantity = parseInt(existing.quantity || 0) + parseInt(item.quantity || 1);
         } else {
             const prod = state.products.find(p => p.id === item.productId);
-            const variant = prod?.variants.find(v => v.size === item.size);
+            const variant = prod?.variants.find(v => v.name === item.size);
             state.cart.push({
                 ...item,
                 quantity: parseInt(item.quantity || 1),
@@ -335,92 +335,120 @@ const pages = {
             return;
         }
 
-        document.querySelectorAll('.accordion-item').forEach(item => {
-            item.classList.remove('active');
-            item.querySelector('.accordion-content').style.maxHeight = '0';
-        });
-
-        let selectedSize = product.variants[0].name;
-
-        document.title = `${product.name} - Sugandhmaya`;
+        // Update product page content
         document.getElementById('product-name').textContent = product.name;
+        document.getElementById('product-name-breadcrumb').textContent = product.name;
         document.getElementById('product-category').textContent = product.category;
         document.getElementById('product-description').textContent = product.description;
 
-        const renderOptions = (containerId, options, label) => {
+        // Set initial selected variant
+        let selectedVariant = product.variants[0];
+
+        // Function to render options (scent or size)
+        const renderOptions = (containerId, options, label, name) => {
             const container = document.getElementById(containerId);
             if (!container) return;
-            if (!options || options.length <= 1) {
-                container.style.display = 'none';
-                return;
-            }
-            container.style.display = 'block';
+
+            // Show or hide the container based on options length
+            container.classList.toggle('hidden', options.length <= 1);
+            if (options.length <= 1) return;
+
             let html = `<label class="block subheading mb-3">${label}</label><div class="flex flex-wrap gap-3">`;
             options.forEach((opt, index) => {
-                html += `<label><input type="radio" name="${label.toLowerCase()}" value="${opt}" ${index === 0 ? 'checked' : ''}><span>${opt}</span></label>`;
+                html += `
+                    <label>
+                        <input type="radio" name="${name}" value="${opt}" ${index === 0 ? 'checked' : ''}>
+                        <span class="size-box cursor-pointer p-3 bg-white rounded-xl shadow-sm hover:bg-gray-100 transition-colors duration-200">
+                            ${opt}
+                        </span>
+                    </label>
+                `;
             });
             html += '</div>';
             container.innerHTML = html;
         };
 
-        const updateVariantUI = () => {
-            const variant = product.variants.find(v => v.name === selectedSize);
-            if (!variant) return;
+        // Function to update UI based on selected variant
+        const updateVariantUI = (variant) => {
             document.getElementById('product-price').textContent = `₹${variant.price}`;
-            document.getElementById('main-product-image').src = variant.images[0];
+
+            const mainImage = document.getElementById('main-product-image');
             const thumbnailGrid = document.getElementById('thumbnail-grid');
-            thumbnailGrid.innerHTML = variant.images.map(image => `<img src="${image}" class="thumbnail-image" data-src="${image}">`).join('');
-            document.querySelector('.thumbnail-image')?.classList.add('active');
+
+            if (mainImage) {
+                mainImage.src = variant.images[0];
+            }
+
+            if (thumbnailGrid) {
+                thumbnailGrid.innerHTML = variant.images.map(image => `
+                    <img src="${image}" class="thumbnail-image" data-src="${image}" alt="Product thumbnail">
+                `).join('');
+
+                const firstThumbnail = thumbnailGrid.querySelector('.thumbnail-image');
+                if (firstThumbnail) {
+                    firstThumbnail.classList.add('active');
+                }
+            }
         };
 
-        renderOptions('scent-options', product.scents, 'Scent');
-        renderOptions('size-options', product.variants.map(v => v.name), 'Size');
-        updateVariantUI();
+        // Initial rendering of options and UI
+        renderOptions('scent-options', product.scents, 'Scent', 'scent');
+        renderOptions('size-options', product.variants.map(v => v.name), 'Size', 'size');
+        updateVariantUI(selectedVariant);
 
-        document.getElementById('size-options')?.addEventListener('change', e => {
+        // Event listeners for options and quantity
+        document.getElementById('product-form').addEventListener('change', e => {
             if (e.target.name === 'size') {
-                selectedSize = e.target.value;
-                updateVariantUI();
+                selectedVariant = product.variants.find(v => v.name === e.target.value);
+                if (selectedVariant) {
+                    updateVariantUI(selectedVariant);
+                }
             }
         });
 
-        const productPageContainer = document.querySelector('.product-page-main');
-        if (productPageContainer) {
-            productPageContainer.addEventListener('click', (e) => {
-                const target = e.target;
+        document.getElementById('product-form').addEventListener('click', e => {
+            const thumbnail = e.target.closest('.thumbnail-image');
+            if (thumbnail) {
+                document.querySelectorAll('.thumbnail-image').forEach(t => t.classList.remove('active'));
+                thumbnail.classList.add('active');
+                document.getElementById('main-product-image').src = thumbnail.src;
+                return;
+            }
 
-                if (target.closest('#add-to-cart-product')) {
-                    const selectedSizeEl = document.querySelector('input[name="size"]:checked');
-                    if (product.variants.length > 1 && !selectedSizeEl) {
-                        utils.showToast("Please select a size.");
-                        return;
-                    }
-                    const selectedScentEl = document.querySelector('input[name="scent"]:checked');
-                    const selectedSize = selectedSizeEl ? selectedSizeEl.value : product.variants[0].name;
-                    const selectedScent = selectedScentEl ? selectedScentEl.value : (product.scents.length > 0 ? product.scents[0] : 'N/A');
-                    const quantity = parseInt(document.getElementById("quantity-input").value);
-                    const cartItemId = `${productId}_${selectedSize}_${selectedScent}`;
-                    cartActions.add({ cartItemId, productId, size: selectedSize, scent: selectedScent, quantity });
-                }
+            const decreaseBtn = e.target.closest('#decrease-quantity');
+            const increaseBtn = e.target.closest('#increase-quantity');
+            const quantityInput = document.getElementById('quantity-input');
 
-                if (target.closest('#decrease-quantity')) {
-                    let quantityInput = document.getElementById("quantity-input");
-                    if (parseInt(quantityInput.value) > 1) quantityInput.value--;
-                }
+            if (decreaseBtn && parseInt(quantityInput.value) > 1) {
+                quantityInput.value = parseInt(quantityInput.value) - 1;
+            } else if (increaseBtn) {
+                quantityInput.value = parseInt(quantityInput.value) + 1;
+            }
 
-                if (target.closest('#increase-quantity')) {
-                    let quantityInput = document.getElementById("quantity-input");
-                    quantityInput.value++;
-                }
+            const addToCartBtn = e.target.closest('#add-to-cart-product');
+            if (addToCartBtn) {
+                const quantity = parseInt(quantityInput.value);
+                const scent = document.querySelector('input[name="scent"]:checked')?.value || product.scents[0];
+                const size = document.querySelector('input[name="size"]:checked')?.value || product.variants[0].name;
+                const cartItemId = `${product.id}_${size}_${scent}`;
+                cartActions.add({ cartItemId, productId: product.id, size, scent, quantity });
+            }
+        });
 
-                const thumbnail = target.closest('.thumbnail-image');
-                if (thumbnail) {
-                    document.getElementById('main-product-image').src = thumbnail.dataset.src;
-                    document.querySelectorAll('.thumbnail-image').forEach(t => t.classList.remove('active'));
-                    thumbnail.classList.add('active');
+        // Accordion functionality
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const item = header.closest('.accordion-item');
+                const content = item.querySelector('.accordion-content');
+                item.classList.toggle('active');
+
+                if (item.classList.contains('active')) {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                } else {
+                    content.style.maxHeight = '0';
                 }
             });
-        }
+        });
     },
     checkout() {
         const form = document.getElementById('checkout-form');
