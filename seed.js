@@ -23,10 +23,10 @@ const products = [
                 sticks: 40,
                 price: 70,
                 images: [
-                    './images/products/sugandhmaya_chandan_agarbatti/1.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/2.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/6.webp'
+                    '/images/products/sugandhmaya_chandan_agarbatti/1.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
                 ]
             },
             {
@@ -35,15 +35,15 @@ const products = [
                 sticks: 12,
                 price: 15,
                 images: [
-                    './images/products/sugandhmaya_chandan_agarbatti/4.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/5.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/6.webp'
+                    '/images/products/sugandhmaya_chandan_agarbatti/4.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/5.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
                 ]
             }
         ],
         description: 'Experience the divine fragrance of fresh roses in our handcrafted agarbatti.',
-        featuredImage: './images/products/sugandhmaya_chandan_agarbatti/1.webp'
+        featuredImage: '/images/products/sugandhmaya_chandan_agarbatti/1.webp'
     },
     {
         id: 'mogra',
@@ -57,10 +57,10 @@ const products = [
                 sticks: 40,
                 price: 70,
                 images: [
-                    './images/products/sugandhmaya_chandan_agarbatti/1.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/2.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/6.webp'
+                    '/images/products/sugandhmaya_chandan_agarbatti/1.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
                 ]
             },
             {
@@ -69,15 +69,15 @@ const products = [
                 sticks: 12,
                 price: 15,
                 images: [
-                    './images/products/sugandhmaya_chandan_agarbatti/4.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/5.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/6.webp'
+                    '/images/products/sugandhmaya_chandan_agarbatti/4.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/5.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
                 ]
             }
         ],
         description: 'The sweet and delicate fragrance of mogra flowers in every stick.',
-        featuredImage: './images/products/sugandhmaya_chandan_agarbatti/1.webp'
+        featuredImage: '/images/products/sugandhmaya_chandan_agarbatti/1.webp'
     },
     {
         id: 'oudh',
@@ -91,10 +91,10 @@ const products = [
                 sticks: 40,
                 price: 70,
                 images: [
-                    './images/products/sugandhmaya_chandan_agarbatti/1.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/2.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/6.webp'
+                    '/images/products/sugandhmaya_chandan_agarbatti/1.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
                 ]
             },
             {
@@ -103,15 +103,15 @@ const products = [
                 sticks: 12,
                 price: 15,
                 images: [
-                    './images/products/sugandhmaya_chandan_agarbatti/4.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/5.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/6.webp'
+                    '/images/products/sugandhmaya_chandan_agarbatti/4.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/5.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
                 ]
             }
         ],
         description: 'The rich and earthy aroma of oudh in every stick.',
-        featuredImage: './images/products/sugandhmaya_chandan_agarbatti/1.webp'
+        featuredImage: '/images/products/sugandhmaya_chandan_agarbatti/1.webp'
     },
     {
         id: 'chandan',
@@ -125,10 +125,10 @@ const products = [
                 sticks: 40,
                 price: 70,
                 images: [
-                    './images/products/sugandhmaya_chandan_agarbatti/1.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/2.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/6.webp'
+                    '/images/products/sugandhmaya_chandan_agarbatti/1.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
                 ]
             },
             {
@@ -137,15 +137,15 @@ const products = [
                 sticks: 12,
                 price: 15,
                 images: [
-                    './images/products/sugandhmaya_chandan_agarbatti/4.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/5.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/6.webp'
+                    '/images/products/sugandhmaya_chandan_agarbatti/4.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/5.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
                 ]
             }
         ],
         description: 'The sacred and divine fragrance of chandan in every stick.',
-        featuredImage: './images/products/sugandhmaya_chandan_agarbatti/1.webp'
+        featuredImage: '/images/products/sugandhmaya_chandan_agarbatti/1.webp'
     },
     {
         id: 'orchid',
@@ -159,10 +159,10 @@ const products = [
                 sticks: 40,
                 price: 70,
                 images: [
-                    './images/products/sugandhmaya_chandan_agarbatti/1.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/2.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/6.webp'
+                    '/images/products/sugandhmaya_chandan_agarbatti/1.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
                 ]
             },
             {
@@ -171,15 +171,15 @@ const products = [
                 sticks: 12,
                 price: 15,
                 images: [
-                    './images/products/sugandhmaya_chandan_agarbatti/4.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/5.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    './images/products/sugandhmaya_chandan_agarbatti/6.webp'
+                    '/images/products/sugandhmaya_chandan_agarbatti/4.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/5.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
                 ]
             }
         ],
         description: 'The sweet and delicate fragrance of orchid flowers in every stick.',
-        featuredImage: './images/products/sugandhmaya_chandan_agarbatti/1.webp'
+        featuredImage: '/images/products/sugandhmaya_chandan_agarbatti/1.webp'
     }
 ];
 

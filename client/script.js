@@ -285,8 +285,9 @@ const pages = {
             }
 
             shopGrid.innerHTML = filteredProducts.map(product => {
-                const featuredImage = product.featuredImage || (product.variants && product.variants[0] && product.variants[0].images[0]);
-                const price = product.variants && product.variants[0] ? product.variants[0].price : 'N/A';
+                const firstVariant = product.variants && product.variants[0];
+                const imagePath = firstVariant ? firstVariant.images[0] : '';
+                const price = firstVariant ? firstVariant.price : 'N/A';
                 const name = product.name;
                 const category = product.category;
 
@@ -294,7 +295,7 @@ const pages = {
                     <a href="product.html?id=${product.id}" class="product-card-link">
                         <article class="product-card">
                             <div class="product-image-container">
-                                <img src="${featuredImage}" alt="${name}" class="product-image">
+                                <img src="${imagePath}" alt="${name}" class="product-image">
                             </div>
                             <div class="product-details">
                                 <h3 class="product-title">${name}</h3>
@@ -334,6 +335,8 @@ const pages = {
 
         setupShopPage();
     },
+    // ... (rest of the code after pages.shop)
+
     product() {
         const params = new URLSearchParams(window.location.search);
         const productId = params.get('id');
