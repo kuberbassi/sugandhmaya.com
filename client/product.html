@@ -29,10 +29,16 @@
             <div class="grid lg:grid-cols-2 gap-16">
                 <div class="product-gallery">
                     <div class="main-image-wrapper mb-4">
-                        <img id="main-product-image" src="" alt="Main product image" class="rounded-lg shadow-md w-full">
+                        <img id="main-product-image" src="" alt="Main product image" class="rounded-lg">
                     </div>
-                    <div id="thumbnail-grid" class="flex gap-4 overflow-x-auto pb-2">
+                    <div class="thumbnail-scroller flex items-center mt-4">
+                        <button id="scroll-left" class="arrow-btn text-lg">&lt;</button>
+                        <div id="thumbnail-track-container" class="flex-grow overflow-hidden">
+                            <div id="thumbnail-grid" class="thumbnail-track flex gap-2">
+                                </div>
                         </div>
+                        <button id="scroll-right" class="arrow-btn text-lg">&gt;</button>
+                    </div>
                 </div>
 
                 <div class="product-details">

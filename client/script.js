@@ -267,32 +267,32 @@ const pages = {
             </a>`).join('');
     },
     // In client/script.js, replace the entire pages.shop function with this.
-shop() {
-    const shopGrid = document.querySelector('.products-grid');
-    const filterButtonsContainer = document.querySelector('.filter-buttons');
+    shop() {
+        const shopGrid = document.querySelector('.products-grid');
+        const filterButtonsContainer = document.querySelector('.filter-buttons');
 
-    if (!shopGrid || !filterButtonsContainer) return;
+        if (!shopGrid || !filterButtonsContainer) return;
 
-    const displayProducts = (filter = 'all') => {
-        const filteredProducts = state.products.filter(p => filter === 'all' || p.category.toLowerCase() === filter.toLowerCase());
+        const displayProducts = (filter = 'all') => {
+            const filteredProducts = state.products.filter(p => filter === 'all' || p.category.toLowerCase() === filter.toLowerCase());
 
-        if (filteredProducts.length === 0) {
-            shopGrid.innerHTML = `
+            if (filteredProducts.length === 0) {
+                shopGrid.innerHTML = `
                 <div class="empty-state">
                     <h3 class="text-2xl text-gray-500 font-serif">No products found in this category.</h3>
                 </div>
             `;
-            return;
-        }
+                return;
+            }
 
-        shopGrid.innerHTML = filteredProducts.map(product => {
-            const firstVariant = product.variants && product.variants[0];
-            const imagePath = firstVariant ? firstVariant.images[0] : '';
-            const price = firstVariant ? firstVariant.price : 'N/A';
-            const name = product.name;
-            const category = product.category;
+            shopGrid.innerHTML = filteredProducts.map(product => {
+                const firstVariant = product.variants && product.variants[0];
+                const imagePath = firstVariant ? firstVariant.images[0] : '';
+                const price = firstVariant ? firstVariant.price : 'N/A';
+                const name = product.name;
+                const category = product.category;
 
-            return `
+                return `
                 <a href="product.html?id=${product.id}" class="product-card-link">
                     <article class="product-card">
                         <div class="product-image-container">
@@ -306,37 +306,38 @@ shop() {
                     </article>
                 </a>
             `;
-        }).join('');
-    };
+            }).join('');
+        };
 
-    filterButtonsContainer.addEventListener('click', (e) => {
-        const button = e.target.closest('.filter-button');
-        if (button) {
-            document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            const category = button.dataset.category;
-            displayProducts(category);
-        }
-    });
+        filterButtonsContainer.addEventListener('click', (e) => {
+            const button = e.target.closest('.filter-button');
+            if (button) {
+                document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                const category = button.dataset.category;
+                displayProducts(category);
+            }
+        });
 
-    const setupShopPage = async () => {
-        await utils.fetchProducts();
-        const categories = [...new Set(state.products.map(p => p.category))];
-        
-        const filterButtonsHtml = `
+        const setupShopPage = async () => {
+            await utils.fetchProducts();
+            const categories = [...new Set(state.products.map(p => p.category))];
+
+            const filterButtonsHtml = `
             <button class="filter-button active" data-category="all">All Products</button>
             ${categories.map(category => `
                 <button class="filter-button" data-category="${category}">${category}</button>
             `).join('')}
         `;
-        filterButtonsContainer.innerHTML = filterButtonsHtml;
+            filterButtonsContainer.innerHTML = filterButtonsHtml;
 
-        displayProducts();
-    };
+            displayProducts();
+        };
 
-    setupShopPage();
-},
+        setupShopPage();
+    },
 
+    // In client/script.js, replace the entire pages.product function with this.
     product() {
         const params = new URLSearchParams(window.location.search);
         const productId = params.get('id');
@@ -367,13 +368,13 @@ shop() {
             let html = `<label class="block subheading mb-3">${label}</label><div class="flex flex-wrap gap-3">`;
             options.forEach((opt, index) => {
                 html += `
-                    <label>
-                        <input type="radio" name="${name}" value="${opt}" ${index === 0 ? 'checked' : ''}>
-                        <span class="size-box cursor-pointer p-3 bg-white rounded-xl shadow-sm hover:bg-gray-100 transition-colors duration-200">
-                            ${opt}
-                        </span>
-                    </label>
-                `;
+                <label>
+                    <input type="radio" name="${name}" value="${opt}" ${index === 0 ? 'checked' : ''}>
+                    <span class="size-box cursor-pointer p-3 bg-white rounded-xl shadow-sm hover:bg-gray-100 transition-colors duration-200">
+                        ${opt}
+                    </span>
+                </label>
+            `;
             });
             html += '</div>';
             container.innerHTML = html;
@@ -392,8 +393,8 @@ shop() {
 
             if (thumbnailGrid) {
                 thumbnailGrid.innerHTML = variant.images.map(image => `
-                    <img src="${image}" class="thumbnail-image" data-src="${image}" alt="Product thumbnail">
-                `).join('');
+                <img src="${image}" class="thumbnail-image" data-src="${image}" alt="Product thumbnail">
+            `).join('');
 
                 const firstThumbnail = thumbnailGrid.querySelector('.thumbnail-image');
                 if (firstThumbnail) {
@@ -460,6 +461,27 @@ shop() {
                 }
             });
         });
+
+        // Image gallery navigation
+        const thumbnailTrackContainer = document.getElementById('thumbnail-track-container');
+        const scrollLeftBtn = document.getElementById('scroll-left');
+        const scrollRightBtn = document.getElementById('scroll-right');
+
+        if (thumbnailTrackContainer && scrollLeftBtn && scrollRightBtn) {
+            scrollLeftBtn.addEventListener('click', () => {
+                thumbnailTrackContainer.scrollBy({
+                    left: -100, // Adjust this value to change scroll speed
+                    behavior: 'smooth'
+                });
+            });
+
+            scrollRightBtn.addEventListener('click', () => {
+                thumbnailTrackContainer.scrollBy({
+                    left: 100, // Adjust this value to change scroll speed
+                    behavior: 'smooth'
+                });
+            });
+        }
     },
     checkout() {
         const form = document.getElementById('checkout-form');
