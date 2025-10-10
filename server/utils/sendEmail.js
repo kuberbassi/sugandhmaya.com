@@ -1,31 +1,15 @@
 // server/utils/sendEmail.js
+const { Resend } = require('resend');
 const sgMail = require('@sendgrid/mail');
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 /**
- * A generic function that sends emails via SendGrid.
+ * Sends the OTP email using RESEND with the correct brand template.
  */
-const sendEmail = async (options) => {
-  const msg = {
-    to: options.to,
-    from: process.env.SENDGRID_FROM_EMAIL,
-    subject: options.subject,
-    html: options.html,
-  };
-  try {
-    await sgMail.send(msg);
-    console.log(`✅ Email sent successfully to ${options.to}`);
-  } catch (error) {
-    console.error('❌ Error sending email via SendGrid:', error.response?.body || error);
-    throw new Error('Failed to send email.');
-  }
-};
-
-/**
- * Creates and sends a branded HTML email for OTP verification.
- */
-const sendOtpEmail = async ({ to, otp }) => {
-    const emailHtml = `
+const sendOtpEmailWithResend = async ({ to, otp }) => {
+  const emailHtml = `
       <!DOCTYPE html>
       <html>
       <head>
@@ -55,27 +39,63 @@ const sendOtpEmail = async ({ to, otp }) => {
       </body>
       </html>
     `;
-
-    await sendEmail({
-        to: to,
-        subject: 'Your Sugandhmaya Verification Code',
-        html: emailHtml
+  try {
+    await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL,
+      to: to,
+      subject: 'Your Sugandhmaya Verification Code',
+      html: emailHtml,
     });
+    console.log(`✅ OTP Email sent successfully to ${to} via Resend.`);
+  } catch (error) {
+    console.error('❌ Error sending OTP email via Resend:', error);
+    throw new Error('Failed to send OTP email via Resend.');
+  }
 };
-
 
 /**
- * Creates and sends a branded HTML email for order confirmations.
+ * Sends the Order Confirmation email using SENDGRID.
  */
-const sendOrderConfirmationEmail = async (order) => {
-    const itemsHtml = order.items.map(item => `...`).join(''); // This logic is already correct
-    const emailHtml = `...`; // This logic is also correct from before
+const sendOrderConfirmationWithSendGrid = async (order) => {
+    const itemsHtml = order.items.map(item =>
+        `<tr>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.name} (${item.scent} / ${item.size}) x ${item.quantity}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">₹${(item.price * item.quantity).toFixed(2)}</td>
+        </tr>`
+    ).join('');
+
+    const emailHtml = `
+      <body style="font-family: Arial, sans-serif; margin: 20px; color: #3D352E;">
+        <h2 style="font-family: 'Playfair Display', serif; color: #2C2A29;">Thank you for your order, ${order.customer.name}!</h2>
+        <p>Your order #${order._id.toString().slice(-6)} has been placed successfully.</p>
+        <table width="100%" style="border-collapse: collapse; margin-top: 20px;">
+          ${itemsHtml}
+          <tr style="border-top: 2px solid #000; font-weight: bold;">
+            <td style="padding: 10px;">Total</td>
+            <td style="padding: 10px; text-align: right;">₹${order.total.toFixed(2)}</td>
+          </tr>
+        </table>
+        <p style="margin-top: 20px;"><strong>Shipping to:</strong><br>${order.customer.address}</p>
+      </body>
+    `;
     
-    await sendEmail({
+    const msg = {
         to: order.customer.email,
+        from: process.env.SENDGRID_FROM_EMAIL, // This uses your SendGrid verified email
         subject: `Your Sugandhmaya Order Confirmation (#${order._id.toString().slice(-6)})`,
-        html: emailHtml, // Your beautiful order confirmation template
-    });
+        html: emailHtml,
+    };
+
+    try {
+        await sgMail.send(msg);
+        console.log(`✅ Order Confirmation sent to ${order.customer.email} via SendGrid.`);
+    } catch (error) {
+        console.error('❌ Error sending order confirmation via SendGrid:', error.response?.body || error);
+        throw new Error('Failed to send order confirmation via SendGrid.');
+    }
 };
 
-module.exports = { sendOtpEmail, sendOrderConfirmationEmail };
+module.exports = {
+  sendOtpEmailWithResend,
+  sendOrderConfirmationWithSendGrid,
+};

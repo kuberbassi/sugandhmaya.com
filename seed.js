@@ -1,7 +1,6 @@
-// seed.js (now located in the project root)
-require('dotenv').config({ path: './server/.env' }); // Correctly points into the server folder
+require('dotenv').config({ path: './server/.env' });
 const mongoose = require('mongoose');
-const Product = require('./server/models/product'); // Correctly points into the server folder
+const Product = require('./server/models/product');
 
 const productsToSeed = [
     {
@@ -15,13 +14,27 @@ const productsToSeed = [
                 size: "12 Sticks",
                 price: 91,
                 image: './images/products/sugandhmaya_chandan_agarbatti/4.webp',
-                thumbnails: [ /* ... thumbnails ... */ ]
+                thumbnails: [
+                    './images/products/sugandhmaya_chandan_agarbatti/1.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/2.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/4.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/5.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/6.webp'
+                ]
             },
             {
                 size: "40 Sticks",
                 price: 330,
                 image: './images/products/sugandhmaya_chandan_agarbatti/1.webp',
-                thumbnails: [ /* ... thumbnails ... */ ]
+                thumbnails: [
+                    './images/products/sugandhmaya_chandan_agarbatti/1.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/2.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/3.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/4.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/5.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/6.webp'
+                ]
             }
         ]
     },
@@ -36,13 +49,19 @@ const productsToSeed = [
                 size: "12 Sticks",
                 price: 150,
                 image: './images/products/sugandhmaya_chandan_agarbatti/1.webp',
-                thumbnails: [ /* ... thumbnails ... */ ]
+                thumbnails: [
+                    './images/products/sugandhmaya_chandan_agarbatti/1.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/2.webp'
+                ]
             },
             {
                 size: "40 Sticks",
                 price: 500,
                 image: './images/products/sugandhmaya_chandan_agarbatti/1.webp',
-                thumbnails: [ /* ... thumbnails ... */ ]
+                thumbnails: [
+                    './images/products/sugandhmaya_chandan_agarbatti/1.webp',
+                    './images/products/sugandhmaya_chandan_agarbatti/2.webp'
+                ]
             }
         ]
     }
@@ -57,9 +76,10 @@ const seedDB = async () => {
         await Product.insertMany(productsToSeed);
         console.log('✅ Database has been successfully seeded!');
     } catch (err) {
-        console.error("❌ Seeding failed:", err);
+        console.error('❌ Error seeding database:', err);
     } finally {
-        mongoose.connection.close();
+        mongoose.disconnect();
+        console.log('MongoDB disconnected.');
     }
 };
 

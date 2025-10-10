@@ -17,84 +17,56 @@ async function loadComponent(elementId, filePath) {
             const response = await fetch(filePath);
             const html = await response.text();
             container.innerHTML = html;
-        } catch (error) {
-            console.error(`Failed to load component from ${filePath}:`, error);
-        }
+        } catch (error) { console.error(`Failed to load component from ${filePath}:`, error); }
     }
 }
 
-async function loadHeader() {
-    await loadComponent('header-container', config.headerPath);
-}
-
-async function loadFooter() {
-    await loadComponent('footer-container', config.footerPath);
-}
+async function loadHeader() { await loadComponent('header-container', config.headerPath); }
+async function loadFooter() { await loadComponent('footer-container', config.footerPath); }
 
 // --- 3. CORE UTILITY FUNCTIONS ---
 const utils = {
     async fetchProducts() {
         try {
-            console.log("Attempting to fetch products...");
             const response = await fetch(`${config.apiBaseUrl}/api/products`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             state.products = await response.json();
-            console.log("✅ Products fetched successfully:", state.products);
-            if (state.products.length === 0) {
-                console.warn("Warning: Fetched 0 products. Is the database seeded?");
-            }
         } catch (error) {
             console.error("❌ Could not fetch products:", error);
-            // Display an error message to the user on the page
-            const shopGrid = document.getElementById('shop-grid');
-            if (shopGrid) shopGrid.innerHTML = `<p class="col-span-full text-center text-red-500">Could not load products. Please ensure the server is running and refresh the page.</p>`;
         }
     },
-
-    saveCart() {
-        localStorage.setItem(config.storageKeys.cart, JSON.stringify(state.cart));
-    },
-
+    saveCart() { localStorage.setItem(config.storageKeys.cart, JSON.stringify(state.cart)); },
     showToast(message) {
         const toastContainer = document.getElementById('toast-container');
-        if (!toastContainer) {
-            console.error('Toast container not found!');
-            alert(message);
-            return;
-        }
-
+        if (!toastContainer) return alert(message);
         const toast = document.createElement('div');
         toast.className = 'toast-message';
         toast.textContent = message;
-
         toastContainer.innerHTML = '';
         toastContainer.appendChild(toast);
-
-        setTimeout(() => {
-            toast.classList.add('show');
-        }, 10);
+        setTimeout(() => toast.classList.add('show'), 10);
         setTimeout(() => {
             toast.classList.remove('show');
             setTimeout(() => toast.remove(), 400);
         }, 3000);
     },
-
     updateCartUI() {
         const cartItemsContainer = document.getElementById("cart-items");
         const cartSubtotalEl = document.getElementById("cart-subtotal");
         const cartCounter = document.getElementById("cart-counter");
         const emptyCartMessage = document.getElementById("empty-cart-message");
+        const checkoutBtn = document.getElementById("checkout-button");
 
-        if (!cartItemsContainer || !cartSubtotalEl || !cartCounter || !emptyCartMessage) return;
+        if (!cartItemsContainer || !cartSubtotalEl || !cartCounter || !emptyCartMessage || !checkoutBtn) return;
 
         cartItemsContainer.innerHTML = "";
 
         if (state.cart.length === 0) {
             emptyCartMessage.style.display = 'block';
+            checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
         } else {
             emptyCartMessage.style.display = 'none';
+            checkoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             state.cart.forEach((item) => {
                 const product = state.products.find(p => p.id === item.productId);
                 if (!product) return;
@@ -130,13 +102,12 @@ const utils = {
         const totalItems = state.cart.reduce((total, item) => total + item.quantity, 0);
         cartSubtotalEl.textContent = `₹${subtotal.toFixed(2)}`;
         cartCounter.textContent = totalItems;
+        if (document.body.classList.contains("checkout-page")) pages.updateCheckoutSummary();
     },
-
     openCart() {
         const cartModal = document.getElementById("cart-modal");
         const cartPanel = document.getElementById("cart-panel");
         if (!cartModal || !cartPanel) return;
-
         cartModal.classList.remove("hidden");
         document.body.classList.add('cart-open');
         setTimeout(() => {
@@ -144,18 +115,15 @@ const utils = {
             cartPanel.classList.remove("translate-x-full");
         }, 20);
     },
-
     closeCart() {
         const cartModal = document.getElementById("cart-modal");
         const cartPanel = document.getElementById("cart-panel");
         if (!cartModal || !cartPanel) return;
-
         cartModal.classList.add("opacity-0");
         cartPanel.classList.add("translate-x-full");
         document.body.classList.remove('cart-open');
         setTimeout(() => cartModal.classList.add("hidden"), 500);
     },
-
     setupScrollObserver() {
         const revealElements = document.querySelectorAll(".reveal-on-scroll");
         const observer = new IntersectionObserver((entries) => {
@@ -170,32 +138,51 @@ const utils = {
     }
 };
 
-// --- 4. PAGE-SPECIFIC RENDER FUNCTIONS ---
+// --- 4. CART ACTIONS (THE PERMANENT FIX) ---
+const cartActions = {
+    add(item) {
+        const existingItem = state.cart.find(i => i.cartItemId === item.cartItemId);
+        if (existingItem) existingItem.quantity += item.quantity;
+        else state.cart.push(item);
+        utils.saveCart();
+        utils.updateCartUI(); // Instant update
+        utils.showToast(`${item.quantity} item(s) added to cart.`);
+        utils.openCart();
+    },
+    remove(cartItemId) {
+        state.cart = state.cart.filter(i => i.cartItemId !== cartItemId);
+        utils.saveCart();
+        utils.updateCartUI(); // Instant update
+    },
+    updateQuantity(cartItemId, change) {
+        const itemInCart = state.cart.find(i => i.cartItemId === cartItemId);
+        if (itemInCart) {
+            itemInCart.quantity += change;
+            if (itemInCart.quantity <= 0) this.remove(cartItemId);
+            else {
+                utils.saveCart();
+                utils.updateCartUI(); // Instant update
+            }
+        }
+    }
+};
+
+// --- 5. PAGE-SPECIFIC RENDER FUNCTIONS ---
 const pages = {
     home() {
         const collectionGrid = document.getElementById("collection-grid");
-        if (!collectionGrid) return;
-        if (state.products.length === 0) {
-            collectionGrid.innerHTML = '<p class="text-center col-span-full">Could not load products. Is the server running?</p>';
-            return;
-        }
-        let gridHTML = "";
+        if (!collectionGrid || !state.products || state.products.length === 0) return;
         const topProducts = state.products.slice(0, 3);
-        topProducts.forEach((product) => {
-            const displayImage = product.variants && product.variants.length > 0 ? product.variants[0].image : product.image;
-            gridHTML += `
-                <a href="product.html?id=${product.id}" class="product-card-link group block">
-                    <div class="product-image-container"><img src="${displayImage}" loading="lazy" alt="${product.name}" class="product-image"></div>
-                    <div class="pt-6 text-center">
-                        <h3 class="text-xl font-serif">${product.name}</h3>
-                        <p class="text-base mt-1 text-gray-500">${product.category}</p>
-                        <p class="text-lg font-bold font-sans mt-2 text-brand-accent">Starting from ₹${product.variants[0].price}</p>
-                    </div>
-                </a>`;
-        });
-        collectionGrid.innerHTML = gridHTML;
+        collectionGrid.innerHTML = topProducts.map(product => `
+            <a href="product.html?id=${product.id}" class="product-card-link group block">
+                <div class="product-image-container"><img src="${product.variants[0].image}" loading="lazy" alt="${product.name}" class="product-image"></div>
+                <div class="pt-6 text-center">
+                    <h3 class="text-xl font-serif">${product.name}</h3>
+                    <p class="text-base mt-1 text-gray-500">${product.category}</p>
+                    <p class="text-lg font-bold font-sans mt-2 text-brand-accent">Starting from ₹${product.variants[0].price}</p>
+                </div>
+            </a>`).join('');
     },
-
     shop() {
         const shopGrid = document.getElementById('shop-grid');
         const categoryFilter = document.getElementById('category-filter');
@@ -206,364 +193,300 @@ const pages = {
             categoryFilter.innerHTML += `<label class="filter-label"><input type="radio" name="category" value="${category}"><span>${category}</span></label>`;
         });
         function displayProducts(filter) {
-            shopGrid.innerHTML = '';
             const filteredProducts = state.products.filter(p => filter === 'all' || p.category === filter);
-            if (filteredProducts.length === 0) {
-                shopGrid.innerHTML = `<p class="col-span-full">No products found in this category.</p>`;
-                return;
-            }
-            filteredProducts.forEach(product => {
-                const displayImage = product.variants && product.variants.length > 0 ? product.variants[0].image : product.image;
-                const productCard = document.createElement('a');
-                productCard.href = `product.html?id=${product.id}`;
-                productCard.className = "product-card-link group block";
-                productCard.innerHTML = `
-                    <div class="product-image-container"><img src="${displayImage}" loading="lazy" alt="${product.name}" class="product-image"></div>
+            shopGrid.innerHTML = filteredProducts.map(product => `
+                <a href="product.html?id=${product.id}" class="product-card-link group block">
+                    <div class="product-image-container"><img src="${product.variants[0].image}" loading="lazy" alt="${product.name}" class="product-image"></div>
                     <div class="pt-8 text-center">
                         <h3 class="text-2xl font-serif">${product.name}</h3>
                         <p class="text-base mt-1">${product.category}</p>
                         <p class="text-lg font-bold font-sans mt-2 text-brand-accent">Starting from ₹${product.variants[0].price}</p>
-                    </div>`;
-                shopGrid.appendChild(productCard);
-            });
+                    </div>
+                </a>`).join('');
         }
         displayProducts('all');
-        categoryFilter.addEventListener('change', e => {
-            if (e.target.name === 'category') {
-                displayProducts(e.target.value);
-            }
-        });
+        categoryFilter.addEventListener('change', e => e.target.name === 'category' && displayProducts(e.target.value));
     },
-
     product() {
         const params = new URLSearchParams(window.location.search);
         const productId = params.get('id');
-        if (!productId) return;
         const product = state.products.find(p => p.id === productId);
-
         if (!product) {
-            const mainContent = document.querySelector('.product-page-main');
-            if (mainContent) mainContent.innerHTML = '<h1 class="text-center text-2xl p-10">Product not found</h1>';
+            document.querySelector('.product-page-main').innerHTML = '<h1 class="text-center text-2xl p-10">Product not found</h1>';
             return;
         }
 
-        let selectedSize = product.variants[0].size;
-        let selectedScent = product.scents[0];
-        const nameEl = document.getElementById('product-name');
-        const categoryEl = document.getElementById('product-category');
-        const priceEl = document.getElementById('product-price');
-        const descriptionEl = document.getElementById('product-description');
-        const mainImageEl = document.getElementById('main-product-image');
-        const thumbnailGrid = document.getElementById('thumbnail-grid');
-        const scentOptionsContainer = document.getElementById('scent-options');
-        const sizeOptionsContainer = document.getElementById('size-options');
-        const scrollLeftBtn = document.getElementById('scroll-left');
-        const scrollRightBtn = document.getElementById('scroll-right');
+        document.querySelectorAll('.accordion-item').forEach(item => {
+            item.classList.remove('active');
+            item.querySelector('.accordion-content').style.maxHeight = '0';
+        });
 
-        const renderScents = () => {
-            if (!scentOptionsContainer) return;
-            if (!product.scents || product.scents.length <= 1) {
-                if (scentOptionsContainer.parentElement) scentOptionsContainer.parentElement.style.display = 'none';
+        let selectedSize = product.variants[0].size;
+        
+        document.title = `${product.name} - Sugandhmaya`;
+        document.getElementById('product-name').textContent = product.name;
+        document.getElementById('product-category').textContent = product.category;
+        document.getElementById('product-description').textContent = product.description;
+
+        const renderOptions = (containerId, options, label) => {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            if (!options || options.length <= 1) {
+                container.style.display = 'none';
                 return;
             }
-            let scentHtml = '<label class="block subheading mb-3">Scent</label><div class="flex flex-wrap gap-3">';
-            product.scents.forEach((scent, index) => {
-                scentHtml += `<label><input type="radio" name="scent" value="${scent}" ${index === 0 ? 'checked' : ''}><span>${scent}</span></label>`;
+            container.style.display = 'block';
+            let html = `<label class="block subheading mb-3">${label}</label><div class="flex flex-wrap gap-3">`;
+            options.forEach((opt, index) => {
+                html += `<label><input type="radio" name="${label.toLowerCase()}" value="${opt}" ${index === 0 ? 'checked' : ''}><span>${opt}</span></label>`;
             });
-            scentHtml += '</div>';
-            scentOptionsContainer.innerHTML = scentHtml;
+            html += '</div>';
+            container.innerHTML = html;
         };
-        const renderSizes = () => {
-            if (!sizeOptionsContainer) return;
-            let sizeHtml = '<label class="block subheading mb-3">Size</label><div class="flex flex-wrap gap-3">';
-            product.variants.forEach((variant, index) => {
-                sizeHtml += `<label><input type="radio" name="size" value="${variant.size}" ${index === 0 ? 'checked' : ''}><span>${variant.size}</span></label>`;
-            });
-            sizeHtml += '</div>';
-            sizeOptionsContainer.innerHTML = sizeHtml;
-        };
+
         const updateVariantUI = () => {
             const variant = product.variants.find(v => v.size === selectedSize);
             if (!variant) return;
-            if (priceEl) priceEl.textContent = `₹${variant.price}`;
-            if (mainImageEl) mainImageEl.src = variant.image;
-            if (thumbnailGrid) {
-                thumbnailGrid.innerHTML = '';
-                variant.thumbnails.forEach((thumbSrc) => {
-                    const thumbImg = document.createElement('img');
-                    thumbImg.src = thumbSrc;
-                    thumbImg.alt = `Thumbnail for ${variant.size}`;
-                    thumbImg.className = 'thumbnail-image';
-                    thumbImg.dataset.src = thumbSrc;
-                    thumbnailGrid.appendChild(thumbImg);
-                });
-                updateActiveThumbnail(variant.image);
-            }
+            document.getElementById('product-price').textContent = `₹${variant.price}`;
+            document.getElementById('main-product-image').src = variant.image;
+            const thumbnailGrid = document.getElementById('thumbnail-grid');
+            thumbnailGrid.innerHTML = variant.thumbnails.map(thumb => `<img src="${thumb}" class="thumbnail-image" data-src="${thumb}">`).join('');
+            document.querySelector('.thumbnail-image')?.classList.add('active');
         };
-        const updateActiveThumbnail = (src) => {
-            document.querySelectorAll('.thumbnail-image').forEach(t => t.classList.toggle('active', t.dataset.src === src));
-        };
-
-        document.title = `${product.name} - Sugandhmaya`;
-        if (nameEl) nameEl.textContent = product.name;
-        if (categoryEl) categoryEl.textContent = product.category;
-        if (descriptionEl) descriptionEl.textContent = product.description;
-
-        renderScents();
-        renderSizes();
+        
+        renderOptions('scent-options', product.scents, 'Scent');
+        renderOptions('size-options', product.variants.map(v => v.size), 'Size');
         updateVariantUI();
 
-        sizeOptionsContainer?.addEventListener('change', e => {
+        document.getElementById('size-options')?.addEventListener('change', e => {
             if (e.target.name === 'size') {
                 selectedSize = e.target.value;
                 updateVariantUI();
             }
         });
-        scentOptionsContainer?.addEventListener('change', e => {
-            if (e.target.name === 'scent') selectedScent = e.target.value;
-        });
-        thumbnailGrid?.addEventListener('click', e => {
-            const clickedThumbnail = e.target.closest('.thumbnail-image');
-            if (!clickedThumbnail || clickedThumbnail.classList.contains('active')) return;
-            if (mainImageEl) mainImageEl.style.opacity = '0';
-            setTimeout(() => {
-                if (mainImageEl) {
-                    mainImageEl.src = clickedThumbnail.src;
-                    mainImageEl.style.opacity = '1';
-                }
-            }, 200);
-            updateActiveThumbnail(clickedThumbnail.dataset.src);
-        });
-        const scrollThumbnails = (direction) => {
-            const scroller = document.getElementById('thumbnail-track-container');
-            if (!scroller) return;
-            scroller.scrollBy({ left: direction * (3 * (80 + 12)), behavior: 'smooth' });
-        };
-        scrollLeftBtn?.addEventListener('click', () => scrollThumbnails(-1));
-        scrollRightBtn?.addEventListener('click', () => scrollThumbnails(1));
     },
-
     checkout() {
+        // Phone Input
+        const phoneInput = document.querySelector("#phone-input");
+        if (phoneInput && typeof intlTelInput !== 'undefined' && !phoneInput.classList.contains('iti-initialized')) {
+            phoneInput.classList.add('iti-initialized');
+            window.iti = intlTelInput(phoneInput, { initialCountry: "in", separateDialCode: true, utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js" });
+        }
+
+        // Country & State Selectors
+        const countrySelect = document.getElementById('country-select');
+        const stateSelect = document.getElementById('state-select');
+        
+        if(countrySelect && stateSelect && typeof csc !== 'undefined') {
+            const countries = csc.getAllCountries();
+            countrySelect.innerHTML = countries.map(c => `<option value="${c.isoCode}">${c.name}</option>`).join('');
+            
+            // Set default and load initial states
+            countrySelect.value = 'IN'; // Default to India
+            let states = csc.getStatesOfCountry('IN');
+            stateSelect.innerHTML = states.map(s => `<option value="${s.isoCode}">${s.name}</option>`).join('');
+
+            countrySelect.addEventListener('change', () => {
+                states = csc.getStatesOfCountry(countrySelect.value);
+                stateSelect.innerHTML = states.map(s => `<option value="${s.isoCode}">${s.name}</option>`).join('');
+            });
+        }
+        
+        pages.updateCheckoutSummary();
+    },
+    updateCheckoutSummary() {
         const summaryItems = document.getElementById('summary-items');
         if (!summaryItems) return;
         summaryItems.innerHTML = '';
-        const summaryTotal = document.getElementById('summary-total');
         let total = 0;
         state.cart.forEach(item => {
             const product = state.products.find(p => p.id === item.productId);
             const variant = product ? product.variants.find(v => v.size === item.size) : null;
             if (variant) {
-                const itemEl = document.createElement('div');
-                itemEl.className = "flex justify-between items-center";
-                itemEl.innerHTML = `
-                    <div>
-                        <p class="font-semibold">${product.name} <span class="text-sm font-normal">x ${item.quantity}</span></p>
-                        <p class="text-sm text-gray-500">${item.scent} / ${item.size}</p>
-                    </div>
-                    <span>₹${(variant.price * item.quantity).toFixed(2)}</span>`;
-                summaryItems.appendChild(itemEl);
                 total += variant.price * item.quantity;
+                summaryItems.innerHTML += `<div class="flex justify-between items-center"><div><p class="font-semibold">${product.name} <span class="text-sm font-normal">x ${item.quantity}</span></p><p class="text-sm text-gray-500">${item.scent} / ${item.size}</p></div><span>₹${(variant.price * item.quantity).toFixed(2)}</span></div>`;
             }
         });
-        if (summaryTotal) summaryTotal.textContent = `₹${total.toFixed(2)}`;
+        document.getElementById('summary-total').textContent = `₹${total.toFixed(2)}`;
     },
-
     confirmation() {
         const confirmationDetails = document.getElementById('confirmation-details');
         if (!confirmationDetails) return;
         const orderData = JSON.parse(localStorage.getItem(config.storageKeys.latestOrder));
         if (orderData) {
-            confirmationDetails.innerHTML = `
-                <p><strong>Order for:</strong> ${orderData.customer.name}</p>
-                <p><strong>Email:</strong> ${orderData.customer.email}</p>
-                <p><strong>Total Amount:</strong> ₹${orderData.total.toFixed(2)} (Cash on Delivery)</p>
-            `;
+            confirmationDetails.innerHTML = `<p><strong>Order for:</strong> ${orderData.customer.name}</p><p><strong>Email:</strong> ${orderData.customer.email}</p><p><strong>Total Amount:</strong> ₹${orderData.total.toFixed(2)} (Cash on Delivery)</p>`;
         } else {
             confirmationDetails.innerHTML = '<p>Order details not found.</p>';
         }
-        localStorage.removeItem(config.storageKeys.cart);
         state.cart = [];
+        utils.saveCart();
+        utils.updateCartUI();
         localStorage.removeItem(config.storageKeys.latestOrder);
     }
 };
 
-// --- 5. INITIALIZATION LOGIC ---
+// --- 6. INITIALIZATION & EVENT LISTENERS ---
 async function initializeApp() {
-    await loadHeader();
-    await loadFooter();
+    await Promise.all([loadHeader(), loadFooter()]);
     await utils.fetchProducts();
 
-    const bodyClasses = document.body.classList;
-    if (bodyClasses.contains("home-page")) pages.home();
-    if (bodyClasses.contains("shop-page")) pages.shop();
-    if (document.querySelector(".product-page-main")) pages.product();
-    if (bodyClasses.contains("checkout-page")) pages.checkout();
-    if (document.getElementById('confirmation-details')) pages.confirmation();
+    setupGlobalListeners(); 
 
-    setupGlobalListeners();
-    setupPageSpecificListeners();
+    const body = document.body;
+    if (body.classList.contains("home-page")) pages.home();
+    if (body.classList.contains("shop-page")) pages.shop();
+    if (body.querySelector(".product-page-main")) pages.product();
+    if (body.classList.contains("checkout-page")) pages.checkout();
+    if (body.querySelector("#confirmation-details")) pages.confirmation();
+
     utils.updateCartUI();
     utils.setupScrollObserver();
 }
 
-// --- 6. EVENT LISTENERS ---
 function setupGlobalListeners() {
-    const header = document.getElementById("main-header");
-    const openCartBtn = document.getElementById("open-cart-button");
-    const closeCartBtn = document.getElementById("close-cart-button");
-    const cartModal = document.getElementById("cart-modal");
-    const cartItemsContainer = document.getElementById("cart-items");
-    const checkoutBtn = document.getElementById("checkout-button");
-    const checkoutForm = document.getElementById('checkout-form');
+    let orderPayload = {};
+    
+    document.body.addEventListener('click', e => {
+        const target = e.target;
+        
+        if (target.closest("#open-cart-button")) utils.openCart();
+        if (target.closest("#close-cart-button") || target.id === "cart-modal") utils.closeCart();
+        
+        const quantityChangeBtn = target.closest(".quantity-change");
+        if (quantityChangeBtn) cartActions.updateQuantity(quantityChangeBtn.dataset.id, parseInt(quantityChangeBtn.dataset.change));
 
-    if (header) {
-        window.addEventListener("scroll", () => header.classList.toggle("scrolled", window.scrollY > 50));
-    }
-    openCartBtn?.addEventListener("click", utils.openCart);
-    closeCartBtn?.addEventListener("click", utils.closeCart);
-    cartModal?.addEventListener("click", (e) => {
-        if (e.target === cartModal) utils.closeCart();
-    });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === "Escape" && !cartModal?.classList.contains('hidden')) utils.closeCart();
-    });
-    cartItemsContainer?.addEventListener("click", (e) => {
-        const target = e.target.closest("button");
-        if (!target) return;
-        const cartItemId = target.dataset.id;
-        const itemInCart = state.cart.find(i => i.cartItemId === cartItemId);
-        if (!itemInCart) return;
+        const removeItemBtn = target.closest(".remove-item");
+        if (removeItemBtn) cartActions.remove(removeItemBtn.dataset.id);
+        
+        const checkoutBtn = target.closest('#checkout-button');
+        if (checkoutBtn) {
+            e.preventDefault();
+            if (state.cart.length === 0) utils.showToast("Your cart is empty.");
+            else window.location.href = 'checkout.html';
+        }
 
-        if (target.classList.contains("quantity-change")) {
-            itemInCart.quantity += parseInt(target.dataset.change);
-            if (itemInCart.quantity <= 0) {
-                state.cart = state.cart.filter(i => i.cartItemId !== cartItemId);
+        const accordionHeader = target.closest('.accordion-header');
+        if (accordionHeader) {
+            const accordionItem = accordionHeader.parentElement;
+            const content = accordionHeader.nextElementSibling;
+            const wasActive = accordionItem.classList.contains('active');
+            document.querySelectorAll('.accordion-item').forEach(item => {
+                item.classList.remove('active');
+                item.querySelector('.accordion-content').style.maxHeight = '0';
+            });
+            if (!wasActive) {
+                accordionItem.classList.add('active');
+                content.style.maxHeight = content.scrollHeight + 'px';
             }
         }
-        if (target.classList.contains("remove-item")) {
-            state.cart = state.cart.filter(i => i.cartItemId !== cartItemId);
+        
+        const contactBubble = target.closest('.contact-bubble');
+        const contactPopover = document.getElementById('contact-popover');
+        if (contactBubble && contactPopover) {
+            document.getElementById('popover-title').textContent = contactBubble.dataset.title;
+            document.getElementById('popover-body').innerHTML = contactBubble.dataset.content;
+            contactPopover.classList.remove('hidden');
+            setTimeout(() => contactPopover.classList.add('visible'), 10);
         }
-        utils.saveCart();
-        utils.updateCartUI();
-        if (document.body.classList.contains("checkout-page")) pages.checkout();
-    });
-    checkoutBtn?.addEventListener("click", (e) => {
-        if (state.cart.length === 0) {
-            e.preventDefault();
-            utils.showToast("Your cart is empty.");
+        if ((target.id === 'contact-popover' || target.closest('#popover-close')) && contactPopover?.classList.contains('visible')) {
+            contactPopover.classList.remove('visible');
+            setTimeout(() => contactPopover.classList.add('hidden'), 300);
+        }
+        
+        if (document.querySelector(".product-page-main")) {
+            if (target.closest('#add-to-cart-product')) {
+                const productId = new URLSearchParams(window.location.search).get('id');
+                const product = state.products.find(p => p.id === productId);
+                if (!product) return;
+                const selectedSizeEl = document.querySelector('input[name="size"]:checked');
+                if (!selectedSizeEl) {
+                    utils.showToast("Please select a size.");
+                    return;
+                }
+                const selectedScentEl = document.querySelector('input[name="scent"]:checked');
+                const selectedSize = selectedSizeEl.value;
+                const selectedScent = selectedScentEl ? selectedScentEl.value : (product.scents.length > 0 ? product.scents[0] : 'N/A');
+                const quantity = parseInt(document.getElementById("quantity-input").value);
+                const cartItemId = `${productId}_${selectedSize}_${selectedScent}`;
+                cartActions.add({ cartItemId, productId, size: selectedSize, scent: selectedScent, quantity });
+            }
+
+            if (target.closest('#decrease-quantity')) {
+                let quantityInput = document.getElementById("quantity-input");
+                if (parseInt(quantityInput.value) > 1) quantityInput.value--;
+            }
+            if (target.closest('#increase-quantity')) {
+                let quantityInput = document.getElementById("quantity-input");
+                quantityInput.value++;
+            }
+
+            const thumbnail = target.closest('.thumbnail-image');
+            if (thumbnail) {
+                document.getElementById('main-product-image').src = thumbnail.dataset.src;
+                document.querySelectorAll('.thumbnail-image').forEach(t => t.classList.remove('active'));
+                thumbnail.classList.add('active');
+            }
         }
     });
-    document.getElementById('add-to-cart-product')?.addEventListener('click', () => {
-        const productId = new URLSearchParams(window.location.search).get('id');
-        const product = state.products.find(p => p.id === productId);
-        if (!product) return;
 
-        const selectedSizeEl = document.querySelector('input[name="size"]:checked');
-        const selectedScentEl = document.querySelector('input[name="scent"]:checked');
-        const quantityEl = document.getElementById("quantity-input");
-        if (!selectedSizeEl || !quantityEl) return;
-
-        const selectedSize = selectedSizeEl.value;
-        const selectedScent = selectedScentEl ? selectedScentEl.value : product.scents[0];
-        const quantity = parseInt(quantityEl.value);
-        const cartItemId = `${productId}_${selectedSize}_${selectedScent}`;
-        const existingItem = state.cart.find(item => item.cartItemId === cartItemId);
-
-        if (existingItem) {
-            existingItem.quantity += quantity;
-        } else {
-            state.cart.push({ cartItemId, productId, size: selectedSize, scent: selectedScent, quantity });
-        }
-        utils.saveCart();
-        utils.updateCartUI();
-        utils.showToast(`${quantity} item(s) added to cart.`);
-        utils.openCart();
-    });
-
+    const checkoutForm = document.getElementById('checkout-form');
     if (checkoutForm) {
-        let orderPayload = {};
-        const otpModal = document.getElementById('otp-modal');
-        const otpInput = document.getElementById('otp-input');
-        const verifyOtpBtn = document.getElementById('verify-otp-button');
-        const cancelOtpBtn = document.getElementById('cancel-otp-button');
-
         checkoutForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            console.log("Step 1: 'Place Order' button clicked.");
-
             const submitButton = e.target.querySelector('button[type="submit"]');
             const buttonText = submitButton.querySelector('span');
-
             try {
                 submitButton.disabled = true;
                 if (buttonText) buttonText.textContent = 'Sending Code...';
-
                 const formData = new FormData(e.target);
                 const customerDetails = Object.fromEntries(formData.entries());
+                
+                if (window.iti) customerDetails.phone = window.iti.getNumber();
 
                 orderPayload = {
                     customer: customerDetails,
-                    items: state.cart.map(item => ({
-                        productId: item.productId,
-                        size: item.size,
-                        scent: item.scent,
-                        quantity: item.quantity
-                    }))
+                    items: state.cart.map(item => ({ productId: item.productId, size: item.size, scent: item.scent, quantity: item.quantity }))
                 };
-
-                console.log("Step 2: Sending request to /api/send-otp...");
                 const response = await fetch(`${config.apiBaseUrl}/api/send-otp`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: customerDetails.email })
                 });
-
-                console.log("Step 3: Received response from server. Status:", response.status);
                 if (!response.ok) {
                     const err = await response.json();
                     throw new Error(err.message || 'Failed to send OTP.');
                 }
-
                 utils.showToast('Verification code sent!');
-
-                console.log("Step 4: Attempting to show OTP modal.");
                 const otpModal = document.getElementById('otp-modal');
                 if (otpModal) {
-                    console.log("✅ Modal element found. Making it visible.");
                     otpModal.classList.remove('hidden');
                     otpModal.classList.add('flex');
-                } else {
-                    console.error("❌ CRITICAL: Could not find #otp-modal element in your HTML!");
                 }
-
             } catch (error) {
-                console.error("An error occurred during OTP sending:", error);
                 utils.showToast(`Error: ${error.message}`);
             } finally {
                 submitButton.disabled = false;
                 if (buttonText) buttonText.textContent = 'Place Order';
             }
         });
+    }
 
-        verifyOtpBtn?.addEventListener('click', async () => {
+    const verifyOtpBtn = document.getElementById('verify-otp-button');
+    if(verifyOtpBtn){
+        verifyOtpBtn.addEventListener('click', async () => {
+            const otpInput = document.getElementById('otp-input');
             const otp = otpInput.value;
-            if (!otp || otp.length !== 6) {
-                return utils.showToast("Please enter the 6-digit code.");
-            }
-
+            if (!otp || otp.length !== 6) return utils.showToast("Please enter the 6-digit code.");
             const buttonText = verifyOtpBtn.querySelector('span');
             verifyOtpBtn.disabled = true;
             if (buttonText) buttonText.textContent = 'Verifying...';
-
             orderPayload.otp = otp;
-
             try {
                 const response = await fetch(`${config.apiBaseUrl}/api/orders`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderPayload)
                 });
-
                 if (response.ok) {
                     const result = await response.json();
                     const finalOrderData = { customer: orderPayload.customer, total: result.total };
@@ -580,79 +503,13 @@ function setupGlobalListeners() {
                 if (buttonText) buttonText.textContent = 'Verify & Place Order';
             }
         });
-
-        cancelOtpBtn?.addEventListener('click', () => {
-            otpModal.classList.add('hidden');
-            otpModal.classList.remove('flex');
-        });
     }
-}
+    
+    const cancelOtpBtn = document.getElementById('cancel-otp-button');
+    if(cancelOtpBtn) cancelOtpBtn.addEventListener('click', () => document.getElementById('otp-modal')?.classList.add('hidden'));
 
-function setupPageSpecificListeners() {
-    const quantityInput = document.getElementById("quantity-input");
-    const decreaseBtn = document.getElementById("decrease-quantity");
-    const increaseBtn = document.getElementById("increase-quantity");
-    const accordionHeaders = document.querySelectorAll('.accordion-header');
-    const contactPopover = document.getElementById('contact-popover');
-    const contactPopoverClose = document.getElementById('popover-close');
-
-    if (quantityInput) {
-        decreaseBtn?.addEventListener('click', () => {
-            let currentValue = parseInt(quantityInput.value);
-            if (currentValue > 1) quantityInput.value = currentValue - 1;
-        });
-        increaseBtn?.addEventListener('click', () => {
-            let currentValue = parseInt(quantityInput.value);
-            quantityInput.value = currentValue + 1;
-        });
-    }
-    accordionHeaders.forEach(header => {
-        header.addEventListener('click', () => {
-            const accordionItem = header.parentElement;
-            const content = header.nextElementSibling;
-            if (!accordionItem || !content) return;
-            const wasActive = accordionItem.classList.contains('active');
-            if (!wasActive) {
-                accordionItem.classList.add('active');
-                content.style.maxHeight = content.scrollHeight + 'px';
-            } else {
-                accordionItem.classList.remove('active');
-                content.style.maxHeight = '0';
-            }
-        });
-    });
-
-    const contactBubblesContainer = document.getElementById('contact-bubbles-container');
-    const contactPopoverContent = document.getElementById('contact-popover-content');
-    if (contactBubblesContainer && contactPopover && contactPopoverContent) {
-        const popoverTitle = document.getElementById('popover-title');
-        const popoverBody = document.getElementById('popover-body');
-        contactBubblesContainer.addEventListener('click', (e) => {
-            const bubble = e.target.closest('.contact-bubble');
-            if (bubble) {
-                popoverTitle.textContent = bubble.dataset.title;
-                popoverBody.innerHTML = bubble.dataset.content;
-                contactPopover.classList.remove('hidden');
-                setTimeout(() => {
-                    contactPopover.classList.add('visible');
-                    contactPopoverContent.classList.add('scale-100');
-                }, 20);
-            }
-        });
-        const closePopover = () => {
-            contactPopover.classList.remove('visible');
-            contactPopoverContent.classList.remove('scale-100');
-            setTimeout(() => {
-                contactPopover.classList.add('hidden');
-            }, 300);
-        };
-        contactPopover.addEventListener('click', (e) => {
-            if (e.target === contactPopover) {
-                closePopover();
-            }
-        });
-        contactPopoverClose?.addEventListener('click', closePopover);
-    }
+    const header = document.getElementById("main-header");
+    if (header) window.addEventListener("scroll", () => header.classList.toggle("scrolled", window.scrollY > 50));
 }
 
 document.addEventListener('DOMContentLoaded', initializeApp);
