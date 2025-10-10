@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import Product from './server/models/product.js';
 
 // Get current file path
 const __filename = fileURLToPath(import.meta.url);
@@ -184,4 +183,26 @@ const products = [
     }
 ];
 
-export default products;
+// Asynchronously import the CommonJS modules
+(async () => {
+    try {
+        const productModule = await import('./server/models/product.js');
+        const dbModule = await import('./server/db.js');
+        const Product = productModule.default;
+        const connectDB = dbModule.default;
+        
+        await connectDB();
+
+        console.log('Clearing existing products...');
+        await Product.deleteMany({});
+
+        console.log('Populating the database with new products...');
+        await Product.insertMany(products);
+        console.log('✅ Database successfully populated!');
+        
+        mongoose.connection.close();
+    } catch (err) {
+        console.error('❌ Database seeding failed:', err.message);
+        process.exit(1);
+    }
+})();

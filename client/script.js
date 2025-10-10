@@ -246,6 +246,10 @@ document.addEventListener('click', (e) => {
     }
 });
 
+// client/script.js
+
+// ... (rest of the code before pages.shop)
+
 // --- 5. PAGE-SPECIFIC RENDER FUNCTIONS ---
 const pages = {
     home() {
@@ -268,7 +272,6 @@ const pages = {
 
         if (!shopGrid || !filterButtonsContainer) return;
 
-        // Function to display products based on a filter
         const displayProducts = (filter = 'all') => {
             const filteredProducts = state.products.filter(p => filter === 'all' || p.category.toLowerCase() === filter.toLowerCase());
 
@@ -281,23 +284,29 @@ const pages = {
                 return;
             }
 
-            shopGrid.innerHTML = filteredProducts.map(product => `
-                <a href="product.html?id=${product.id}" class="product-card-link">
-                    <article class="product-card">
-                        <div class="product-image-container">
-                            <img src="${product.variants[0].images[0]}" alt="${product.name}" class="product-image">
-                        </div>
-                        <div class="product-details">
-                            <h3 class="product-title">${product.name}</h3>
-                            <div class="product-category">${product.category}</div>
-                            <div class="product-price">Starting from ₹${product.variants[0].price}</div>
-                        </div>
-                    </article>
-                </a>
-            `).join('');
+            shopGrid.innerHTML = filteredProducts.map(product => {
+                const featuredImage = product.featuredImage || (product.variants && product.variants[0] && product.variants[0].images[0]);
+                const price = product.variants && product.variants[0] ? product.variants[0].price : 'N/A';
+                const name = product.name;
+                const category = product.category;
+
+                return `
+                    <a href="product.html?id=${product.id}" class="product-card-link">
+                        <article class="product-card">
+                            <div class="product-image-container">
+                                <img src="${featuredImage}" alt="${name}" class="product-image">
+                            </div>
+                            <div class="product-details">
+                                <h3 class="product-title">${name}</h3>
+                                <div class="product-category">${category}</div>
+                                <div class="product-price">₹${price}</div>
+                            </div>
+                        </article>
+                    </a>
+                `;
+            }).join('');
         };
 
-        // Add event listener for filter buttons
         filterButtonsContainer.addEventListener('click', (e) => {
             const button = e.target.closest('.filter-button');
             if (button) {
@@ -308,9 +317,8 @@ const pages = {
             }
         });
 
-        // Initial display of all products after fetching them
         const setupShopPage = async () => {
-            await utils.fetchProducts(); // Ensure products are fetched
+            await utils.fetchProducts();
             const categories = [...new Set(state.products.map(p => p.category))];
 
             const filterButtonsHtml = `
