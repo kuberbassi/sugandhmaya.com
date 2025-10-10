@@ -13,10 +13,12 @@
                 <a href="/index.html#collection" class="nav-link">Collection</a>
                 <a href="/index.html#our-promise" class="nav-link">Our Promise</a>
                 <a href="/index.html#contact" class="nav-link">Contact</a>
-                
+
                 <button class="cart-button" id="open-cart-button" aria-label="Open cart">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
                     <span class="cart-count" data-cart-count>0</span>
                 </button>
@@ -26,16 +28,19 @@
 </header>
 
 <!-- Cart Panel -->
-<div id="cart-panel">
-    <div class="cart-panel-header">
-        <h2 class="text-xl font-medium">Your Cart</h2>
-        <button class="cart-close-button" id="close-cart-button">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
+<div id="cart-panel-overlay">
+    <div id="cart-panel">
+        <div class="cart-panel-header">
+            <h2 class="text-xl font-medium">Your Cart</h2>
+            <button class="cart-close-button" id="close-cart-button">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-auto"></div>
     </div>
-    <div id="cart-items" class="flex-1 overflow-auto"></div>
 </div>
 
 <script src="/js/navigation.js"></script>

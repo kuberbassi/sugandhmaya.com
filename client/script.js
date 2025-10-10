@@ -111,11 +111,13 @@ const utils = {
     },
     openCart() {
         document.getElementById('cart-panel')?.classList.add('open');
+        document.getElementById('cart-panel-overlay')?.classList.add('is-visible');
         document.body.classList.add('cart-open');
     },
 
     closeCart() {
         document.getElementById('cart-panel')?.classList.remove('open');
+        document.getElementById('cart-panel-overlay')?.classList.remove('is-visible');
         document.body.classList.remove('cart-open');
     },
 
