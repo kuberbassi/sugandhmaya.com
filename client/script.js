@@ -35,7 +35,66 @@ const utils = {
             console.error("❌ Could not fetch products:", error);
         }
     },
-    saveCart() { localStorage.setItem(config.storageKeys.cart, JSON.stringify(state.cart)); },
+    // Persist cart and immediately refresh UI & checkout summary
+    saveCart() {
+        localStorage.setItem(config.storageKeys.cart, JSON.stringify(state.cart));
+        this.updateCartUI();
+    },
+
+    updateCartUI() {
+        const totalCount = state.cart.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
+        const totalAmount = state.cart.reduce((sum, item) => sum + (parseFloat(item.price || 0) * parseInt(item.quantity || 0)), 0);
+
+        // Update cart count badge
+        document.querySelectorAll('[data-cart-count]').forEach(el => {
+            el.textContent = totalCount;
+            el.style.display = totalCount ? 'flex' : 'none';
+        });
+
+        // Update cart panel
+        const cartItems = document.getElementById('cart-items');
+        if (!cartItems) return;
+
+        if (state.cart.length === 0) {
+            cartItems.innerHTML = '<div class="p-8 text-center text-gray-500">Your cart is empty</div>';
+            return;
+        }
+
+        cartItems.innerHTML = `
+            <div class="flex-1 overflow-auto px-4">
+                ${state.cart.map(item => `
+                    <div class="cart-item py-4 border-b border-gray-100">
+                        <div class="flex justify-between mb-2">
+                            <div>
+                                <h4 class="font-medium">${item.productName}</h4>
+                                <div class="text-sm text-gray-500">Size: ${item.size} • Scent: ${item.scent}</div>
+                            </div>
+                            <button class="cart-remove text-red-500 hover:text-red-700" data-id="${item.cartItemId}">×</button>
+                        </div>
+                        <div class="flex justify-between items-center mt-2">
+                            <div class="flex items-center space-x-2">
+                                <button class="cart-decrease w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200" data-id="${item.cartItemId}">−</button>
+                                <span class="w-8 text-center">${item.quantity}</span>
+                                <button class="cart-increase w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200" data-id="${item.cartItemId}">+</button>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-medium">₹${(item.price * item.quantity).toFixed(2)}</div>
+                                <div class="text-sm text-gray-500">₹${item.price} each</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            <div class="border-t p-4 bg-gray-50">
+                <div class="flex justify-between mb-4">
+                    <span>Subtotal</span>
+                    <span class="font-medium">₹${totalAmount.toFixed(2)}</span>
+                </div>
+                <a href="/checkout" class="btn w-full text-center">Proceed to Checkout</a>
+            </div>
+        `;
+    },
+
     showToast(message) {
         const toastContainer = document.getElementById('toast-container');
         if (!toastContainer) return alert(message);
@@ -50,122 +109,142 @@ const utils = {
             setTimeout(() => toast.remove(), 400);
         }, 3000);
     },
-    updateCartUI() {
-        const cartItemsContainer = document.getElementById("cart-items");
-        const cartSubtotalEl = document.getElementById("cart-subtotal");
-        const cartCounter = document.getElementById("cart-counter");
-        const emptyCartMessage = document.getElementById("empty-cart-message");
-        const checkoutBtn = document.getElementById("checkout-button");
-
-        if (!cartItemsContainer || !cartSubtotalEl || !cartCounter || !emptyCartMessage || !checkoutBtn) return;
-
-        cartItemsContainer.innerHTML = "";
-
-        if (state.cart.length === 0) {
-            emptyCartMessage.style.display = 'block';
-            checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
-        } else {
-            emptyCartMessage.style.display = 'none';
-            checkoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            state.cart.forEach((item) => {
-                const product = state.products.find(p => p.id === item.productId);
-                if (!product) return;
-                const variant = product.variants.find(v => v.size === item.size);
-                if (!variant) return;
-
-                const itemEl = document.createElement("div");
-                itemEl.className = "flex items-center gap-4 py-3 border-b border-gray-100";
-                itemEl.innerHTML = `
-                    <img src="${variant.image}" alt="${product.name}" class="w-16 h-20 object-cover rounded" loading="lazy">
-                    <div class="flex-grow">
-                        <h3 class="font-semibold">${product.name}</h3>
-                        <p class="text-sm text-gray-500">${item.scent} / ${item.size}</p>
-                        <div class="flex items-center mt-2">
-                            <button class="quantity-change h-6 w-6 border rounded text-gray-600" data-id="${item.cartItemId}" data-change="-1">-</button>
-                            <span class="mx-3 text-sm">${item.quantity}</span>
-                            <button class="quantity-change h-6 w-6 border rounded text-gray-600" data-id="${item.cartItemId}" data-change="1">+</button>
-                        </div>
-                    </div>
-                    <div>
-                        <p class="font-semibold">₹${(variant.price * item.quantity).toFixed(2)}</p>
-                        <button class="remove-item text-xs text-gray-400 hover:text-red-500 float-right mt-2" data-id="${item.cartItemId}">Remove</button>
-                    </div>`;
-                cartItemsContainer.appendChild(itemEl);
-            });
-        }
-
-        const subtotal = state.cart.reduce((total, item) => {
-            const product = state.products.find(p => p.id === item.productId);
-            const variant = product ? product.variants.find(v => v.size === item.size) : null;
-            return total + (variant ? variant.price * item.quantity : 0);
-        }, 0);
-        const totalItems = state.cart.reduce((total, item) => total + item.quantity, 0);
-        cartSubtotalEl.textContent = `₹${subtotal.toFixed(2)}`;
-        cartCounter.textContent = totalItems;
-        if (document.body.classList.contains("checkout-page")) pages.updateCheckoutSummary();
-    },
     openCart() {
-        const cartModal = document.getElementById("cart-modal");
-        const cartPanel = document.getElementById("cart-panel");
-        if (!cartModal || !cartPanel) return;
-        cartModal.classList.remove("hidden");
+        document.getElementById('cart-panel')?.classList.add('open');
         document.body.classList.add('cart-open');
-        setTimeout(() => {
-            cartModal.classList.remove("opacity-0");
-            cartPanel.classList.remove("translate-x-full");
-        }, 20);
     },
+
     closeCart() {
-        const cartModal = document.getElementById("cart-modal");
-        const cartPanel = document.getElementById("cart-panel");
-        if (!cartModal || !cartPanel) return;
-        cartModal.classList.add("opacity-0");
-        cartPanel.classList.add("translate-x-full");
+        document.getElementById('cart-panel')?.classList.remove('open');
         document.body.classList.remove('cart-open');
-        setTimeout(() => cartModal.classList.add("hidden"), 500);
     },
+
     setupScrollObserver() {
-        const revealElements = document.querySelectorAll(".reveal-on-scroll");
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
+        const header = document.getElementById('main-header');
+        if (!header) return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add("is-visible");
-                    observer.unobserve(entry.target);
+                    header.classList.remove('scrolled');
+                } else {
+                    header.classList.add('scrolled');
+                }
+            },
+            { threshold: [1], rootMargin: '-100px 0px 0px 0px' }
+        );
+
+        // Observe the first section or main content
+        const firstSection = document.querySelector('main > :first-child');
+        if (firstSection) observer.observe(firstSection);
+
+        // Also handle immediate scroll position
+        const handleScroll = () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll(); // Check initial scroll position
+    },
+
+    setupScrollAnimations() {
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
                 }
             });
-        }, { threshold: 0.1 });
-        revealElements.forEach((el) => observer.observe(el));
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+    },
+
+    initializeHomePage() {
+        this.setupScrollAnimations();
+
+        // Lazy load images
+        document.querySelectorAll('[data-src]').forEach(img => {
+            img.src = img.dataset.src;
+            img.onload = () => img.classList.add('loaded');
+        });
     }
 };
 
-// --- 4. CART ACTIONS (THE PERMANENT FIX) ---
+// --- 4. CART ACTIONS ---
 const cartActions = {
     add(item) {
-        const existingItem = state.cart.find(i => i.cartItemId === item.cartItemId);
-        if (existingItem) existingItem.quantity += item.quantity;
-        else state.cart.push(item);
+        const existing = state.cart.find(c => c.cartItemId === item.cartItemId);
+        if (existing) {
+            existing.quantity = parseInt(existing.quantity || 0) + parseInt(item.quantity || 1);
+        } else {
+            const prod = state.products.find(p => p.id === item.productId);
+            const variant = prod?.variants.find(v => v.size === item.size);
+            state.cart.push({
+                ...item,
+                quantity: parseInt(item.quantity || 1),
+                productName: prod?.name,
+                price: variant?.price || 0
+            });
+        }
         utils.saveCart();
-        utils.updateCartUI(); // Instant update
-        utils.showToast(`${item.quantity} item(s) added to cart.`);
+        utils.showToast('Added to cart');
         utils.openCart();
     },
+
     remove(cartItemId) {
-        state.cart = state.cart.filter(i => i.cartItemId !== cartItemId);
+        state.cart = state.cart.filter(c => c.cartItemId !== cartItemId);
         utils.saveCart();
-        utils.updateCartUI(); // Instant update
+        utils.showToast('Item removed');
     },
+
     updateQuantity(cartItemId, change) {
-        const itemInCart = state.cart.find(i => i.cartItemId === cartItemId);
-        if (itemInCart) {
-            itemInCart.quantity += change;
-            if (itemInCart.quantity <= 0) this.remove(cartItemId);
-            else {
-                utils.saveCart();
-                utils.updateCartUI(); // Instant update
-            }
+        const item = state.cart.find(c => c.cartItemId === cartItemId);
+        if (!item) return;
+
+        // Ensure change is exactly +1 or -1
+        change = change > 0 ? 1 : -1;
+        const newQty = Math.max(1, parseInt(item.quantity) + change);
+
+        if (newQty === parseInt(item.quantity)) return;
+
+        item.quantity = newQty;
+        utils.saveCart();
+        // Explicitly keep cart open
+        const panel = document.getElementById('cart-panel');
+        if (panel) {
+            panel.classList.add('open');
+            utils.updateCartUI();
         }
     }
 };
+
+// Delegate cart panel button clicks (works immediately after updateCartUI re-renders)
+document.addEventListener('click', (e) => {
+    const decrease = e.target.closest('.cart-decrease');
+    const increase = e.target.closest('.cart-increase');
+    const remove = e.target.closest('.cart-remove');
+
+    if (decrease) {
+        cartActions.updateQuantity(decrease.dataset.id, -1);
+    }
+    if (increase) {
+        cartActions.updateQuantity(increase.dataset.id, +1);
+    }
+    if (remove) {
+        cartActions.remove(remove.dataset.id);
+    }
+});
 
 // --- 5. PAGE-SPECIFIC RENDER FUNCTIONS ---
 const pages = {
@@ -175,7 +254,7 @@ const pages = {
         const topProducts = state.products.slice(0, 3);
         collectionGrid.innerHTML = topProducts.map(product => `
             <a href="product.html?id=${product.id}" class="product-card-link group block">
-                <div class="product-image-container"><img src="${product.variants[0].image}" loading="lazy" alt="${product.name}" class="product-image"></div>
+                <div class="product-image-container"><img src="${product.variants[0].images[0]}" loading="lazy" alt="${product.name}" class="product-image"></div>
                 <div class="pt-6 text-center">
                     <h3 class="text-xl font-serif">${product.name}</h3>
                     <p class="text-base mt-1 text-gray-500">${product.category}</p>
@@ -184,28 +263,68 @@ const pages = {
             </a>`).join('');
     },
     shop() {
-        const shopGrid = document.getElementById('shop-grid');
-        const categoryFilter = document.getElementById('category-filter');
-        if (!shopGrid || !categoryFilter) return;
-        const categories = [...new Set(state.products.map(p => p.category))];
-        categoryFilter.innerHTML = `<label class="filter-label"><input type="radio" name="category" value="all" checked><span>All Products</span></label>`;
-        categories.forEach(category => {
-            categoryFilter.innerHTML += `<label class="filter-label"><input type="radio" name="category" value="${category}"><span>${category}</span></label>`;
-        });
-        function displayProducts(filter) {
-            const filteredProducts = state.products.filter(p => filter === 'all' || p.category === filter);
-            shopGrid.innerHTML = filteredProducts.map(product => `
-                <a href="product.html?id=${product.id}" class="product-card-link group block">
-                    <div class="product-image-container"><img src="${product.variants[0].image}" loading="lazy" alt="${product.name}" class="product-image"></div>
-                    <div class="pt-8 text-center">
-                        <h3 class="text-2xl font-serif">${product.name}</h3>
-                        <p class="text-base mt-1">${product.category}</p>
-                        <p class="text-lg font-bold font-sans mt-2 text-brand-accent">Starting from ₹${product.variants[0].price}</p>
+        const shopGrid = document.querySelector('.products-grid');
+        const filterButtonsContainer = document.querySelector('.filter-buttons');
+
+        if (!shopGrid || !filterButtonsContainer) return;
+
+        // Function to display products based on a filter
+        const displayProducts = (filter = 'all') => {
+            const filteredProducts = state.products.filter(p => filter === 'all' || p.category.toLowerCase() === filter.toLowerCase());
+
+            if (filteredProducts.length === 0) {
+                shopGrid.innerHTML = `
+                    <div class="empty-state">
+                        <h3 class="text-2xl text-gray-500 font-serif">No products found in this category.</h3>
                     </div>
-                </a>`).join('');
-        }
-        displayProducts('all');
-        categoryFilter.addEventListener('change', e => e.target.name === 'category' && displayProducts(e.target.value));
+                `;
+                return;
+            }
+
+            shopGrid.innerHTML = filteredProducts.map(product => `
+                <a href="product.html?id=${product.id}" class="product-card-link">
+                    <article class="product-card">
+                        <div class="product-image-container">
+                            <img src="${product.variants[0].images[0]}" alt="${product.name}" class="product-image">
+                        </div>
+                        <div class="product-details">
+                            <h3 class="product-title">${product.name}</h3>
+                            <div class="product-category">${product.category}</div>
+                            <div class="product-price">Starting from ₹${product.variants[0].price}</div>
+                        </div>
+                    </article>
+                </a>
+            `).join('');
+        };
+
+        // Add event listener for filter buttons
+        filterButtonsContainer.addEventListener('click', (e) => {
+            const button = e.target.closest('.filter-button');
+            if (button) {
+                document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                const category = button.dataset.category;
+                displayProducts(category);
+            }
+        });
+
+        // Initial display of all products after fetching them
+        const setupShopPage = async () => {
+            await utils.fetchProducts(); // Ensure products are fetched
+            const categories = [...new Set(state.products.map(p => p.category))];
+
+            const filterButtonsHtml = `
+                <button class="filter-button active" data-category="all">All Products</button>
+                ${categories.map(category => `
+                    <button class="filter-button" data-category="${category}">${category}</button>
+                `).join('')}
+            `;
+            filterButtonsContainer.innerHTML = filterButtonsHtml;
+
+            displayProducts();
+        };
+
+        setupShopPage();
     },
     product() {
         const params = new URLSearchParams(window.location.search);
@@ -221,8 +340,8 @@ const pages = {
             item.querySelector('.accordion-content').style.maxHeight = '0';
         });
 
-        let selectedSize = product.variants[0].size;
-        
+        let selectedSize = product.variants[0].name;
+
         document.title = `${product.name} - Sugandhmaya`;
         document.getElementById('product-name').textContent = product.name;
         document.getElementById('product-category').textContent = product.category;
@@ -245,17 +364,17 @@ const pages = {
         };
 
         const updateVariantUI = () => {
-            const variant = product.variants.find(v => v.size === selectedSize);
+            const variant = product.variants.find(v => v.name === selectedSize);
             if (!variant) return;
             document.getElementById('product-price').textContent = `₹${variant.price}`;
-            document.getElementById('main-product-image').src = variant.image;
+            document.getElementById('main-product-image').src = variant.images[0];
             const thumbnailGrid = document.getElementById('thumbnail-grid');
-            thumbnailGrid.innerHTML = variant.thumbnails.map(thumb => `<img src="${thumb}" class="thumbnail-image" data-src="${thumb}">`).join('');
+            thumbnailGrid.innerHTML = variant.images.map(image => `<img src="${image}" class="thumbnail-image" data-src="${image}">`).join('');
             document.querySelector('.thumbnail-image')?.classList.add('active');
         };
-        
+
         renderOptions('scent-options', product.scents, 'Scent');
-        renderOptions('size-options', product.variants.map(v => v.size), 'Size');
+        renderOptions('size-options', product.variants.map(v => v.name), 'Size');
         updateVariantUI();
 
         document.getElementById('size-options')?.addEventListener('change', e => {
@@ -264,64 +383,228 @@ const pages = {
                 updateVariantUI();
             }
         });
-    },
-    checkout() {
-        // Phone Input
-        const phoneInput = document.querySelector("#phone-input");
-        if (phoneInput && typeof intlTelInput !== 'undefined' && !phoneInput.classList.contains('iti-initialized')) {
-            phoneInput.classList.add('iti-initialized');
-            window.iti = intlTelInput(phoneInput, { initialCountry: "in", separateDialCode: true, utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js" });
-        }
 
-        // Country & State Selectors
-        const countrySelect = document.getElementById('country-select');
-        const stateSelect = document.getElementById('state-select');
-        
-        if(countrySelect && stateSelect && typeof csc !== 'undefined') {
-            const countries = csc.getAllCountries();
-            countrySelect.innerHTML = countries.map(c => `<option value="${c.isoCode}">${c.name}</option>`).join('');
-            
-            // Set default and load initial states
-            countrySelect.value = 'IN'; // Default to India
-            let states = csc.getStatesOfCountry('IN');
-            stateSelect.innerHTML = states.map(s => `<option value="${s.isoCode}">${s.name}</option>`).join('');
+        const productPageContainer = document.querySelector('.product-page-main');
+        if (productPageContainer) {
+            productPageContainer.addEventListener('click', (e) => {
+                const target = e.target;
 
-            countrySelect.addEventListener('change', () => {
-                states = csc.getStatesOfCountry(countrySelect.value);
-                stateSelect.innerHTML = states.map(s => `<option value="${s.isoCode}">${s.name}</option>`).join('');
+                if (target.closest('#add-to-cart-product')) {
+                    const selectedSizeEl = document.querySelector('input[name="size"]:checked');
+                    if (product.variants.length > 1 && !selectedSizeEl) {
+                        utils.showToast("Please select a size.");
+                        return;
+                    }
+                    const selectedScentEl = document.querySelector('input[name="scent"]:checked');
+                    const selectedSize = selectedSizeEl ? selectedSizeEl.value : product.variants[0].name;
+                    const selectedScent = selectedScentEl ? selectedScentEl.value : (product.scents.length > 0 ? product.scents[0] : 'N/A');
+                    const quantity = parseInt(document.getElementById("quantity-input").value);
+                    const cartItemId = `${productId}_${selectedSize}_${selectedScent}`;
+                    cartActions.add({ cartItemId, productId, size: selectedSize, scent: selectedScent, quantity });
+                }
+
+                if (target.closest('#decrease-quantity')) {
+                    let quantityInput = document.getElementById("quantity-input");
+                    if (parseInt(quantityInput.value) > 1) quantityInput.value--;
+                }
+
+                if (target.closest('#increase-quantity')) {
+                    let quantityInput = document.getElementById("quantity-input");
+                    quantityInput.value++;
+                }
+
+                const thumbnail = target.closest('.thumbnail-image');
+                if (thumbnail) {
+                    document.getElementById('main-product-image').src = thumbnail.dataset.src;
+                    document.querySelectorAll('.thumbnail-image').forEach(t => t.classList.remove('active'));
+                    thumbnail.classList.add('active');
+                }
             });
         }
-        
-        pages.updateCheckoutSummary();
     },
-    updateCheckoutSummary() {
-        const summaryItems = document.getElementById('summary-items');
-        if (!summaryItems) return;
-        summaryItems.innerHTML = '';
-        let total = 0;
-        state.cart.forEach(item => {
-            const product = state.products.find(p => p.id === item.productId);
-            const variant = product ? product.variants.find(v => v.size === item.size) : null;
-            if (variant) {
-                total += variant.price * item.quantity;
-                summaryItems.innerHTML += `<div class="flex justify-between items-center"><div><p class="font-semibold">${product.name} <span class="text-sm font-normal">x ${item.quantity}</span></p><p class="text-sm text-gray-500">${item.scent} / ${item.size}</p></div><span>₹${(variant.price * item.quantity).toFixed(2)}</span></div>`;
-            }
-        });
-        document.getElementById('summary-total').textContent = `₹${total.toFixed(2)}`;
-    },
-    confirmation() {
-        const confirmationDetails = document.getElementById('confirmation-details');
-        if (!confirmationDetails) return;
-        const orderData = JSON.parse(localStorage.getItem(config.storageKeys.latestOrder));
-        if (orderData) {
-            confirmationDetails.innerHTML = `<p><strong>Order for:</strong> ${orderData.customer.name}</p><p><strong>Email:</strong> ${orderData.customer.email}</p><p><strong>Total Amount:</strong> ₹${orderData.total.toFixed(2)} (Cash on Delivery)</p>`;
-        } else {
-            confirmationDetails.innerHTML = '<p>Order details not found.</p>';
+    checkout() {
+        const form = document.getElementById('checkout-form');
+        if (!form) return;
+
+        // Initialize country/state dropdowns with phone input style
+        const countrySelect = document.getElementById('country-select');
+        const stateSelect = document.getElementById('state-select');
+
+        if (countrySelect) {
+            countrySelect.className = 'form-select iti__country-select';
+            stateSelect.className = 'form-select iti__country-select';
+
+            // Populate countries
+            const countries = window.intlTelInputGlobals.getCountryData();
+            countrySelect.innerHTML = countries.map(country =>
+                `<option value="${country.iso2}" data-code="${country.dialCode}">
+                    ${country.name}
+                </option>`
+            ).join('');
         }
-        state.cart = [];
-        utils.saveCart();
-        utils.updateCartUI();
-        localStorage.removeItem(config.storageKeys.latestOrder);
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const email = formData.get('email');
+
+            // Send OTP first
+            const otpSent = await orderSystem.sendOTP(email);
+            if (!otpSent) return;
+
+            // Show OTP modal
+            const otpModal = document.getElementById('otp-modal');
+            otpModal.style.display = 'flex';
+
+            // Handle OTP verification
+            document.getElementById('verify-otp-button').onclick = async () => {
+                const otp = document.getElementById('otp-input').value;
+                const verified = await orderSystem.verifyOTP(email, otp);
+
+                if (verified) {
+                    const orderData = {
+                        items: state.cart,
+                        customer: Object.fromEntries(formData),
+                        total: state.cart.reduce((sum, item) =>
+                            sum + (item.price * item.quantity), 0)
+                    };
+                    await orderSystem.placeOrder(orderData);
+                }
+            };
+        });
+    },
+
+    confirmation() {
+        const order = JSON.parse(localStorage.getItem(config.storageKeys.latestOrder));
+        if (!order) {
+            window.location.href = '/';
+            return;
+        }
+
+        const container = document.getElementById('confirmation-details');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="order-receipt p-6 bg-white rounded-lg shadow-lg">
+                <h2 class="text-2xl font-medium mb-4">Order #${order.id}</h2>
+                <div class="mb-4">
+                    <p>Thank you for your order! A confirmation email has been sent to ${order.customer.email}</p>
+                </div>
+                <div class="order-items border-t border-b py-4 my-4">
+                    ${order.items.map(item => `
+                        <div class="flex justify-between py-2">
+                            <div>
+                                ${item.productName} × ${item.quantity}
+                                <div class="text-sm text-gray-500">
+                                    Size: ${item.size} • Scent: ${item.scent}
+                                </div>
+                            </div>
+                            <div>₹${(item.price * item.quantity).toFixed(2)}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="text-right text-xl font-medium">
+                    Total: ₹${order.total.toFixed(2)}
+                </div>
+                <button onclick="window.print()" class="btn mt-6">
+                    Print Receipt
+                </button>
+            </div>
+        `;
+    }
+};
+
+const orderSystem = {
+    async sendOTP(email) {
+        try {
+            const response = await fetch(`${config.apiBaseUrl}/api/send-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            const data = await response.json();
+            if (data.success) {
+                utils.showToast('OTP sent to your email');
+                return true;
+            }
+            throw new Error(data.message);
+        } catch (error) {
+            utils.showToast('Failed to send OTP: ' + error.message);
+            return false;
+        }
+    },
+
+    async verifyOTP(email, otp) {
+        try {
+            const response = await fetch(`${config.apiBaseUrl}/api/verify-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, otp })
+            });
+            const data = await response.json();
+            if (data.success) {
+                return true;
+            }
+            throw new Error(data.message);
+        } catch (error) {
+            utils.showToast('OTP verification failed: ' + error.message);
+            return false;
+        }
+    },
+
+    async placeOrder(orderData) {
+        try {
+            const response = await fetch(`${config.apiBaseUrl}/api/orders`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+            const data = await response.json();
+            if (data.success) {
+                localStorage.setItem(config.storageKeys.latestOrder, JSON.stringify(data.order));
+                window.location.href = '/confirmation.html';
+                return true;
+            }
+            throw new Error(data.message);
+        } catch (error) {
+            utils.showToast('Order placement failed: ' + error.message);
+            return false;
+        }
+    },
+
+    async handleCheckout(e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const formData = new FormData(form);
+        const email = formData.get('email');
+
+        // First show OTP modal
+        document.getElementById('otp-modal').style.display = 'flex';
+
+        // Handle send OTP button
+        document.getElementById('send-otp-button').onclick = async () => {
+            const sent = await this.sendOTP(email);
+            if (sent) {
+                utils.showToast('OTP sent to your email');
+            }
+        };
+
+        // Handle verify OTP button
+        document.getElementById('verify-otp-button').onclick = async () => {
+            const otp = document.getElementById('otp-input').value;
+            const verified = await this.verifyOTP(email, otp);
+
+            if (verified) {
+                const orderData = {
+                    items: state.cart,
+                    customer: Object.fromEntries(formData),
+                    total: state.cart.reduce((sum, item) =>
+                        sum + (parseFloat(item.price) * parseInt(item.quantity)), 0)
+                };
+                await this.placeOrder(orderData);
+            }
+        };
     }
 };
 
@@ -330,7 +613,7 @@ async function initializeApp() {
     await Promise.all([loadHeader(), loadFooter()]);
     await utils.fetchProducts();
 
-    setupGlobalListeners(); 
+    setupGlobalListeners();
 
     const body = document.body;
     if (body.classList.contains("home-page")) pages.home();
@@ -339,177 +622,125 @@ async function initializeApp() {
     if (body.classList.contains("checkout-page")) pages.checkout();
     if (body.querySelector("#confirmation-details")) pages.confirmation();
 
+    // Initial UI updates after everything is loaded
     utils.updateCartUI();
     utils.setupScrollObserver();
 }
 
 function setupGlobalListeners() {
-    let orderPayload = {};
-    
-    document.body.addEventListener('click', e => {
-        const target = e.target;
-        
-        if (target.closest("#open-cart-button")) utils.openCart();
-        if (target.closest("#close-cart-button") || target.id === "cart-modal") utils.closeCart();
-        
-        const quantityChangeBtn = target.closest(".quantity-change");
-        if (quantityChangeBtn) cartActions.updateQuantity(quantityChangeBtn.dataset.id, parseInt(quantityChangeBtn.dataset.change));
+    // Cart panel controls
+    document.getElementById('open-cart-button')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        utils.openCart();
+    });
 
-        const removeItemBtn = target.closest(".remove-item");
-        if (removeItemBtn) cartActions.remove(removeItemBtn.dataset.id);
-        
-        const checkoutBtn = target.closest('#checkout-button');
-        if (checkoutBtn) {
-            e.preventDefault();
-            if (state.cart.length === 0) utils.showToast("Your cart is empty.");
-            else window.location.href = 'checkout.html';
-        }
+    document.getElementById('close-cart-button')?.addEventListener('click', utils.closeCart);
 
-        const accordionHeader = target.closest('.accordion-header');
-        if (accordionHeader) {
-            const accordionItem = accordionHeader.parentElement;
-            const content = accordionHeader.nextElementSibling;
-            const wasActive = accordionItem.classList.contains('active');
-            document.querySelectorAll('.accordion-item').forEach(item => {
-                item.classList.remove('active');
-                item.querySelector('.accordion-content').style.maxHeight = '0';
-            });
-            if (!wasActive) {
-                accordionItem.classList.add('active');
-                content.style.maxHeight = content.scrollHeight + 'px';
-            }
+    // Cart item controls delegation
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.cart-decrease')) {
+            const id = e.target.closest('.cart-decrease').dataset.id;
+            cartActions.updateQuantity(id, -1);
         }
-        
-        const contactBubble = target.closest('.contact-bubble');
-        const contactPopover = document.getElementById('contact-popover');
-        if (contactBubble && contactPopover) {
-            document.getElementById('popover-title').textContent = contactBubble.dataset.title;
-            document.getElementById('popover-body').innerHTML = contactBubble.dataset.content;
-            contactPopover.classList.remove('hidden');
-            setTimeout(() => contactPopover.classList.add('visible'), 10);
+        if (e.target.closest('.cart-increase')) {
+            const id = e.target.closest('.cart-increase').dataset.id;
+            cartActions.updateQuantity(id, 1);
         }
-        if ((target.id === 'contact-popover' || target.closest('#popover-close')) && contactPopover?.classList.contains('visible')) {
-            contactPopover.classList.remove('visible');
-            setTimeout(() => contactPopover.classList.add('hidden'), 300);
-        }
-        
-        if (document.querySelector(".product-page-main")) {
-            if (target.closest('#add-to-cart-product')) {
-                const productId = new URLSearchParams(window.location.search).get('id');
-                const product = state.products.find(p => p.id === productId);
-                if (!product) return;
-                const selectedSizeEl = document.querySelector('input[name="size"]:checked');
-                if (!selectedSizeEl) {
-                    utils.showToast("Please select a size.");
-                    return;
-                }
-                const selectedScentEl = document.querySelector('input[name="scent"]:checked');
-                const selectedSize = selectedSizeEl.value;
-                const selectedScent = selectedScentEl ? selectedScentEl.value : (product.scents.length > 0 ? product.scents[0] : 'N/A');
-                const quantity = parseInt(document.getElementById("quantity-input").value);
-                const cartItemId = `${productId}_${selectedSize}_${selectedScent}`;
-                cartActions.add({ cartItemId, productId, size: selectedSize, scent: selectedScent, quantity });
-            }
-
-            if (target.closest('#decrease-quantity')) {
-                let quantityInput = document.getElementById("quantity-input");
-                if (parseInt(quantityInput.value) > 1) quantityInput.value--;
-            }
-            if (target.closest('#increase-quantity')) {
-                let quantityInput = document.getElementById("quantity-input");
-                quantityInput.value++;
-            }
-
-            const thumbnail = target.closest('.thumbnail-image');
-            if (thumbnail) {
-                document.getElementById('main-product-image').src = thumbnail.dataset.src;
-                document.querySelectorAll('.thumbnail-image').forEach(t => t.classList.remove('active'));
-                thumbnail.classList.add('active');
-            }
+        if (e.target.closest('.cart-remove')) {
+            const id = e.target.closest('.cart-remove').dataset.id;
+            cartActions.remove(id);
         }
     });
 
-    const checkoutForm = document.getElementById('checkout-form');
-    if (checkoutForm) {
-        checkoutForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitButton = e.target.querySelector('button[type="submit"]');
-            const buttonText = submitButton.querySelector('span');
-            try {
-                submitButton.disabled = true;
-                if (buttonText) buttonText.textContent = 'Sending Code...';
-                const formData = new FormData(e.target);
-                const customerDetails = Object.fromEntries(formData.entries());
-                
-                if (window.iti) customerDetails.phone = window.iti.getNumber();
+    // Close cart when clicking outside
+    document.addEventListener('click', (e) => {
+        const cartPanel = document.getElementById('cart-panel');
+        const cartButton = document.getElementById('open-cart-button');
+        if (cartPanel?.classList.contains('open') &&
+            !cartPanel.contains(e.target) &&
+            !cartButton?.contains(e.target)) {
+            utils.closeCart();
+        }
+    });
 
-                orderPayload = {
-                    customer: customerDetails,
-                    items: state.cart.map(item => ({ productId: item.productId, size: item.size, scent: item.scent, quantity: item.quantity }))
-                };
-                const response = await fetch(`${config.apiBaseUrl}/api/send-otp`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: customerDetails.email })
-                });
-                if (!response.ok) {
-                    const err = await response.json();
-                    throw new Error(err.message || 'Failed to send OTP.');
-                }
-                utils.showToast('Verification code sent!');
-                const otpModal = document.getElementById('otp-modal');
-                if (otpModal) {
-                    otpModal.classList.remove('hidden');
-                    otpModal.classList.add('flex');
-                }
-            } catch (error) {
-                utils.showToast(`Error: ${error.message}`);
-            } finally {
-                submitButton.disabled = false;
-                if (buttonText) buttonText.textContent = 'Place Order';
-            }
-        });
-    }
-
-    const verifyOtpBtn = document.getElementById('verify-otp-button');
-    if(verifyOtpBtn){
-        verifyOtpBtn.addEventListener('click', async () => {
-            const otpInput = document.getElementById('otp-input');
-            const otp = otpInput.value;
-            if (!otp || otp.length !== 6) return utils.showToast("Please enter the 6-digit code.");
-            const buttonText = verifyOtpBtn.querySelector('span');
-            verifyOtpBtn.disabled = true;
-            if (buttonText) buttonText.textContent = 'Verifying...';
-            orderPayload.otp = otp;
-            try {
-                const response = await fetch(`${config.apiBaseUrl}/api/orders`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(orderPayload)
-                });
-                if (response.ok) {
-                    const result = await response.json();
-                    const finalOrderData = { customer: orderPayload.customer, total: result.total };
-                    localStorage.setItem(config.storageKeys.latestOrder, JSON.stringify(finalOrderData));
-                    window.location.href = 'confirmation.html';
-                } else {
-                    const result = await response.json();
-                    throw new Error(result.message || 'Verification Failed.');
-                }
-            } catch (error) {
-                utils.showToast(`Error: ${error.message}`);
-            } finally {
-                verifyOtpBtn.disabled = false;
-                if (buttonText) buttonText.textContent = 'Verify & Place Order';
-            }
-        });
-    }
-    
-    const cancelOtpBtn = document.getElementById('cancel-otp-button');
-    if(cancelOtpBtn) cancelOtpBtn.addEventListener('click', () => document.getElementById('otp-modal')?.classList.add('hidden'));
-
-    const header = document.getElementById("main-header");
-    if (header) window.addEventListener("scroll", () => header.classList.toggle("scrolled", window.scrollY > 50));
+    // Update header on scroll
+    window.addEventListener('scroll', () => {
+        const header = document.getElementById('main-header');
+        if (window.scrollY > 50) {
+            header?.classList.add('scrolled');
+        } else {
+            header?.classList.remove('scrolled');
+        }
+    }, { passive: true });
 }
 
-document.addEventListener('DOMContentLoaded', initializeApp);
+function initializeLocationDropdowns() {
+    const countrySelect = document.getElementById('country-select');
+    const stateSelect = document.getElementById('state-select');
+
+    if (!countrySelect || !stateSelect) return;
+
+    // Style dropdowns
+    [countrySelect, stateSelect].forEach(select => {
+        select.className = 'form-select';
+    });
+
+    // Load country data
+    fetch('https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/countries%2Bstates.json')
+        .then(response => response.json())
+        .then(data => {
+            // Populate countries
+            countrySelect.innerHTML = `
+                <option value="">Select Country</option>
+                ${data.countries.map(country =>
+                `<option value="${country.iso2}">${country.name}</option>`
+            ).join('')}
+            `;
+
+            // Handle country change
+            countrySelect.addEventListener('change', function () {
+                const country = data.countries.find(c => c.iso2 === this.value);
+                if (!country) {
+                    stateSelect.innerHTML = '<option value="">Select State</option>';
+                    stateSelect.disabled = true;
+                    return;
+                }
+
+                stateSelect.innerHTML = `
+                    <option value="">Select State</option>
+                    ${country.states.map(state =>
+                    `<option value="${state.state_code}">${state.name}</option>`
+                ).join('')}
+                `;
+                stateSelect.disabled = false;
+            });
+        });
+}
+
+// end of setupGlobalListeners
+initializeApp();
+
+// Add to your initialization code
+document.addEventListener('DOMContentLoaded', () => {
+    // Force show any hidden content after a slight delay
+    setTimeout(() => {
+        document.querySelectorAll('.reveal-on-scroll, .hero-title, .main-content-area, #collection-grid')
+            .forEach(el => {
+                el.style.opacity = '1';
+                el.style.visibility = 'visible';
+                el.style.transform = 'none';
+            });
+    }, 100);
+});
+
+// Update header transparency
+window.addEventListener('scroll', () => {
+    const header = document.getElementById('main-header');
+    if (window.scrollY > 50) {
+        header.style.backgroundColor = 'rgba(248, 244, 238, 0.95)';
+        header.style.backdropFilter = 'blur(10px)';
+    } else {
+        header.style.backgroundColor = 'transparent';
+        header.style.backdropFilter = 'none';
+    }
+}, { passive: true });

@@ -2,53 +2,63 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Order Confirmation - Sugandhmaya</title>
-    <link rel="icon" type="image/png" href="./images/Sugandhmaya-icon.webp">
+    <link rel="icon" type="image/png" href="./images/Sugandhmaya-icon.webp" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
 </head>
 
-<body>
+<body class="confirmation-page">
     <div id="header-container"></div>
 
     <main class="flex flex-col items-center justify-center text-center min-h-screen py-24 px-6 bg-brand-background">
         <div class="bg-white p-12 rounded-lg shadow-xl max-w-xl w-full reveal-on-scroll">
-            <svg xmlns="http://www.w3.org/2000/svg"
-                class="h-24 w-24 text-green-500 mx-auto mb-6 motion-safe:animate-bounce" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+            <!-- Success icon -->
+            <div class="flex items-center justify-center mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20 text-brand-accent" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.5">
+                    <circle cx="12" cy="12" r="9" class="text-brand-accent" stroke="none" fill="rgba(229,164,78,0.12)"></circle>
+                    <path d="M9 12.5l1.8 1.8L15 10" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+
             <h1 class="text-4xl font-serif font-bold text-brand-dark mb-4">Order Placed Successfully!</h1>
-            <p class="text-lg text-gray-600">Thank you for your purchase. Your order details are below, and a confirmation email will be sent shortly.</p>
-            
+            <p class="text-lg text-gray-600">Thank you for your purchase. Your order details are below, and a confirmation email
+                will be sent shortly.</p>
+
             <div id="confirmation-details" class="mt-8 text-left bg-gray-50 p-6 rounded-md border border-gray-100">
-                </div>
-            <a href="index.html" class="mt-10 inline-block btn">
-                <span>Back to Home</span>
-            </a>
+                <!-- script.js will populate this -->
+            </div>
+
+            <div class="mt-8 flex justify-center gap-4">
+                <a href="index.html" class="btn">Continue Shopping</a>
+                <a href="shop.html" class="btn btn-secondary">View Orders</a>
+            </div>
         </div>
     </main>
 
     <div id="footer-container"></div>
 
-    <div id="contact-popover"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] hidden opacity-0">
+    <!-- Contact popover (kept for consistency with header/footer scripts) -->
+    <div id="contact-popover" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] hidden opacity-0 items-center justify-center">
         <div id="contact-popover-content"
             class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center transform scale-95 transition-transform duration-300">
-            <h3 id="popover-title" class="text-xl font-serif font-bold mb-3"></h3>
-            <div id="popover-body" class="text-brand-text/80"></div>
-            <button id="popover-close"
-                class="absolute -top-3 -right-3 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md">&times;</button>
+            <h3 id="popover-title" class="text-xl font-serif font-bold mb-3">Contact Us</h3>
+            <div id="popover-body" class="text-brand-text/80">Please reach out to hello@sugandhmaya.example</div>
+            <button id="popover-close" class="btn mt-6">Close</button>
         </div>
     </div>
+
     <div id="toast-container" class="fixed bottom-0 left-0 w-full p-8 pointer-events-none z-[200]"></div>
+
+    <!-- load scripts in same order as other pages (preserve existing script expectations) -->
     <script src="script.js"></script>
     <script src="common-components.js"></script>
 </body>

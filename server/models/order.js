@@ -23,4 +23,5 @@ const orderSchema = new mongoose.Schema({
     }
 });
 
+// Change to CommonJS export
 module.exports = mongoose.model('Order', orderSchema);

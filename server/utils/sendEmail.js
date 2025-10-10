@@ -1,6 +1,11 @@
 // server/utils/sendEmail.js
-const { Resend } = require('resend');
-const sgMail = require('@sendgrid/mail');
+
+// This import loads all environment variables from the .env file.
+import 'dotenv/config'; 
+
+// Now import the required libraries using ES Module syntax.
+import { Resend } from 'resend';
+import sgMail from '@sendgrid/mail';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -29,7 +34,7 @@ const sendOtpEmailWithResend = async ({ to, otp }) => {
                           Please use the following code to complete your order. This code will expire in 5 minutes.
                       </p>
                       <div style="margin: 30px 0; text-align: center;">
-                          <p style="font-family: 'Inter', sans-serif; font-size: 36px; font-weight: 700; color: #E5A44E; letter-spacing: 10px; margin: 0; padding: 15px; background-color: #F8F4EE; border-radius: 8px;">
+                          <p style="font-family: 'Inter', sans-serif; font-size: 36px; font-weight: 700; color: #E5A44E; letter-spacing: 10px; padding: 15px; background-color: #F8F4EE; border-radius: 8px;">
                               ${otp}
                           </p>
                       </div>
@@ -81,7 +86,7 @@ const sendOrderConfirmationWithSendGrid = async (order) => {
     
     const msg = {
         to: order.customer.email,
-        from: process.env.SENDGRID_FROM_EMAIL, // This uses your SendGrid verified email
+        from: process.env.SENDGRID_FROM_EMAIL,
         subject: `Your Sugandhmaya Order Confirmation (#${order._id.toString().slice(-6)})`,
         html: emailHtml,
     };
@@ -95,7 +100,8 @@ const sendOrderConfirmationWithSendGrid = async (order) => {
     }
 };
 
-module.exports = {
+// Change to ES Module named exports
+export {
   sendOtpEmailWithResend,
   sendOrderConfirmationWithSendGrid,
 };

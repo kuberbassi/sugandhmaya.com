@@ -2,17 +2,17 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Checkout - Sugandhmaya</title>
-    <link rel="icon" type="image/png" href="./images/Sugandhmaya-icon.webp">
+    <link rel="icon" type="image/png" href="./images/Sugandhmaya-icon.webp" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
 </head>
@@ -23,73 +23,63 @@
     <div class="checkout-layout-grid">
         <section class="checkout-form-section">
             <div class="form-container">
-                <a href="index.html" class="flex items-center mb-12">
-                    <div id="nav-icon" class="w-12 h-12">
-                        <img src="./images/Sugandhmaya-icon.webp" alt="Sugandhmaya Logo">
-                    </div>
-                    <span style="font-family: var(--font-ui);"
-                        class="text-xl font-bold tracking-widest text-brand-dark">SUGANDHMAYA</span>
+                <a href="index.html" class="flex items-center mb-6">
+                    <img src="./images/Sugandhmaya-icon.webp" alt="Sugandhmaya" class="w-12 h-12 mr-3" />
+                    <h1 class="text-3xl font-serif font-bold">Shipping Information</h1>
                 </a>
-                <h1 class="text-3xl font-serif font-bold mb-8">Shipping Information</h1>
-                <form id="checkout-form">
+
+                <form id="checkout-form" class="mt-6" novalidate>
                     <div class="form-group">
-                        <label for="name">Full Name</label>
-                        <input type="text" id="name" name="name" required class="w-full" autocomplete="name">
+                        <label for="full-name">Full name</label>
+                        <input id="full-name" name="name" class="form-input" required />
                     </div>
+
                     <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" required class="w-full" autocomplete="email">
+                        <label for="email">Email</label>
+                        <input id="email" name="email" type="email" class="form-input" required />
                     </div>
+
                     <div class="form-group">
-                        <label for="address">Street Address</label>
-                        <input type="text" id="address" name="address" required class="form-input"
-                            autocomplete="street-address" placeholder="House No, Street Name">
+                        <label for="phone-input">Phone</label>
+                        <input id="phone-input" name="phone" class="form-input" />
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="form-group">
-                            <label for="city">City</label>
-                            <input type="text" id="city" name="city" required class="form-input"
-                                autocomplete="address-level2">
-                        </div>
-                        <div class="form-group">
-                            <label for="pincode">PIN Code</label>
-                            <input type="text" id="pincode" name="pincode" required class="form-input"
-                                autocomplete="postal-code">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="form-group">
-                            <label for="country-select">Country</label>
-                            <select id="country-select" name="country" required class="form-input"></select>
-                        </div>
-                        <div class="form-group">
-                            <label for="state-select">State / Province</label>
-                            <select id="state-select" name="state" required class="form-input"></select>
-                        </div>
-                    </div>
+
                     <div class="form-group">
-                        <label for="phone-input">Phone Number</label>
-                        <input type="tel" id="phone-input" name="phone" required class="w-full">
+                        <label for="country-select">Country</label>
+                        <select id="country-select" name="country" class="form-input"></select>
                     </div>
-                    <h2 class="text-2xl font-serif font-bold mt-12 mb-6">Payment</h2>
-                    <div class="payment-method">
-                        <span>Cash on Delivery</span>
-                        <span>Available</span>
+
+                    <div class="form-group">
+                        <label for="state-select">State</label>
+                        <select id="state-select" name="state" class="form-input"></select>
                     </div>
-                    <div class="mt-8">
-                        <button type="submit" class="w-full btn">
-                            <span>Place Order</span>
-                        </button>
+
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input id="address" name="address" class="form-input" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pin">PIN / ZIP</label>
+                        <input id="pin" name="pin" class="form-input" />
+                    </div>
+
+                    <div class="form-group mt-6 flex items-center gap-4">
+                        <button type="submit" id="place-order-button" class="btn">Place Order</button>
+                        <button type="button" id="open-otp-button" class="btn btn-secondary">Send OTP</button>
                     </div>
                 </form>
             </div>
         </section>
+
         <section class="checkout-summary-section flex items-start justify-center">
             <div class="summary-container">
-                <h2 class="text-2xl font-serif font-bold mb-6">Order Summary</h2>
-                <div id="summary-items" class="space-y-4"></div>
+                <h2 class="font-serif text-2xl mb-4">Order Summary</h2>
+                <div id="summary-items" class="space-y-3 mb-4">
+                    <!-- items populated by script.js -->
+                </div>
                 <div class="summary-divider"></div>
-                <div class="flex justify-between items-center text-xl font-bold font-ui">
+                <div class="flex justify-between mt-4 font-bold">
                     <span>Total</span>
                     <span id="summary-total">₹0.00</span>
                 </div>
@@ -99,27 +89,28 @@
 
     <div id="footer-container"></div>
 
+    <!-- OTP modal -->
     <div id="otp-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] hidden items-center justify-center">
         <div class="bg-white p-8 rounded-lg shadow-xl max-w-sm w-full text-center">
             <h3 class="text-2xl font-serif font-bold mb-4">Verify Your Order</h3>
             <p class="text-brand-text/80 mb-6">A 6-digit verification code has been sent to your email address.</p>
+
             <div class="form-group">
-                <label for="otp-input">Enter Verification Code</label>
-                <input type="text" id="otp-input" name="otp" required
-                    class="w-full text-center text-2xl tracking-widest" maxlength="6">
+                <input id="otp-input" maxlength="6" class="form-input" placeholder="Enter 6-digit code" />
             </div>
-            <div class="mt-8 flex gap-4">
-                <button type="button" id="cancel-otp-button" class="w-full btn btn-secondary">Cancel</button>
-                <button type="button" id="verify-otp-button" class="w-full btn">
-                    <span>Verify & Place Order</span>
-                </button>
+
+            <div class="mt-8 flex gap-4 justify-center">
+                <button id="verify-otp-button" class="btn">Verify</button>
+                <button id="cancel-otp-button" class="btn btn-secondary">Cancel</button>
             </div>
         </div>
     </div>
 
     <div id="toast-container" class="fixed bottom-0 left-0 w-full p-8 pointer-events-none z-[200]"></div>
+
+    <!-- keep existing script order to avoid changing runtime expectations -->
     <script src="script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/country-state-city@3.2.1/dist/cjs/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/country-state-city@3.2.1/dist/country-state-city.min.js"></script>
 </body>
 
 </html>

@@ -4,197 +4,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Sugandhmaya offers pure, artisanal puja essentials crafted to bring tranquility and intention to your sacred space. Explore our collection of handcrafted products.">
-    <title>Sugandhmaya - The Art of Ritual</title>
+    <title>Sugandhmaya - The Art of Modern Ritual</title>
     <link rel="icon" type="image/png" href="./images/Sugandhmaya-icon.webp">
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .hero-section {
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
+                url('./images/texture-bg.webp');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .nav-brand {
+            font-weight: 700;
+            /* Makes Sugandhmaya text bold */
+        }
+    </style>
 </head>
 
 <body class="home-page">
     <div id="header-container"></div>
+
     <main>
+        <!-- Hero Section -->
         <section class="hero-section">
             <div class="container mx-auto px-6">
-                <div class="grid lg:grid-cols-2 gap-12 items-center">
-                    <div class="max-w-md reveal-on-scroll hero-text-content">
-                        <h1 class="hero-title text-5xl md:text-6xl lg:text-7xl font-bold text-brand-text">
-                            The <span class="text-brand-accent">Art</span> of Modern Ritual
-                        </h1>
-                        <p class="mt-8 text-lg text-brand-text/70">
-                            Pure, artisanal puja essentials crafted to bring tranquility and intention to your
-                            sacred space.
-                        </p>
-                        <a href="#collection" class="mt-12 btn">
-                            <span>Explore The Collection</span>
+                <div class="grid lg:grid-cols-2 gap-16 items-center">
+                    <div class="hero-text-content reveal-on-scroll">
+                        <h1 class="hero-title">The Art of<br>Modern Ritual</h1>
+                        <p>Pure, artisanal puja essentials crafted to bring tranquility and intention to your sacred
+                            space.</p>
+                        <a href="/shop.html" class="btn">
+                            Explore the Collection
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg>
                         </a>
                     </div>
-                    <div class="hero-media-grid">
-                        <div class="hero-media-item media-item-1">
-                            <video autoplay loop muted playsinline src="./images/agarbatti-video.mp4"
-                                class="hero-media"></video>
-                        </div>
-                        <div class="hero-media-item media-item-2">
+                    <div class="hero-media-grid reveal-on-scroll" style="--delay: 0.2s">
+                        <div class="media-item-1" style="background-image: url('./images/hero-1.webp')">
                             <img src="./images/products/sugandhmaya_chandan_agarbatti/12-stick-box-agarbatti.webp"
-                                alt="Agarbatti sticks in smoke" class="hero-media" loading="lazy">
+                                alt="Sacred Incense Ritual" loading="lazy">
                         </div>
-                        <div class="hero-media-item media-item-3">
+                        <div class="media-item-2">
+                            <video autoplay loop muted playsinline>
+                                <source src="./images/agarbatti-video.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="media-item-3" style="background-image: url('./images/hero-3.webp')">
                             <img src="./images/products/sugandhmaya_chandan_agarbatti/40-stick-box-agarbatti.webp"
-                                alt="Agarbatti box" class="hero-media" loading="lazy">
+                                alt="Puja Essentials Collection" loading="lazy">
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <div class="main-content-area">
-            <section id="collection" class="py-24 md:py-32 section-bordered">
-                <div class="container mx-auto px-6">
-                    <div class="text-center mb-16 reveal-on-scroll">
-                        <p class="subheading text-brand-accent">Artisanal Craft</p>
-                        <h2 class="text-4xl md:text-5xl mt-4">Featured Collection</h2>
-                    </div>
-                    <div id="collection-grid">
-                    </div>
-                    <div class="text-center mt-16">
-                        <a href="shop.html" class="btn">
-                            <span>View All Products</span>
-                        </a>
-                    </div>
+        <!-- Featured Collection Section -->
+        <section class="featured-collection py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h4 class="subheading">ARTISANAL CRAFT</h4>
+                    <h2 class="text-4xl font-serif mb-4">Featured Collection</h2>
+                    <div class="value-line"></div>
                 </div>
-            </section>
 
-            <section class="core-values-section py-24 md:py-32 section-bordered">
-                <div class="container mx-auto px-6">
-                    <div class="text-center mb-16 reveal-on-scroll">
-                        <p class="subheading text-brand-accent">Our Commitment</p>
-                        <h2 class="text-4xl md:text-5xl mt-4">Our Core Values</h2>
-                    </div>
-                    <div class="grid md:grid-cols-3 gap-12 text-center">
-                        <div class="reveal-on-scroll">
-                            <div class="icon-wrapper">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+                <div class="bento-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+                    <!-- Rose Collection -->
+                    <div class="bento-item bg-rose-50 p-6 rounded-xl hover:shadow-lg transition-all reveal-on-scroll"
+                        style="--delay: 0.1s">
+                        <div class="text-4xl mb-4">🌹</div>
+                        <h4 class="text-xl font-bold mb-2">Rose</h4>
+                        <div class="sizes-grid grid grid-cols-2 gap-3">
+                            <div class="size-box p-3 bg-white rounded">
+                                <p>40 Sticks</p>
+                                <p class="text-sm text-gray-600">Premium Box</p>
                             </div>
-                            <h3 class="text-2xl font-serif mt-6">Handcrafted Tradition</h3>
-                            <p class="mt-2 text-brand-text/70">Each product is crafted with meticulous care, honoring
-                                age-old techniques passed down through generations.</p>
-                        </div>
-                        <div class="reveal-on-scroll" style="transition-delay: 150ms;">
-                            <div class="icon-wrapper">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                        d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                                </svg>
+                            <div class="size-box p-3 bg-white rounded">
+                                <p>12 Sticks</p>
+                                <p class="text-sm text-gray-600">Travel Pack</p>
                             </div>
-                            <h3 class="text-2xl font-serif mt-6">Pure & Natural</h3>
-                            <p class="mt-2 text-brand-text/70">We use only the finest natural ingredients, free from
-                                harmful additives, to ensure a pure and authentic experience.</p>
-                        </div>
-                        <div class="reveal-on-scroll" style="transition-delay: 300ms;">
-                            <div class="icon-wrapper">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                </svg>
-                            </div>
-                            <h3 class="text-2xl font-serif mt-6">Ethically Sourced</h3>
-                            <p class="mt-2 text-brand-text/70">Our materials are sourced responsibly, supporting local
-                                communities and preserving the environment.</p>
                         </div>
                     </div>
-                </div>
-            </section>
 
-            <section id="our-promise" class="py-16 md:py-20 section-bordered">
-                <div class="container mx-auto px-6">
-                    <div class="grid md:grid-cols-2 gap-16 items-center">
-                        <div class="reveal-on-scroll">
-                            <p class="subheading text-brand-accent">Our Philosophy</p>
-                            <h2 class="text-4xl md:text-5xl mt-4">A Promise of <br>Purity & Craft.</h2>
-                            <div class="space-y-6 text-lg leading-relaxed mt-8 max-w-md">
-                                <p>At Sugandhmaya, we believe spirituality is an art form. Our mission is to
-                                    craft products that not only honor ancient traditions but also inspire beauty and
-                                    peace in
-                                    the modern world.</p>
-                                <p>Each item is made with intention, using pure, natural ingredients sourced
-                                    ethically. This is our promise of purity, quality, and connection.</p>
+                    <!-- Mogra Collection -->
+                    <div class="bento-item bg-yellow-50 p-6 rounded-xl hover:shadow-lg transition-all reveal-on-scroll"
+                        style="--delay: 0.2s">
+                        <div class="text-4xl mb-4">🌸</div>
+                        <h4 class="text-xl font-bold mb-2">Mogra</h4>
+                        <div class="sizes-grid grid grid-cols-2 gap-3">
+                            <div class="size-box p-3 bg-white rounded">
+                                <p>40 Sticks</p>
+                                <p class="text-sm text-gray-600">Premium Box</p>
                             </div>
-                        </div>
-                        <div class="redesigned-logo-card reveal-on-scroll" style="transition-delay: 150ms;">
-                            <div class="logo-card-frame">
-                                <video autoplay loop muted playsinline src="./images/logo-video.mp4"
-                                    class="logo-card-video"></video>
+                            <div class="size-box p-3 bg-white rounded">
+                                <p>12 Sticks</p>
+                                <p class="text-sm text-gray-600">Travel Pack</p>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
 
-            <section id="contact" class="py-24 md:py-32 text-center section-bordered">
-                <div class="container mx-auto px-6 reveal-on-scroll relative z-10">
-                    <p class="subheading text-brand-accent">Get In Touch</p>
-                    <h2 class="text-4xl md:text-5xl mt-4">Start a Conversation</h2>
-                    <p class="mt-4 mx-auto text-lg max-w-2xl text-brand-text/70">For any inquiry, feedback, or
-                        collaboration, we welcome the connection. Click on a bubble to see more.</p>
-                    <div id="contact-bubbles-container" class="relative mt-16 h-64">
-                        <button class="contact-bubble" data-title="Our Address"
-                            data-content="IOR Technology Private Limited<br>G-57, Ground Floor, West End Mall, Janak Puri, New Delhi - 110058">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="w-8 h-8">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                            </svg>
-                        </button>
-                        <button class="contact-bubble" data-title="Email Us"
-                            data-content="<a href='mailto:ops@indiaonroaming.com'>ops@indiaonroaming.com</a>">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="w-8 h-8">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-                            </svg>
-                        </button>
-                        <button class="contact-bubble" data-title="Call Us"
-                            data-content="<a href='tel:+919971055746'>+91 9971055746</a>">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="w-8 h-8">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 6.75z" />
-                            </svg>
-                        </button>
+                    <!-- Oudh Collection -->
+                    <div class="bento-item bg-amber-50 p-6 rounded-xl hover:shadow-lg transition-all reveal-on-scroll"
+                        style="--delay: 0.3s">
+                        <div class="text-4xl mb-4">🌳</div>
+                        <h4 class="text-xl font-bold mb-2">Oudh</h4>
+                        <div class="sizes-grid grid grid-cols-2 gap-3">
+                            <div class="size-box p-3 bg-white rounded">
+                                <p>40 Sticks</p>
+                                <p class="text-sm text-gray-600">Premium Box</p>
+                            </div>
+                            <div class="size-box p-3 bg-white rounded">
+                                <p>12 Sticks</p>
+                                <p class="text-sm text-gray-600">Travel Pack</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Oudh Premium Collection -->
+                    <div class="bento-item bg-brown-50 p-6 rounded-xl hover:shadow-lg transition-all reveal-on-scroll"
+                        style="--delay: 0.4s">
+                        <div class="text-4xl mb-4">✨</div>
+                        <h4 class="text-xl font-bold mb-2">Oudh Premium</h4>
+                        <div class="sizes-grid grid grid-cols-2 gap-3">
+                            <div class="size-box p-3 bg-white rounded">
+                                <p>40 Sticks</p>
+                                <p class="text-sm text-gray-600">Premium Box</p>
+                            </div>
+                            <div class="size-box p-3 bg-white rounded">
+                                <p>12 Sticks</p>
+                                <p class="text-sm text-gray-600">Travel Pack</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chandan Collection -->
+                    <div class="bento-item bg-orange-50 p-6 rounded-xl hover:shadow-lg transition-all reveal-on-scroll"
+                        style="--delay: 0.5s">
+                        <div class="text-4xl mb-4">🪵</div>
+                        <h4 class="text-xl font-bold mb-2">Chandan</h4>
+                        <div class="sizes-grid grid grid-cols-2 gap-3">
+                            <div class="size-box p-3 bg-white rounded">
+                                <p>40 Sticks</p>
+                                <p class="text-sm text-gray-600">Premium Box</p>
+                            </div>
+                            <div class="size-box p-3 bg-white rounded">
+                                <p>12 Sticks</p>
+                                <p class="text-sm text-gray-600">Travel Pack</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Orchid Collection -->
+                    <div class="bento-item bg-purple-50 p-6 rounded-xl hover:shadow-lg transition-all reveal-on-scroll"
+                        style="--delay: 0.6s">
+                        <div class="text-4xl mb-4">🌺</div>
+                        <h4 class="text-xl font-bold mb-2">Orchid</h4>
+                        <div class="sizes-grid grid grid-cols-2 gap-3">
+                            <div class="size-box p-3 bg-white rounded">
+                                <p>40 Sticks</p>
+                                <p class="text-sm text-gray-600">Premium Box</p>
+                            </div>
+                            <div class="size-box p-3 bg-white rounded">
+                                <p>12 Sticks</p>
+                                <p class="text-sm text-gray-600">Travel Pack</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </section>
-        </div>
+
+                <div class="text-center mt-12">
+                    <a href="/shop.html" class="view-all-products">
+                        View All Products
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Values -->
+        <section class="core-values-section">
+            <div class="container mx-auto px-6">
+                <div class="section-header text-center mb-16">
+                    <h4 class="subheading">Our Commitment</h4>
+                    <h2 class="heading text-4xl font-serif mb-4">Our Core Values</h2>
+                    <div class="section-line"></div>
+                </div>
+
+                <div class="values-grid">
+                    <div class="value-card reveal-on-scroll" style="--delay: 0.1s">
+                        <div class="value-icon">
+                            <span class="emoji-icon">🪷</span>
+                        </div>
+                        <h3 class="value-title">Handcrafted Tradition</h3>
+                        <div class="value-line"></div>
+                        <p class="value-description">Each product is crafted with meticulous care, honoring age-old
+                            techniques passed down through generations.</p>
+                    </div>
+
+                    <div class="value-card reveal-on-scroll" style="--delay: 0.2s">
+                        <div class="value-icon">
+                            <span class="emoji-icon">🌿</span>
+                        </div>
+                        <h3 class="value-title">Pure & Natural</h3>
+                        <div class="value-line"></div>
+                        <p class="value-description">We use only the finest natural ingredients, free from harmful
+                            additives, to ensure a pure and authentic experience.</p>
+                    </div>
+
+                    <div class="value-card reveal-on-scroll" style="--delay: 0.3s">
+                        <div class="value-icon">
+                            <span class="emoji-icon">✨</span>
+                        </div>
+                        <h3 class="value-title">Ethically Sourced</h3>
+                        <div class="value-line"></div>
+                        <p class="value-description">Our materials are sourced responsibly, supporting local communities
+                            and preserving the environment.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Philosophy Section -->
+        <section id="our-promise" class="py-24 bg-white relative overflow-hidden">
+            <div class="container mx-auto px-6">
+                <div class="grid lg:grid-cols-2 gap-16 items-center">
+                    <div class="promise-content reveal-on-scroll">
+                        <h4 class="subheading">Our Philosophy</h4>
+                        <h2 class="text-4xl font-serif mb-6">A Promise of<br>Purity & Craft.</h2>
+                        <p class="text-lg text-gray-600 mb-8">At Sugandhmaya, we believe spirituality is an art form. Our mission is to craft products that not only honor ancient traditions but also inspire beauty and peace in modern sacred spaces.</p>
+                        <a href="#contact" class="btn btn-animated">Learn More</a>
+                    </div>
+                    <div class="brand-emblem reveal-on-scroll" style="--delay: 0.2s">
+                        <video autoplay loop muted playsinline class="mx-auto w-full max-w-md">
+                            <source src="./images/logo-video.mp4" type="video/mp4">
+                            <img src="./images/Sugandhmaya-icon.webp" alt="Sugandhmaya Emblem" class="mx-auto">
+                        </video>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute inset-0 bg-gradient-radial opacity-10 pointer-events-none"></div>
+        </section>
+
+        <!-- Add this new Contact Section -->
+        <section id="contact" class="py-24 bg-brand-background">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h4 class="subheading">Get in Touch</h4>
+                    <h2 class="text-4xl font-serif mb-4">Contact Us</h2>
+                    <div class="value-line"></div>
+                    <div class="w-20 h-0.5 bg-brand-accent mx-auto"></div>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    <a href="https://share.google/mAWPFtRgirVCi2x3G" 
+                       class="contact-card reveal-on-scroll" 
+                       style="--delay: 0.1s"
+                       target="_blank">
+                        <div class="contact-icon">📍</div>
+                        <h3 class="text-xl font-serif mb-3">Visit Us</h3>
+                        <p class="text-gray-600">
+                            IOR Technology Private Limited<br>
+                            G-57, Ground Floor, West End Mall, Janak Puri, New Delhi<br>
+                            110058
+                        </p>
+                    </a>
+
+                    <a href="tel:+919971055746" 
+                       class="contact-card reveal-on-scroll" 
+                       style="--delay: 0.2s"
+                       target="_blank">
+                        <div class="contact-icon">📞</div>
+                        <h3 class="text-xl font-serif mb-3">Call Us</h3>
+                        <p class="text-gray-600">
+                            +91 9971055746<br>
+                            For inquiries related to orders and support
+                        </p>
+                    </a>
+
+                    <a href="mailto:ops@indiaonroaming.com" 
+                       class="contact-card reveal-on-scroll" 
+                       style="--delay: 0.3s"
+                       target="_blank">
+                        <div class="contact-icon">📧</div>
+                        <h3 class="text-xl font-serif mb-3">Email Us</h3>
+                        <p class="text-gray-600">
+                            ops@indiaonroaming.com<br>
+                            We'll respond within 24 business hours
+                        </p>
+                    </a>
+                </div>
+            </div>
+        </section>
     </main>
 
     <div id="footer-container"></div>
+    <script src="script.js" type="module"></script>
+    <script src="common-components.js" type="module"></script>
+    <script src="js/featured-products.js" type="module"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('http://localhost:3000/api/products');
+                if (!response.ok) throw new Error('Failed to fetch products');
 
-    <div id="contact-popover"
-        class="fixed top-0 left-0 w-full h-full bg-black/50 backdrop-blur-sm z-[150] hidden opacity-0">
-        <div id="contact-popover-content"
-            class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center transform scale-95 transition-transform duration-300">
-            <h3 id="popover-title" class="text-xl font-serif font-bold mb-3"></h3>
-            <div id="popover-body" class="text-brand-text/80"></div>
-            <button id="popover-close"
-                class="absolute -top-3 -right-3 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md">&times;</button>
-        </div>
-    </div>
+                const products = await response.json();
+                const featuredProducts = products.slice(0, 2);
 
-    <div id="toast-container" class="fixed bottom-0 left-0 w-full p-8 pointer-events-none z-[200]"></div>
-    <script src="script.js"></script>
-    <script src="common-components.js"></script>
+                const productsContainer = document.getElementById('featured-products');
+                if (!productsContainer) return;
+
+                productsContainer.innerHTML = featuredProducts.map((product, index) => `
+            <article class="collection-item reveal-on-scroll" style="--delay: ${0.1 + index * 0.1}s">
+                ${product.isBestseller ? '<div class="collection-item-badge bestseller">Bestseller</div>' : ''}
+                ${product.isNew ? '<div class="collection-item-badge new">New</div>' : ''}
+                <div class="collection-item-image">
+                    <img src="${product.images[0]}" 
+                         alt="${product.name}" 
+                         loading="lazy">
+                </div>
+                <div class="collection-item-content">
+                    <h3 class="collection-item-title">${product.name}</h3>
+                    <p class="collection-item-price">₹${product.price}</p>
+                </div>
+            </article>
+        `).join('');
+
+                // Initialize animations
+                setTimeout(() => {
+                    document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+                        el.classList.add('is-visible');
+                    });
+                }, 100);
+
+            } catch (error) {
+                console.error('Error loading products:', error);
+                document.getElementById('featured-products').innerHTML = `
+            <div class="text-center text-gray-500">
+                Unable to load products at this time.
+            </div>
+        `;
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -1,19 +1,27 @@
+// server/models/product.js
 const mongoose = require('mongoose');
 
+// Define the variant schema first
 const variantSchema = new mongoose.Schema({
-  size: { type: String, required: true }, // e.g., "40 Sticks"
-  price: { type: Number, required: true },
-  image: { type: String, required: true }, // Main image for this variant
-  thumbnails: [String]
+  id: String,
+  name: String,
+  sticks: Number,
+  price: Number,
+  images: [String]
 });
 
+// Define the product schema using the variant schema
 const productSchema = new mongoose.Schema({
-  id: { type: String, required: true, unique: true },
-  name: { type: String, required: true },
-  category: { type: String, required: true },
-  description: { type: String, required: true },
-  scents: [String], // Array of available scents like ["Rose", "Orchid"]
-  variants: [variantSchema]
+  id: String,
+  name: String,
+  category: String,
+  scents: [String],
+  variants: [variantSchema],
+  description: String,
+  featuredImage: String
 });
 
-module.exports = mongoose.model('Product', productSchema);
+const Product = mongoose.model('Product', productSchema);
+
+// Change to CommonJS export
+module.exports = Product;

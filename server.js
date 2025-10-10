@@ -6,7 +6,7 @@ const cors = require('cors');
 const path = require('path');
 const otpGenerator = require('otp-generator');
 
-// Correctly import the new specific functions
+// Correctly import the updated files that now use module.exports
 const { sendOtpEmailWithResend, sendOrderConfirmationWithSendGrid } = require('./server/utils/sendEmail');
 const Product = require('./server/models/product');
 const Order = require('./server/models/order');
@@ -32,6 +32,7 @@ apiRouter.get('/products', async (req, res) => {
         const products = await Product.find({});
         res.status(200).json(products);
     } catch (error) {
+        console.error("Failed to fetch products:", error);
         res.status(500).json({ message: 'Failed to fetch products.' });
     }
 });
@@ -39,27 +40,35 @@ apiRouter.get('/products', async (req, res) => {
 apiRouter.post('/send-otp', async (req, res) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ message: 'Email is required.' });
-    
+
     const otp = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false, lowerCaseAlphabets: false });
     otpStore[email] = { otp, expires: Date.now() + 5 * 60 * 1000 };
 
     try {
-        // Call the Resend function for OTP
         await sendOtpEmailWithResend({ to: email, otp: otp });
-        res.status(200).json({ message: 'OTP sent successfully.' });
+        res.status(200).json({ success: true, message: 'OTP sent successfully.' });
     } catch (error) {
-        res.status(500).json({ message: 'Failed to send OTP email.' });
+        console.error("Error sending OTP:", error);
+        res.status(500).json({ success: false, message: 'Failed to send OTP email.' });
+    }
+});
+
+apiRouter.post('/verify-otp', async (req, res) => {
+    const { email, otp } = req.body;
+    const storedOtp = otpStore[email];
+
+    if (storedOtp && storedOtp.otp === otp && Date.now() < storedOtp.expires) {
+        delete otpStore[email];
+        res.json({ success: true });
+    } else {
+        res.status(400).json({ success: false, message: 'Invalid or expired OTP.' });
     }
 });
 
 apiRouter.post('/orders', async (req, res) => {
     try {
-        const { customer, items, otp } = req.body;
-        if (!otp || !otpStore[customer.email] || otpStore[customer.email].otp !== otp || Date.now() > otpStore[customer.email].expires) {
-            return res.status(400).json({ message: 'Invalid or expired verification code.' });
-        }
-        delete otpStore[customer.email];
-
+        const { customer, items } = req.body;
+        
         const productIds = items.map(i => i.productId);
         const productsFromDB = await Product.find({ 'id': { $in: productIds } });
 
@@ -67,7 +76,7 @@ apiRouter.post('/orders', async (req, res) => {
         const orderItems = items.map(item => {
             const product = productsFromDB.find(p => p.id === item.productId);
             if (!product) throw new Error(`Product not found.`);
-            const variant = product.variants.find(v => v.size === item.size);
+            const variant = product.variants.find(v => v.name === item.size);
             if (!variant) throw new Error(`Variant not found.`);
             total += variant.price * item.quantity;
             return { ...item, name: product.name, price: variant.price };
@@ -75,13 +84,13 @@ apiRouter.post('/orders', async (req, res) => {
 
         const newOrder = new Order({ customer, items: orderItems, total });
         const savedOrder = await newOrder.save();
-        
-        // Call the SendGrid function for the order receipt
+
         await sendOrderConfirmationWithSendGrid(savedOrder);
-        
-        res.status(201).json({ message: 'Order placed successfully!', orderId: savedOrder._id, total: savedOrder.total });
+
+        res.status(201).json({ success: true, message: 'Order placed successfully!', order: savedOrder });
     } catch (error) {
-        res.status(500).json({ message: 'An internal server error occurred.' });
+        console.error("Order placement failed:", error);
+        res.status(500).json({ success: false, message: 'An internal server error occurred.' });
     }
 });
 
