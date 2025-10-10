@@ -183,13 +183,11 @@ const products = [
     }
 ];
 
-// Asynchronously import the CommonJS modules
+// Asynchronously import the CommonJS module
 (async () => {
     try {
-        const productModule = await import('./server/models/product.js');
-        const dbModule = await import('./server/db.js');
-        const Product = productModule.default;
-        const connectDB = dbModule.default;
+        const { default: Product } = await import('./server/models/product.js');
+        const { default: connectDB } = await import('./server/db.js');
         
         await connectDB();
 
