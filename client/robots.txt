@@ -1,0 +1,11 @@
+# Allow all friendly robots
+User-agent: *
+Allow: /
+
+# Disallow pages that are not useful for SEO
+Disallow: /checkout.html
+Disallow: /confirmation.html
+Disallow: /api/
+
+# Point to the sitemap
+Sitemap: https://www.sugandhmaya.com/sitemap.xml
