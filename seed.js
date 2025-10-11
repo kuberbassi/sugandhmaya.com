@@ -10,36 +10,40 @@ const __dirname = dirname(__filename);
 // Configure dotenv with path
 dotenv.config({ path: './server/.env' });
 
+const images_40_sticks = [
+    '/images/products/sugandhmaya_chandan_agarbatti/1.webp',
+    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
+    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
+    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
+];
+
+const images_20_sticks = [
+    '/images/products/sugandhmaya_chandan_agarbatti/4.webp',
+    '/images/products/sugandhmaya_chandan_agarbatti/5.webp',
+    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
+    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
+];
+
 const products = [
     {
         id: 'rose',
         name: 'Rose Agarbatti',
         category: 'Agarbatti',
-        scents: ['Rose', 'Sandalwood'],
+        scents: ['Rose'],
         variants: [
             {
                 id: 'rose-40',
                 name: 'Premium Box',
                 sticks: 40,
-                price: 70,
-                images: [
-                    '/images/products/sugandhmaya_chandan_agarbatti/1.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
-                ]
+                price: 330,
+                images: images_40_sticks
             },
             {
-                id: 'rose-12',
+                id: 'rose-20',
                 name: 'Travel Pack',
-                sticks: 12,
-                price: 15,
-                images: [
-                    '/images/products/sugandhmaya_chandan_agarbatti/4.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/5.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
-                ]
+                sticks: 20,
+                price: 83,
+                images: images_20_sticks
             }
         ],
         description: 'Experience the divine fragrance of fresh roses in our handcrafted agarbatti.',
@@ -49,65 +53,45 @@ const products = [
         id: 'mogra',
         name: 'Mogra Agarbatti',
         category: 'Agarbatti',
-        scents: ['Mogra', 'Jasmine'],
+        scents: ['Mogra'],
         variants: [
             {
                 id: 'mogra-40',
                 name: 'Premium Box',
                 sticks: 40,
-                price: 70,
-                images: [
-                    '/images/products/sugandhmaya_chandan_agarbatti/1.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
-                ]
+                price: 330,
+                images: images_40_sticks
             },
             {
-                id: 'mogra-12',
+                id: 'mogra-20',
                 name: 'Travel Pack',
-                sticks: 12,
-                price: 15,
-                images: [
-                    '/images/products/sugandhmaya_chandan_agarbatti/4.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/5.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
-                ]
+                sticks: 20,
+                price: 83,
+                images: images_20_sticks
             }
         ],
         description: 'The sweet and delicate fragrance of mogra flowers in every stick.',
         featuredImage: '/images/products/sugandhmaya_chandan_agarbatti/1.webp'
     },
     {
-        id: 'oudh',
+        id: 'oudh-regular',
         name: 'Oudh Agarbatti',
         category: 'Agarbatti',
-        scents: ['Oudh', 'Musk'],
+        scents: ['Oudh - Regular'],
         variants: [
             {
-                id: 'oudh-40',
+                id: 'oudh-regular-40',
                 name: 'Premium Box',
                 sticks: 40,
-                price: 70,
-                images: [
-                    '/images/products/sugandhmaya_chandan_agarbatti/1.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
-                ]
+                price: 330,
+                images: images_40_sticks
             },
             {
-                id: 'oudh-12',
+                id: 'oudh-regular-20',
                 name: 'Travel Pack',
-                sticks: 12,
-                price: 15,
-                images: [
-                    '/images/products/sugandhmaya_chandan_agarbatti/4.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/5.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
-                ]
+                sticks: 20,
+                price: 83,
+                images: images_20_sticks
             }
         ],
         description: 'The rich and earthy aroma of oudh in every stick.',
@@ -117,31 +101,21 @@ const products = [
         id: 'chandan',
         name: 'Chandan Agarbatti',
         category: 'Agarbatti',
-        scents: ['Chandan', 'Sandalwood'],
+        scents: ['Chandan'],
         variants: [
             {
                 id: 'chandan-40',
                 name: 'Premium Box',
                 sticks: 40,
-                price: 70,
-                images: [
-                    '/images/products/sugandhmaya_chandan_agarbatti/1.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
-                ]
+                price: 330,
+                images: images_40_sticks
             },
             {
-                id: 'chandan-12',
+                id: 'chandan-20',
                 name: 'Travel Pack',
-                sticks: 12,
-                price: 15,
-                images: [
-                    '/images/products/sugandhmaya_chandan_agarbatti/4.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/5.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
-                ]
+                sticks: 20,
+                price: 83,
+                images: images_20_sticks
             }
         ],
         description: 'The sacred and divine fragrance of chandan in every stick.',
@@ -151,34 +125,48 @@ const products = [
         id: 'orchid',
         name: 'Orchid Agarbatti',
         category: 'Agarbatti',
-        scents: ['Orchid', 'Lily'],
+        scents: ['Orchid'],
         variants: [
             {
                 id: 'orchid-40',
                 name: 'Premium Box',
                 sticks: 40,
-                price: 70,
-                images: [
-                    '/images/products/sugandhmaya_chandan_agarbatti/1.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
-                ]
+                price: 330,
+                images: images_40_sticks
             },
             {
-                id: 'orchid-12',
+                id: 'orchid-20',
                 name: 'Travel Pack',
-                sticks: 12,
-                price: 15,
-                images: [
-                    '/images/products/sugandhmaya_chandan_agarbatti/4.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/5.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
-                    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
-                ]
+                sticks: 20,
+                price: 83,
+                images: images_20_sticks
             }
         ],
         description: 'The sweet and delicate fragrance of orchid flowers in every stick.',
+        featuredImage: '/images/products/sugandhmaya_chandan_agarbatti/1.webp'
+    },
+    {
+        id: 'oudh-premium',
+        name: 'Oudh Premium Agarbatti',
+        category: 'Agarbatti',
+        scents: ['Oudh - Premium'],
+        variants: [
+            {
+                id: 'oudh-premium-40',
+                name: 'Premium Box',
+                sticks: 40,
+                price: 336,
+                images: images_40_sticks
+            },
+            {
+                id: 'oudh-premium-20',
+                name: 'Travel Pack',
+                sticks: 20,
+                price: 89,
+                images: images_20_sticks
+            }
+        ],
+        description: 'A rich and exotic blend of premium oudh.',
         featuredImage: '/images/products/sugandhmaya_chandan_agarbatti/1.webp'
     }
 ];

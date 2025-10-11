@@ -2,7 +2,7 @@
 
 // --- 1. CONFIGURATION & STATE ---
 const config = {
-    apiBaseUrl: 'https://sugandhmaya.com',
+    apiBaseUrl: 'http://localhost:5000',
     storageKeys: { cart: 'cart', latestOrder: 'latestOrder' },
     headerPath: './_header.html',
     footerPath: './_footer.html'
