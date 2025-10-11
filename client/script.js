@@ -1,4 +1,4 @@
-// client/script.js
+// client/script.js (Corrected and Final Version)
 
 // --- 1. CONFIGURATION & STATE ---
 const config = {
@@ -35,7 +35,6 @@ const utils = {
             console.error("❌ Could not fetch products:", error);
         }
     },
-    // Persist cart and immediately refresh UI & checkout summary
     saveCart() {
         localStorage.setItem(config.storageKeys.cart, JSON.stringify(state.cart));
         this.updateCartUI();
@@ -45,13 +44,11 @@ const utils = {
         const totalCount = state.cart.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0);
         const totalAmount = state.cart.reduce((sum, item) => sum + (parseFloat(item.price || 0) * parseInt(item.quantity || 0)), 0);
 
-        // Update cart count badge
         document.querySelectorAll('[data-cart-count]').forEach(el => {
             el.textContent = totalCount;
-            el.style.display = totalCount ? 'flex' : 'none';
+            el.style.display = totalCount > 0 ? 'flex' : 'none';
         });
 
-        // Update cart panel
         const cartItems = document.getElementById('cart-items');
         if (!cartItems) return;
 
@@ -63,19 +60,19 @@ const utils = {
         cartItems.innerHTML = `
             <div class="flex-1 overflow-auto px-4">
                 ${state.cart.map(item => `
-                    <div class="cart-item py-4 border-b border-gray-100">
+                    <div class="cart-item py-4 border-b border-gray-100" data-id="${item.cartItemId}">
                         <div class="flex justify-between mb-2">
                             <div>
                                 <h4 class="font-medium">${item.productName}</h4>
                                 <div class="text-sm text-gray-500">Size: ${item.size} • Scent: ${item.scent}</div>
                             </div>
-                            <button class="cart-remove text-red-500 hover:text-red-700" data-id="${item.cartItemId}">×</button>
+                            <button class="cart-remove text-red-500 hover:text-red-700">×</button>
                         </div>
                         <div class="flex justify-between items-center mt-2">
                             <div class="flex items-center space-x-2">
-                                <button class="cart-decrease w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200" data-id="${item.cartItemId}">−</button>
+                                <button class="cart-decrease w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200">−</button>
                                 <span class="w-8 text-center">${item.quantity}</span>
-                                <button class="cart-increase w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200" data-id="${item.cartItemId}">+</button>
+                                <button class="cart-increase w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200">+</button>
                             </div>
                             <div class="text-right">
                                 <div class="font-medium">₹${(item.price * item.quantity).toFixed(2)}</div>
@@ -90,7 +87,7 @@ const utils = {
                     <span>Subtotal</span>
                     <span class="font-medium">₹${totalAmount.toFixed(2)}</span>
                 </div>
-                <a href="/checkout" class="btn w-full text-center">Proceed to Checkout</a>
+                <a href="/checkout.html" class="btn w-full text-center">Proceed to Checkout</a>
             </div>
         `;
     },
@@ -124,62 +121,20 @@ const utils = {
     setupScrollObserver() {
         const header = document.getElementById('main-header');
         if (!header) return;
-
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    header.classList.remove('scrolled');
-                } else {
-                    header.classList.add('scrolled');
-                }
-            },
-            { threshold: [1], rootMargin: '-100px 0px 0px 0px' }
-        );
-
-        // Observe the first section or main content
-        const firstSection = document.querySelector('main > :first-child');
-        if (firstSection) observer.observe(firstSection);
-
-        // Also handle immediate scroll position
         const handleScroll = () => {
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
+            header.classList.toggle('scrolled', window.scrollY > 50);
         };
         window.addEventListener('scroll', handleScroll, { passive: true });
-        handleScroll(); // Check initial scroll position
+        handleScroll();
     },
 
     setupScrollAnimations() {
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.1
-        };
-
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                }
+                if (entry.isIntersecting) entry.target.classList.add('is-visible');
             });
-        }, observerOptions);
-
-        document.querySelectorAll('.reveal-on-scroll').forEach(el => {
-            observer.observe(el);
-        });
-    },
-
-    initializeHomePage() {
-        this.setupScrollAnimations();
-
-        // Lazy load images
-        document.querySelectorAll('[data-src]').forEach(img => {
-            img.src = img.dataset.src;
-            img.onload = () => img.classList.add('loaded');
-        });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
     }
 };
 
@@ -214,27 +169,20 @@ const cartActions = {
         const item = state.cart.find(c => c.cartItemId === cartItemId);
         if (!item) return;
 
-        // Ensure change is exactly +1 or -1
-        change = change > 0 ? 1 : -1;
-        const newQty = Math.max(1, parseInt(item.quantity) + change);
+        const currentQty = parseInt(item.quantity);
+        const newQty = Math.max(1, currentQty + change);
 
-        if (newQty === parseInt(item.quantity)) return;
+        if (newQty === currentQty) return;
 
         item.quantity = newQty;
         utils.saveCart();
-        // Explicitly keep cart open
-        const panel = document.getElementById('cart-panel');
-        if (panel) {
-            panel.classList.add('open');
-            utils.updateCartUI();
-        }
     }
 };
-
 
 // --- 5. PAGE-SPECIFIC RENDER FUNCTIONS ---
 const pages = {
     home() {
+        utils.setupScrollAnimations();
         const collectionGrid = document.getElementById("collection-grid");
         if (!collectionGrid || !state.products || state.products.length === 0) return;
         const topProducts = state.products.slice(0, 3);
@@ -247,80 +195,53 @@ const pages = {
                     <p class="text-lg font-bold font-sans mt-2 text-brand-accent">Starting from ₹${product.variants[0].price}</p>
                 </div>
             </a>`).join('');
+
+        // Lazy load images
+        document.querySelectorAll('[data-src]').forEach(img => {
+            img.src = img.dataset.src;
+            img.onload = () => img.classList.add('loaded');
+        });
     },
-    // In client/script.js, replace the entire pages.shop function with this.
     shop() {
         const shopGrid = document.querySelector('.products-grid');
         const filterButtonsContainer = document.querySelector('.filter-buttons');
-
         if (!shopGrid || !filterButtonsContainer) return;
 
         const displayProducts = (filter = 'all') => {
             const filteredProducts = state.products.filter(p => filter === 'all' || p.category.toLowerCase() === filter.toLowerCase());
-
-            if (filteredProducts.length === 0) {
-                shopGrid.innerHTML = `
-                <div class="empty-state">
-                    <h3 class="text-2xl text-gray-500 font-serif">No products found in this category.</h3>
-                </div>
-            `;
-                return;
-            }
-
-            shopGrid.innerHTML = filteredProducts.map(product => {
-                const firstVariant = product.variants && product.variants[0];
-                const imagePath = firstVariant ? firstVariant.images[0] : '';
-                const price = firstVariant ? firstVariant.price : 'N/A';
-                const name = product.name;
-                const category = product.category;
-
+            shopGrid.innerHTML = filteredProducts.length ? filteredProducts.map(product => {
+                const firstVariant = product.variants?.[0];
                 return `
                 <a href="product.html?id=${product.id}" class="product-card-link">
                     <article class="product-card">
-                        <div class="product-image-container">
-                            <img src="${imagePath}" alt="${name}" class="product-image">
-                        </div>
+                        <div class="product-image-container"><img src="${firstVariant?.images[0] || ''}" alt="${product.name}" class="product-image"></div>
                         <div class="product-details">
-                            <h3 class="product-title">${name}</h3>
-                            <div class="product-category">${category}</div>
-                            <div class="product-price">₹${price}</div>
+                            <h3 class="product-title">${product.name}</h3>
+                            <div class="product-category">${product.category}</div>
+                            <div class="product-price">₹${firstVariant?.price || 'N/A'}</div>
                         </div>
                     </article>
-                </a>
-            `;
-            }).join('');
+                </a>`;
+            }).join('') : `<div class="col-span-full text-center py-12 text-gray-500"><h3>No products found.</h3></div>`;
         };
+
+        const categories = [...new Set(state.products.map(p => p.category))];
+        filterButtonsContainer.innerHTML = `<button class="filter-button active" data-category="all">All Products</button>` +
+            categories.map(cat => `<button class="filter-button" data-category="${cat}">${cat}</button>`).join('');
 
         filterButtonsContainer.addEventListener('click', (e) => {
             const button = e.target.closest('.filter-button');
             if (button) {
                 document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
-                const category = button.dataset.category;
-                displayProducts(category);
+                displayProducts(button.dataset.category);
             }
         });
 
-        const setupShopPage = async () => {
-            await utils.fetchProducts();
-            const categories = [...new Set(state.products.map(p => p.category))];
-
-            const filterButtonsHtml = `
-            <button class="filter-button active" data-category="all">All Products</button>
-            ${categories.map(category => `
-                <button class="filter-button" data-category="${category}">${category}</button>
-            `).join('')}
-        `;
-            filterButtonsContainer.innerHTML = filterButtonsHtml;
-
-            displayProducts();
-        };
-
-        setupShopPage();
+        displayProducts();
     },
-
-    // START OF EDITED SECTION: PRODUCT PAGE FUNCTION
     product() {
+        utils.setupScrollAnimations();
         const params = new URLSearchParams(window.location.search);
         const productId = params.get('id');
         const product = state.products.find(p => p.id === productId);
@@ -329,96 +250,87 @@ const pages = {
             return;
         }
 
-        // --- DOM Elements ---
-        const productNameEl = document.getElementById('product-name');
-        const breadcrumbEl = document.getElementById('product-name-breadcrumb');
-        const categoryEl = document.getElementById('product-category');
-        const descriptionEl = document.getElementById('product-description');
-        const priceEl = document.getElementById('product-price');
         const productForm = document.getElementById('product-form');
         const galleryContainer = document.querySelector('.product-gallery');
 
-        // --- State ---
+        // State variables for the gallery
         let selectedVariant = product.variants[0];
         let currentImageIndex = 0;
 
-        // --- UI Update Functions ---
+        // --- Core Gallery Functions ---
         const updateMainImage = (index) => {
             const images = selectedVariant.images;
             if (index < 0 || index >= images.length) return;
-
-            const newImageSrc = images[index];
-            document.getElementById('main-product-image').src = newImageSrc;
-
-            const thumbnailImages = document.querySelectorAll('.thumbnail-image');
-            thumbnailImages.forEach((img, i) => img.classList.toggle('active', i === index));
+            document.getElementById('main-product-image').src = images[index];
+            document.querySelectorAll('.thumbnail-image').forEach((img, i) => img.classList.toggle('active', i === index));
             currentImageIndex = index;
         };
 
         const updateVariantUI = (variant) => {
-            priceEl.textContent = `₹${variant.price}`;
+            document.getElementById('product-price').textContent = `₹${variant.price}`;
             const thumbnailGrid = document.getElementById('thumbnail-grid');
             if (thumbnailGrid) {
-                thumbnailGrid.innerHTML = variant.images.map(image =>
-                    `<img src="${image}" class="thumbnail-image" data-src="${image}" alt="Product thumbnail">`
-                ).join('');
+                thumbnailGrid.innerHTML = variant.images.map(image => `<img src="${image}" class="thumbnail-image" alt="Product thumbnail">`).join('');
             }
-            updateMainImage(0); // Set the first image for the new variant
+            updateMainImage(0);
         };
 
+        // --- Render Product Options ---
         const renderOptions = (containerId, options, label, name) => {
             const container = document.getElementById(containerId);
             if (!container) return;
             container.classList.toggle('hidden', options.length <= 1);
             if (options.length <= 1) return;
-
-            let html = `<label class="subheading mb-3">${label}</label><div class="flex flex-wrap gap-3">`;
-            options.forEach((opt, index) => {
-                html += `
-                <label>
-                    <input type="radio" name="${name}" value="${opt}" ${index === 0 ? 'checked' : ''}>
-                    <span class="size-box cursor-pointer p-3 bg-white rounded-xl shadow-sm hover:bg-gray-100 transition-colors duration-200">${opt}</span>
-                </label>`;
-            });
-            html += '</div>';
-            container.innerHTML = html;
+            container.innerHTML = `<label class="subheading mb-3">${label}</label><div class="flex flex-wrap gap-3">${options.map((opt, index) => `
+            <label>
+                <input type="radio" name="${name}" value="${opt}" ${index === 0 ? 'checked' : ''} class="sr-only">
+                <span class="size-box cursor-pointer p-3 bg-white rounded-xl shadow-sm hover:bg-gray-100 transition-colors duration-200">${opt}</span>
+            </label>`).join('')}</div>`;
         };
 
         // --- Initial Page Setup ---
-        productNameEl.textContent = product.name;
-        breadcrumbEl.textContent = product.name;
-        categoryEl.textContent = product.category;
-        descriptionEl.textContent = product.description;
+        document.getElementById('product-name').textContent = product.name;
+        document.getElementById('product-name-breadcrumb').textContent = product.name;
+        document.getElementById('product-category').textContent = product.category;
+        document.getElementById('product-description').textContent = product.description;
         renderOptions('scent-options', product.scents, 'Scent', 'scent');
         renderOptions('size-options', product.variants.map(v => v.name), 'Size', 'size');
         updateVariantUI(selectedVariant);
 
         // --- Event Listeners ---
 
-        // Listener for the GALLERY (thumbnails and arrows)
+        // Listener for thumbnails
         if (galleryContainer) {
             galleryContainer.addEventListener('click', e => {
-                // Handle thumbnail clicks
                 const thumbnail = e.target.closest('.thumbnail-image');
                 if (thumbnail) {
                     const clickedIndex = Array.from(galleryContainer.querySelectorAll('.thumbnail-image')).indexOf(thumbnail);
                     updateMainImage(clickedIndex);
                 }
-
-                // Handle arrow clicks
-                const images = selectedVariant.images;
-                if (e.target.closest('.prev-arrow')) {
-                    const newIndex = (currentImageIndex - 1 + images.length) % images.length;
-                    updateMainImage(newIndex);
-                }
-                if (e.target.closest('.next-arrow')) {
-                    const newIndex = (currentImageIndex + 1) % images.length;
-                    updateMainImage(newIndex);
-                }
             });
         }
 
-        // Listener for the FORM (variant changes, quantity, add to cart)
+        // Listener for arrow navigation
+        const prevArrow = document.querySelector('.prev-arrow');
+        const nextArrow = document.querySelector('.next-arrow');
+
+        if (prevArrow) {
+            prevArrow.addEventListener('click', () => {
+                const images = selectedVariant.images;
+                const newIndex = (currentImageIndex - 1 + images.length) % images.length;
+                updateMainImage(newIndex);
+            });
+        }
+
+        if (nextArrow) {
+            nextArrow.addEventListener('click', () => {
+                const images = selectedVariant.images;
+                const newIndex = (currentImageIndex + 1) % images.length;
+                updateMainImage(newIndex);
+            });
+        }
+
+        // Listener for the form (variant changes, quantity, add to cart)
         if (productForm) {
             productForm.addEventListener('change', e => {
                 if (e.target.name === 'size') {
@@ -426,19 +338,15 @@ const pages = {
                     if (selectedVariant) updateVariantUI(selectedVariant);
                 }
             });
-
             productForm.addEventListener('click', e => {
                 const quantityInput = document.getElementById('quantity-input');
-                if (e.target.closest('#decrease-quantity') && parseInt(quantityInput.value) > 1) {
-                    quantityInput.value = parseInt(quantityInput.value) - 1;
-                } else if (e.target.closest('#increase-quantity')) {
-                    quantityInput.value = parseInt(quantityInput.value) + 1;
-                } else if (e.target.closest('#add-to-cart-product')) {
+                if (e.target.closest('#decrease-quantity')) quantityInput.value = Math.max(1, parseInt(quantityInput.value) - 1);
+                if (e.target.closest('#increase-quantity')) quantityInput.value = parseInt(quantityInput.value) + 1;
+                if (e.target.closest('#add-to-cart-product')) {
                     const quantity = parseInt(quantityInput.value);
                     const scent = productForm.querySelector('input[name="scent"]:checked')?.value || product.scents[0];
                     const size = productForm.querySelector('input[name="size"]:checked')?.value || product.variants[0].name;
-                    const cartItemId = `${product.id}_${size}_${scent}`;
-                    cartActions.add({ cartItemId, productId: product.id, size, scent, quantity });
+                    cartActions.add({ cartItemId: `${product.id}_${size}_${scent}`, productId: product.id, size, scent, quantity });
                 }
             });
         }
@@ -449,32 +357,11 @@ const pages = {
                 const item = header.closest('.accordion-item');
                 const content = item.querySelector('.accordion-content');
                 item.classList.toggle('active');
-                content.style.maxHeight = item.classList.contains('active') ? content.scrollHeight + 'px' : '0';
+                content.style.maxHeight = item.classList.contains('active') ? `${content.scrollHeight}px` : '0';
             });
         });
 
-
-        // Image gallery navigation logic
-        const prevArrow = document.querySelector('.prev-arrow');
-        const nextArrow = document.querySelector('.next-arrow');
-
-        if (prevArrow && nextArrow) {
-            prevArrow.addEventListener('click', () => {
-                // Use the currently selected variant's images
-                const images = selectedVariant.images;
-                const newIndex = (currentImageIndex - 1 + images.length) % images.length;
-                updateMainImage(newIndex);
-            });
-
-            nextArrow.addEventListener('click', () => {
-                // Use the currently selected variant's images
-                const images = selectedVariant.images;
-                const newIndex = (currentImageIndex + 1) % images.length;
-                updateMainImage(newIndex);
-            });
-        }
-
-        // Thumbnail scroller functionality (existing code)
+        // Thumbnail scroller functionality
         const thumbnailTrackContainer = document.getElementById('thumbnail-track-container');
         const scrollLeftBtn = document.getElementById('scroll-left');
         const scrollRightBtn = document.getElementById('scroll-right');
@@ -482,55 +369,68 @@ const pages = {
         if (thumbnailTrackContainer && scrollLeftBtn && scrollRightBtn) {
             scrollLeftBtn.addEventListener('click', () => {
                 thumbnailTrackContainer.scrollBy({
-                    left: -100, // Adjust this value to change scroll speed
+                    left: -100,
                     behavior: 'smooth'
                 });
             });
 
             scrollRightBtn.addEventListener('click', () => {
                 thumbnailTrackContainer.scrollBy({
-                    left: 100, // Adjust this value to change scroll speed
+                    left: 100,
                     behavior: 'smooth'
                 });
             });
         }
     },
-    // END OF EDITED SECTION: PRODUCT PAGE FUNCTION
     checkout() {
         const form = document.getElementById('checkout-form');
         if (!form) return;
 
-        // Initialize country/state dropdowns with phone input style
         const countrySelect = document.getElementById('country-select');
         const stateSelect = document.getElementById('state-select');
 
-        if (countrySelect) {
-            countrySelect.className = 'form-select iti__country-select';
-            stateSelect.className = 'form-select iti__country-select';
+        // Load country data
+        fetch('https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/countries%2Bstates.json')
+            .then(response => response.json())
+            .then(data => {
+                // Populate countries
+                countrySelect.innerHTML = `
+                <option value="">Select Country</option>
+                ${data.map(country =>
+                    `<option value="${country.iso2}">${country.name}</option>`
+                ).join('')}
+                `;
 
-            // Populate countries
-            const countries = window.intlTelInputGlobals.getCountryData();
-            countrySelect.innerHTML = countries.map(country =>
-                `<option value="${country.iso2}" data-code="${country.dialCode}">
-                    ${country.name}
-                </option>`
-            ).join('');
-        }
+                // Handle country change
+                countrySelect.addEventListener('change', function () {
+                    const country = data.find(c => c.iso2 === this.value);
+                    if (!country) {
+                        stateSelect.innerHTML = '<option value="">Select State</option>';
+                        stateSelect.disabled = true;
+                        return;
+                    }
+
+                    stateSelect.innerHTML = `
+                        <option value="">Select State</option>
+                        ${country.states.map(state =>
+                        `<option value="${state.state_code}">${state.name}</option>`
+                    ).join('')}
+                    `;
+                    stateSelect.disabled = false;
+                });
+            });
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(form);
             const email = formData.get('email');
 
-            // Send OTP first
             const otpSent = await orderSystem.sendOTP(email);
             if (!otpSent) return;
 
-            // Show OTP modal
             const otpModal = document.getElementById('otp-modal');
             otpModal.style.display = 'flex';
 
-            // Handle OTP verification
             document.getElementById('verify-otp-button').onclick = async () => {
                 const otp = document.getElementById('otp-input').value;
                 const verified = await orderSystem.verifyOTP(email, otp);
@@ -547,7 +447,6 @@ const pages = {
             };
         });
     },
-
     confirmation() {
         const order = JSON.parse(localStorage.getItem(config.storageKeys.latestOrder));
         if (!order) {
@@ -653,10 +552,8 @@ const orderSystem = {
         const formData = new FormData(form);
         const email = formData.get('email');
 
-        // First show OTP modal
         document.getElementById('otp-modal').style.display = 'flex';
 
-        // Handle send OTP button
         document.getElementById('send-otp-button').onclick = async () => {
             const sent = await this.sendOTP(email);
             if (sent) {
@@ -664,7 +561,6 @@ const orderSystem = {
             }
         };
 
-        // Handle verify OTP button
         document.getElementById('verify-otp-button').onclick = async () => {
             const otp = document.getElementById('otp-input').value;
             const verified = await this.verifyOTP(email, otp);
@@ -689,150 +585,78 @@ async function initializeApp() {
 
     setupGlobalListeners();
 
-    const body = document.body;
-    if (body.classList.contains("home-page")) pages.home();
-    if (body.classList.contains("shop-page")) pages.shop();
-    if (body.querySelector(".product-page-main")) pages.product();
-    if (body.classList.contains("checkout-page")) pages.checkout();
-    if (body.querySelector("#confirmation-details")) pages.confirmation();
+    if (document.body.classList.contains("home-page")) pages.home();
+    if (document.body.classList.contains("shop-page")) pages.shop();
+    if (document.querySelector(".product-page-main")) pages.product();
+    if (document.body.classList.contains("checkout-page")) pages.checkout();
+    if (document.querySelector("#confirmation-details")) pages.confirmation();
 
-    // Initial UI updates after everything is loaded
     utils.updateCartUI();
     utils.setupScrollObserver();
-}
 
-function setupGlobalListeners() {
-    // Cart panel controls
-    document.getElementById('open-cart-button')?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        utils.openCart();
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            document.querySelectorAll('.reveal-on-scroll, .hero-title, .main-content-area, #collection-grid')
+                .forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.visibility = 'visible';
+                    el.style.transform = 'none';
+                });
+        }, 100);
     });
 
-    document.getElementById('close-cart-button')?.addEventListener('click', utils.closeCart);
-
-    // Cart item controls delegation
-    document.addEventListener('click', (e) => {
-        if (e.target.closest('.cart-decrease')) {
-            const id = e.target.closest('.cart-decrease').dataset.id;
-            cartActions.updateQuantity(id, -1);
-        }
-        if (e.target.closest('.cart-increase')) {
-            const id = e.target.closest('.cart-increase').dataset.id;
-            cartActions.updateQuantity(id, 1);
-        }
-        if (e.target.closest('.cart-remove')) {
-            const id = e.target.closest('.cart-remove').dataset.id;
-            cartActions.remove(id);
-        }
-    });
-
-    // In the setupGlobalListeners function, REPLACE the event listener with this:
-    document.addEventListener('click', (e) => {
-        // Handle cart item controls
-        if (e.target.closest('.cart-decrease')) {
-            e.stopPropagation(); // Prevents panel from closing
-            const id = e.target.closest('.cart-decrease').dataset.id;
-            cartActions.updateQuantity(id, -1);
-        }
-        if (e.target.closest('.cart-increase')) {
-            e.stopPropagation(); // Prevents panel from closing
-            const id = e.target.closest('.cart-increase').dataset.id;
-            cartActions.updateQuantity(id, 1);
-        }
-        if (e.target.closest('.cart-remove')) {
-            e.stopPropagation(); // Prevents panel from closing
-            const id = e.target.closest('.cart-remove').dataset.id;
-            cartActions.remove(id);
-        }
-
-        // Handle closing cart when clicking outside
-        const cartPanel = document.getElementById('cart-panel');
-        const cartButton = document.getElementById('open-cart-button');
-        if (cartPanel?.classList.contains('open') &&
-            !cartPanel.contains(e.target) &&
-            !cartButton?.contains(e.target)) {
-            utils.closeCart();
-        }
-    });
-
-    // Update header on scroll
     window.addEventListener('scroll', () => {
         const header = document.getElementById('main-header');
-        if (window.scrollY > 50) {
-            header?.classList.add('scrolled');
-        } else {
-            header?.classList.remove('scrolled');
+        if (header) {
+            if (window.scrollY > 50) {
+                header.style.backgroundColor = 'rgba(248, 244, 238, 0.95)';
+                header.style.backdropFilter = 'blur(10px)';
+            } else {
+                header.style.backgroundColor = 'transparent';
+                header.style.backdropFilter = 'none';
+            }
         }
     }, { passive: true });
 }
 
-function initializeLocationDropdowns() {
-    const countrySelect = document.getElementById('country-select');
-    const stateSelect = document.getElementById('state-select');
+function setupGlobalListeners() {
+    document.addEventListener('click', (e) => {
+        const openCartButton = e.target.closest('#open-cart-button');
+        const closeCartButton = e.target.closest('#close-cart-button');
+        const cartItemAction = e.target.closest('.cart-item button');
+        const cartPanel = document.getElementById('cart-panel');
 
-    if (!countrySelect || !stateSelect) return;
+        if (openCartButton) {
+            e.stopPropagation();
+            utils.openCart();
+            return;
+        }
 
-    // Style dropdowns
-    [countrySelect, stateSelect].forEach(select => {
-        select.className = 'form-select';
+        if (closeCartButton) {
+            utils.closeCart();
+            return;
+        }
+
+        if (cartItemAction) {
+            e.stopPropagation();
+            const cartItem = cartItemAction.closest('.cart-item');
+            const id = cartItem.dataset.id;
+
+            if (cartItemAction.matches('.cart-increase')) {
+                cartActions.updateQuantity(id, 1);
+            } else if (cartItemAction.matches('.cart-decrease')) {
+                cartActions.updateQuantity(id, -1);
+            } else if (cartItemAction.matches('.cart-remove')) {
+                cartActions.remove(id);
+            }
+            return;
+        }
+
+        if (cartPanel && cartPanel.classList.contains('open') &&
+            !cartPanel.contains(e.target) && !document.getElementById('open-cart-button').contains(e.target)) {
+            utils.closeCart();
+        }
     });
-
-    // Load country data
-    fetch('https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/countries%2Bstates.json')
-        .then(response => response.json())
-        .then(data => {
-            // Populate countries
-            countrySelect.innerHTML = `
-                <option value="">Select Country</option>
-                ${data.countries.map(country =>
-                `<option value="${country.iso2}">${country.name}</option>`
-            ).join('')}
-            `;
-
-            // Handle country change
-            countrySelect.addEventListener('change', function () {
-                const country = data.countries.find(c => c.iso2 === this.value);
-                if (!country) {
-                    stateSelect.innerHTML = '<option value="">Select State</option>';
-                    stateSelect.disabled = true;
-                    return;
-                }
-
-                stateSelect.innerHTML = `
-                    <option value="">Select State</option>
-                    ${country.states.map(state =>
-                    `<option value="${state.state_code}">${state.name}</option>`
-                ).join('')}
-                `;
-                stateSelect.disabled = false;
-            });
-        });
 }
 
-// end of setupGlobalListeners
 initializeApp();
-
-// Add to your initialization code
-document.addEventListener('DOMContentLoaded', () => {
-    // Force show any hidden content after a slight delay
-    setTimeout(() => {
-        document.querySelectorAll('.reveal-on-scroll, .hero-title, .main-content-area, #collection-grid')
-            .forEach(el => {
-                el.style.opacity = '1';
-                el.style.visibility = 'visible';
-                el.style.transform = 'none';
-            });
-    }, 100);
-});
-
-// Update header transparency
-window.addEventListener('scroll', () => {
-    const header = document.getElementById('main-header');
-    if (window.scrollY > 50) {
-        header.style.backgroundColor = 'rgba(248, 244, 238, 0.95)';
-        header.style.backdropFilter = 'blur(10px)';
-    } else {
-        header.style.backgroundColor = 'transparent';
-        header.style.backdropFilter = 'none';
-    }
-}, { passive: true });
