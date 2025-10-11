@@ -2,7 +2,9 @@
 
 // --- 1. CONFIGURATION & STATE ---
 const config = {
-    apiBaseUrl: 'http://localhost:5000',
+    // FIX: Removed the hardcoded localhost URL.
+    // All API calls will now be relative to the domain.
+    apiBaseUrl: '',
     storageKeys: { cart: 'cart', latestOrder: 'latestOrder' },
     headerPath: './_header.html',
     footerPath: './_footer.html'
@@ -28,6 +30,7 @@ async function loadFooter() { await loadComponent('footer-container', config.foo
 const utils = {
     async fetchProducts() {
         try {
+            // FIX: The URL now correctly points to your API on Vercel.
             const response = await fetch(`${config.apiBaseUrl}/api/products`);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             state.products = await response.json();
