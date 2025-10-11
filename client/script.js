@@ -339,7 +339,7 @@ const pages = {
         setupShopPage();
     },
 
-    // In client/script.js, replace the entire pages.product function with this.
+    // START OF EDITED SECTION: PRODUCT PAGE FUNCTION
     product() {
         const params = new URLSearchParams(window.location.search);
         const productId = params.get('id');
@@ -357,6 +357,7 @@ const pages = {
 
         // Set initial selected variant
         let selectedVariant = product.variants[0];
+        let currentImageIndex = 0; // New state variable
 
         // Function to render options (scent or size)
         const renderOptions = (containerId, options, label, name) => {
@@ -367,7 +368,7 @@ const pages = {
             container.classList.toggle('hidden', options.length <= 1);
             if (options.length <= 1) return;
 
-            let html = `<label class="block subheading mb-3">${label}</label><div class="flex flex-wrap gap-3">`;
+            let html = `<label class="subheading mb-3">${label}</label><div class="flex flex-wrap gap-3">`;
             options.forEach((opt, index) => {
                 html += `
                 <label>
@@ -403,6 +404,20 @@ const pages = {
                     firstThumbnail.classList.add('active');
                 }
             }
+            currentImageIndex = 0; // Reset index when variant changes
+        };
+
+        // Function to update the main image and active thumbnail
+        const updateMainImage = (index) => {
+            const thumbnailImages = document.querySelectorAll('.thumbnail-image');
+            if (index < 0 || index >= thumbnailImages.length) return;
+
+            const newImageSrc = thumbnailImages[index].dataset.src;
+            document.getElementById('main-product-image').src = newImageSrc;
+
+            thumbnailImages.forEach(t => t.classList.remove('active'));
+            thumbnailImages[index].classList.add('active');
+            currentImageIndex = index;
         };
 
         // Initial rendering of options and UI
@@ -423,9 +438,10 @@ const pages = {
         document.getElementById('product-form').addEventListener('click', e => {
             const thumbnail = e.target.closest('.thumbnail-image');
             if (thumbnail) {
-                document.querySelectorAll('.thumbnail-image').forEach(t => t.classList.remove('active'));
-                thumbnail.classList.add('active');
-                document.getElementById('main-product-image').src = thumbnail.src;
+                // This finds which thumbnail was clicked (e.g., the 1st, 2nd, etc.)
+                const clickedIndex = Array.from(document.querySelectorAll('.thumbnail-image')).indexOf(thumbnail);
+                // This updates the main image to show the one you clicked
+                updateMainImage(clickedIndex);
                 return;
             }
 
@@ -464,7 +480,27 @@ const pages = {
             });
         });
 
-        // Image gallery navigation
+        // Image gallery navigation logic
+        const prevArrow = document.querySelector('.prev-arrow');
+        const nextArrow = document.querySelector('.next-arrow');
+
+        if (prevArrow && nextArrow) {
+            prevArrow.addEventListener('click', () => {
+                // Use the currently selected variant's images
+                const images = selectedVariant.images;
+                const newIndex = (currentImageIndex - 1 + images.length) % images.length;
+                updateMainImage(newIndex);
+            });
+
+            nextArrow.addEventListener('click', () => {
+                // Use the currently selected variant's images
+                const images = selectedVariant.images;
+                const newIndex = (currentImageIndex + 1) % images.length;
+                updateMainImage(newIndex);
+            });
+        }
+
+        // Thumbnail scroller functionality (existing code)
         const thumbnailTrackContainer = document.getElementById('thumbnail-track-container');
         const scrollLeftBtn = document.getElementById('scroll-left');
         const scrollRightBtn = document.getElementById('scroll-right');
@@ -485,6 +521,7 @@ const pages = {
             });
         }
     },
+    // END OF EDITED SECTION: PRODUCT PAGE FUNCTION
     checkout() {
         const form = document.getElementById('checkout-form');
         if (!form) return;

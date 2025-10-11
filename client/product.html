@@ -28,19 +28,20 @@
 
             <div class="grid lg:grid-cols-2 gap-16">
                 <div class="product-gallery">
-                    <div class="main-image-wrapper mb-4">
-                        <img id="main-product-image" src="" alt="Main product image" class="rounded-lg">
+                    <div class="main-image-wrapper relative mb-4 rounded-lg overflow-hidden">
+                        <img id="main-product-image" src="" alt="Main product image" class="w-full h-auto object-cover">
+                        <button class="prev-arrow image-nav-arrow left-4">&lt;</button>
+                        <button class="next-arrow image-nav-arrow right-4">&gt;</button>
                     </div>
                     <div class="thumbnail-scroller flex items-center mt-4">
                         <button id="scroll-left" class="arrow-btn text-lg">&lt;</button>
                         <div id="thumbnail-track-container" class="flex-grow overflow-hidden">
                             <div id="thumbnail-grid" class="thumbnail-track flex gap-2">
-                                </div>
+                            </div>
                         </div>
                         <button id="scroll-right" class="arrow-btn text-lg">&gt;</button>
                     </div>
                 </div>
-
                 <div class="product-details">
                     <p id="product-category" class="subheading text-brand-accent"></p>
                     <h1 id="product-name" class="text-4xl font-serif font-bold mt-2"></h1>
@@ -52,10 +53,14 @@
                         <div id="size-options" class="mt-6 hidden"></div>
 
                         <div class="flex items-center gap-4 mt-8">
-                            <div class="quantity-selector flex items-center border border-gray-300 rounded-full px-2 py-1">
-                                <button type="button" id="decrease-quantity" class="text-xl px-2 text-gray-600">-</button>
-                                <input type="number" id="quantity-input" value="1" min="1" readonly class="text-center w-12 border-none focus:ring-0 bg-transparent">
-                                <button type="button" id="increase-quantity" class="text-xl px-2 text-gray-600">+</button>
+                            <div
+                                class="quantity-selector flex items-center border border-gray-300 rounded-full px-2 py-1">
+                                <button type="button" id="decrease-quantity"
+                                    class="text-xl px-2 text-gray-600">-</button>
+                                <input type="number" id="quantity-input" value="1" min="1" readonly
+                                    class="text-center w-12 border-none focus:ring-0 bg-transparent">
+                                <button type="button" id="increase-quantity"
+                                    class="text-xl px-2 text-gray-600">+</button>
                             </div>
                             <button id="add-to-cart-product" type="button" class="btn flex-grow">
                                 <span>Add to Cart</span>
@@ -65,29 +70,41 @@
 
                     <div class="mt-12">
                         <div class="accordion-item active">
-                            <button class="accordion-header flex justify-between items-center w-full py-4 border-b border-gray-200">
+                            <button
+                                class="accordion-header flex justify-between items-center w-full py-4 border-b border-gray-200">
                                 <span class="text-xl font-medium">Product Details</span>
                                 <span class="plus-minus transition-transform duration-300">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4v16m8-8H4" />
                                     </svg>
                                 </span>
                             </button>
                             <div class="accordion-content overflow-hidden transition-all duration-500 ease-in-out">
-                                <p class="py-4 text-gray-600">This handcrafted product is made with 100% natural ingredients, including pure essential oils and sustainable wood powder. Our unique blend ensures a clean and long-lasting burn, perfect for meditation and daily rituals.</p>
+                                <p class="py-4 text-gray-600">This handcrafted product is made with 100% natural
+                                    ingredients, including pure essential oils and sustainable wood powder. Our unique
+                                    blend ensures a clean and long-lasting burn, perfect for meditation and daily
+                                    rituals.</p>
                             </div>
                         </div>
                         <div class="accordion-item">
-                            <button class="accordion-header flex justify-between items-center w-full py-4 border-b border-gray-200">
+                            <button
+                                class="accordion-header flex justify-between items-center w-full py-4 border-b border-gray-200">
                                 <span>Shipping & Returns</span>
                                 <span class="plus-minus transition-transform duration-300">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4v16m8-8H4" />
                                     </svg>
                                 </span>
                             </button>
-                            <div class="accordion-content overflow-hidden transition-all duration-500 ease-in-out" style="max-height: 0;">
-                                <p class="py-4 text-gray-600">We offer free shipping on all orders above ₹500. Orders are typically processed within 1-2 business days. We accept returns within 30 days of purchase for unused products in their original packaging.</p>
+                            <div class="accordion-content overflow-hidden transition-all duration-500 ease-in-out"
+                                style="max-height: 0;">
+                                <p class="py-4 text-gray-600">We offer free shipping on all orders above ₹500. Orders
+                                    are typically processed within 1-2 business days. We accept returns within 30 days
+                                    of purchase for unused products in their original packaging.</p>
                             </div>
                         </div>
                     </div>
