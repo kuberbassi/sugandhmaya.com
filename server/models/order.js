@@ -5,8 +5,12 @@ const orderSchema = new mongoose.Schema({
     customer: {
         name: String,
         email: String,
-        address: String,
         phone: String,
+        address: String,
+        // FIX: Added missing fields to save to the database
+        state: String,
+        country: String,
+        pin: String,
     },
     items: [{
         productId: String,
@@ -23,5 +27,4 @@ const orderSchema = new mongoose.Schema({
     }
 });
 
-// Change to CommonJS export
 module.exports = mongoose.model('Order', orderSchema);

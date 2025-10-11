@@ -389,12 +389,15 @@ const pages = {
         const phoneInput = document.getElementById('phone');
         const otpModal = document.getElementById('otp-modal');
         const placeOrderBtn = document.getElementById('place-order-button');
+        const verifyOtpBtn = document.getElementById('verify-otp-button');
+        const otpInput = document.getElementById('otp-input');
 
         const renderCheckoutSummary = () => {
             if (state.cart.length === 0) {
                 summaryItemsContainer.innerHTML = '<p class="text-gray-500">Your cart is empty.</p>';
                 if (placeOrderBtn) {
                     placeOrderBtn.disabled = true;
+                    placeOrderBtn.textContent = 'Cart is Empty';
                     placeOrderBtn.style.opacity = '0.5';
                 }
                 return;
@@ -417,27 +420,44 @@ const pages = {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!form.checkValidity()) {
-                utils.showToast("Please fill all required fields.");
+                utils.showToast("Please fill all required fields correctly.");
+                form.reportValidity(); // Show browser validation messages
                 return;
             }
+            placeOrderBtn.disabled = true;
+            placeOrderBtn.textContent = 'Sending OTP...';
+
             const formData = new FormData(form);
             const customerData = Object.fromEntries(formData);
-            customerData.phone = iti.getNumber();
+            
             if (await orderSystem.sendOTP(customerData.email)) {
                 otpModal.style.display = 'flex';
             }
+            placeOrderBtn.disabled = false;
+            placeOrderBtn.textContent = 'Place Order';
         });
 
-        document.getElementById('verify-otp-button').onclick = async () => {
+        verifyOtpBtn.addEventListener('click', async () => {
+            verifyOtpBtn.disabled = true;
+            verifyOtpBtn.textContent = 'Verifying...';
+
             const formData = new FormData(form);
             const customerData = Object.fromEntries(formData);
             customerData.phone = iti.getNumber();
-            const otp = document.getElementById('otp-input').value;
-            if (await orderSystem.verifyOTP(customerData.email, otp)) {
-                await orderSystem.placeOrder({ customer: customerData, items: state.cart });
-            }
-        };
+            const otp = otpInput.value;
 
+            const isVerified = await orderSystem.verifyOTP(customerData.email, otp);
+            
+            if (isVerified) {
+                verifyOtpBtn.textContent = 'Placing Order...';
+                await orderSystem.placeOrder({ customer: customerData, items: state.cart });
+            } else {
+                 // Re-enable the button if verification fails
+                verifyOtpBtn.disabled = false;
+                verifyOtpBtn.textContent = 'Verify & Complete Order';
+            }
+        });
+        
         document.getElementById('cancel-otp-button').addEventListener('click', () => {
             otpModal.style.display = 'none';
         });

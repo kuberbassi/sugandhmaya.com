@@ -15,16 +15,12 @@
     <link rel="stylesheet" href="style.css">
     <style>
         .hero-section {
-            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
-                url('./images/texture-bg.webp');
+            /* FIX: Replaced missing image with a valid one */
+            background: linear-gradient(rgba(248, 244, 238, 0.9), rgba(248, 244, 238, 0.9)),
+                url('./images/hero-bg.webp');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-        }
-
-        .nav-brand {
-            font-weight: 700;
-            /* Makes Sugandhmaya text bold */
         }
     </style>
 </head>
@@ -33,7 +29,6 @@
     <div id="header-container"></div>
 
     <main>
-        <!-- Hero Section -->
         <section class="hero-section">
             <div class="container mx-auto px-6">
                 <div class="grid lg:grid-cols-2 gap-16 items-center">
@@ -52,25 +47,22 @@
                         </a>
                     </div>
                     <div class="hero-media-grid reveal-on-scroll" style="--delay: 0.2s">
-                        <div class="media-item-1" style="background-image: url('./images/hero-1.webp')">
-                            <img src="./images/products/sugandhmaya_chandan_agarbatti/12-stick-box-agarbatti.webp"
-                                alt="Sacred Incense Ritual" loading="lazy">
+                        <div class="media-item-1">
+                            <img src="./images/products/sugandhmaya_chandan_agarbatti/12-stick-box-agarbatti.webp" alt="Sacred Incense Ritual" loading="lazy">
                         </div>
                         <div class="media-item-2">
                             <video autoplay loop muted playsinline>
                                 <source src="./images/agarbatti-video.mp4" type="video/mp4">
                             </video>
                         </div>
-                        <div class="media-item-3" style="background-image: url('./images/hero-3.webp')">
-                            <img src="./images/products/sugandhmaya_chandan_agarbatti/40-stick-box-agarbatti.webp"
-                                alt="Puja Essentials Collection" loading="lazy">
+                        <div class="media-item-3">
+                            <img src="./images/products/sugandhmaya_chandan_agarbatti/40-stick-box-agarbatti.webp" alt="Puja Essentials Collection" loading="lazy">
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Featured Collection Section -->
         <section id="collection" class="featured-collection py-24">
             <div class="container mx-auto px-6">
                 <div class="text-center mb-16">
@@ -79,111 +71,10 @@
                     <div class="value-line"></div>
                 </div>
 
-                <div class="bento-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-                    <!-- Rose Collection -->
-                    <div class="bento-item bg-rose-50 p-6 rounded-xl hover:shadow-lg transition-all reveal-on-scroll"
-                        style="--delay: 0.1s">
-                        <div class="text-4xl mb-4">🌹</div>
-                        <h4 class="text-xl font-bold mb-2">Rose</h4>
-                        <div class="sizes-grid grid grid-cols-2 gap-3">
-                            <div class="size-box p-3 bg-white rounded">
-                                <p>40 Sticks</p>
-                                <p class="text-sm text-gray-600">Premium Box</p>
-                            </div>
-                            <div class="size-box p-3 bg-white rounded">
-                                <p>12 Sticks</p>
-                                <p class="text-sm text-gray-600">Travel Pack</p>
-                            </div>
-                        </div>
+                <div id="collection-grid" class="collection-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
                     </div>
 
-                    <!-- Mogra Collection -->
-                    <div class="bento-item bg-yellow-50 p-6 rounded-xl hover:shadow-lg transition-all reveal-on-scroll"
-                        style="--delay: 0.2s">
-                        <div class="text-4xl mb-4">🌸</div>
-                        <h4 class="text-xl font-bold mb-2">Mogra</h4>
-                        <div class="sizes-grid grid grid-cols-2 gap-3">
-                            <div class="size-box p-3 bg-white rounded">
-                                <p>40 Sticks</p>
-                                <p class="text-sm text-gray-600">Premium Box</p>
-                            </div>
-                            <div class="size-box p-3 bg-white rounded">
-                                <p>12 Sticks</p>
-                                <p class="text-sm text-gray-600">Travel Pack</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Oudh Collection -->
-                    <div class="bento-item bg-amber-50 p-6 rounded-xl hover:shadow-lg transition-all reveal-on-scroll"
-                        style="--delay: 0.3s">
-                        <div class="text-4xl mb-4">🌳</div>
-                        <h4 class="text-xl font-bold mb-2">Oudh</h4>
-                        <div class="sizes-grid grid grid-cols-2 gap-3">
-                            <div class="size-box p-3 bg-white rounded">
-                                <p>40 Sticks</p>
-                                <p class="text-sm text-gray-600">Premium Box</p>
-                            </div>
-                            <div class="size-box p-3 bg-white rounded">
-                                <p>12 Sticks</p>
-                                <p class="text-sm text-gray-600">Travel Pack</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Oudh Premium Collection -->
-                    <div class="bento-item bg-brown-50 p-6 rounded-xl hover:shadow-lg transition-all reveal-on-scroll"
-                        style="--delay: 0.4s">
-                        <div class="text-4xl mb-4">✨</div>
-                        <h4 class="text-xl font-bold mb-2">Oudh Premium</h4>
-                        <div class="sizes-grid grid grid-cols-2 gap-3">
-                            <div class="size-box p-3 bg-white rounded">
-                                <p>40 Sticks</p>
-                                <p class="text-sm text-gray-600">Premium Box</p>
-                            </div>
-                            <div class="size-box p-3 bg-white rounded">
-                                <p>12 Sticks</p>
-                                <p class="text-sm text-gray-600">Travel Pack</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Chandan Collection -->
-                    <div class="bento-item bg-orange-50 p-6 rounded-xl hover:shadow-lg transition-all reveal-on-scroll"
-                        style="--delay: 0.5s">
-                        <div class="text-4xl mb-4">🪵</div>
-                        <h4 class="text-xl font-bold mb-2">Chandan</h4>
-                        <div class="sizes-grid grid grid-cols-2 gap-3">
-                            <div class="size-box p-3 bg-white rounded">
-                                <p>40 Sticks</p>
-                                <p class="text-sm text-gray-600">Premium Box</p>
-                            </div>
-                            <div class="size-box p-3 bg-white rounded">
-                                <p>12 Sticks</p>
-                                <p class="text-sm text-gray-600">Travel Pack</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Orchid Collection -->
-                    <div class="bento-item bg-purple-50 p-6 rounded-xl hover:shadow-lg transition-all reveal-on-scroll"
-                        style="--delay: 0.6s">
-                        <div class="text-4xl mb-4">🌺</div>
-                        <h4 class="text-xl font-bold mb-2">Orchid</h4>
-                        <div class="sizes-grid grid grid-cols-2 gap-3">
-                            <div class="size-box p-3 bg-white rounded">
-                                <p>40 Sticks</p>
-                                <p class="text-sm text-gray-600">Premium Box</p>
-                            </div>
-                            <div class="size-box p-3 bg-white rounded">
-                                <p>12 Sticks</p>
-                                <p class="text-sm text-gray-600">Travel Pack</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="text-center mt-12">
+                <div class="text-center mt-16">
                     <a href="/shop.html" class="view-all-products">
                         View All Products
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -194,7 +85,6 @@
             </div>
         </section>
 
-        <!-- Core Values -->
         <section class="core-values-section">
             <div class="container mx-auto px-6">
                 <div class="section-header text-center mb-16">
@@ -210,8 +100,7 @@
                         </div>
                         <h3 class="value-title">Handcrafted Tradition</h3>
                         <div class="value-line"></div>
-                        <p class="value-description">Each product is crafted with meticulous care, honoring age-old
-                            techniques passed down through generations.</p>
+                        <p class="value-description">Each product is crafted with meticulous care, honoring age-old techniques.</p>
                     </div>
 
                     <div class="value-card reveal-on-scroll" style="--delay: 0.2s">
@@ -220,8 +109,7 @@
                         </div>
                         <h3 class="value-title">Pure & Natural</h3>
                         <div class="value-line"></div>
-                        <p class="value-description">We use only the finest natural ingredients, free from harmful
-                            additives, to ensure a pure and authentic experience.</p>
+                        <p class="value-description">We use only the finest natural ingredients, free from harmful additives.</p>
                     </div>
 
                     <div class="value-card reveal-on-scroll" style="--delay: 0.3s">
@@ -230,21 +118,19 @@
                         </div>
                         <h3 class="value-title">Ethically Sourced</h3>
                         <div class="value-line"></div>
-                        <p class="value-description">Our materials are sourced responsibly, supporting local communities
-                            and preserving the environment.</p>
+                        <p class="value-description">Our materials are sourced responsibly, supporting local communities.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Philosophy Section -->
         <section id="our-promise" class="py-24 bg-white relative overflow-hidden">
             <div class="container mx-auto px-6">
                 <div class="grid lg:grid-cols-2 gap-16 items-center">
                     <div class="promise-content reveal-on-scroll">
                         <h4 class="subheading">Our Philosophy</h4>
                         <h2 class="text-4xl font-serif mb-6">A Promise of<br>Purity & Craft.</h2>
-                        <p class="text-lg text-gray-600 mb-8">At Sugandhmaya, we believe spirituality is an art form. Our mission is to craft products that not only honor ancient traditions but also inspire beauty and peace in modern sacred spaces.</p>
+                        <p class="text-lg text-gray-600 mb-8">At Sugandhmaya, we believe spirituality is an art form, crafting products that honor tradition and inspire peace.</p>
                         <a href="#contact" class="btn btn-animated">Learn More</a>
                     </div>
                     <div class="brand-emblem reveal-on-scroll" style="--delay: 0.2s">
@@ -255,55 +141,30 @@
                     </div>
                 </div>
             </div>
-            <div class="absolute inset-0 bg-gradient-radial opacity-10 pointer-events-none"></div>
         </section>
 
-        <!-- Add this new Contact Section -->
         <section id="contact" class="py-24 bg-brand-background">
             <div class="container mx-auto px-6">
-                <div class="text-center mb-16">
+                 <div class="text-center mb-16">
                     <h4 class="subheading">Get in Touch</h4>
                     <h2 class="text-4xl font-serif mb-4">Contact Us</h2>
                     <div class="value-line"></div>
-                    <div class="w-20 h-0.5 bg-brand-accent mx-auto"></div>
                 </div>
-
-                <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                    <a href="https://share.google/mAWPFtRgirVCi2x3G" 
-                       class="contact-card reveal-on-scroll" 
-                       style="--delay: 0.1s"
-                       target="_blank">
+                 <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    <a href="https://share.google/mAWPFtRgirVCi2x3G" class="contact-card reveal-on-scroll" target="_blank">
                         <div class="contact-icon">📍</div>
                         <h3 class="text-xl font-serif mb-3">Visit Us</h3>
-                        <p class="text-gray-600">
-                            IOR Technology Private Limited<br>
-                            G-57, Ground Floor, West End Mall, Janak Puri, New Delhi<br>
-                            110058
-                        </p>
+                        <p class="text-gray-600">G-57, West End Mall, Janak Puri, New Delhi - 110058</p>
                     </a>
-
-                    <a href="tel:+919971055746" 
-                       class="contact-card reveal-on-scroll" 
-                       style="--delay: 0.2s"
-                       target="_blank">
+                    <a href="tel:+919971055746" class="contact-card reveal-on-scroll" style="--delay: 0.2s" target="_blank">
                         <div class="contact-icon">📞</div>
                         <h3 class="text-xl font-serif mb-3">Call Us</h3>
-                        <p class="text-gray-600">
-                            +91 9971055746<br>
-                            For inquiries related to orders and support
-                        </p>
+                        <p class="text-gray-600">+91 9971055746</p>
                     </a>
-
-                    <a href="mailto:ops@indiaonroaming.com" 
-                       class="contact-card reveal-on-scroll" 
-                       style="--delay: 0.3s"
-                       target="_blank">
+                    <a href="mailto:ops@indiaonroaming.com" class="contact-card reveal-on-scroll" style="--delay: 0.3s" target="_blank">
                         <div class="contact-icon">📧</div>
                         <h3 class="text-xl font-serif mb-3">Email Us</h3>
-                        <p class="text-gray-600">
-                            ops@indiaonroaming.com<br>
-                            We'll respond within 24 business hours
-                        </p>
+                        <p class="text-gray-600">ops@indiaonroaming.com</p>
                     </a>
                 </div>
             </div>
@@ -311,54 +172,8 @@
     </main>
 
     <div id="footer-container"></div>
-    <script src="script.js" type="module"></script>
-    <script src="common-components.js" type="module"></script>
-    <script src="js/featured-products.js" type="module"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                const response = await fetch('http://localhost:3000/api/products');
-                if (!response.ok) throw new Error('Failed to fetch products');
-
-                const products = await response.json();
-                const featuredProducts = products.slice(0, 2);
-
-                const productsContainer = document.getElementById('featured-products');
-                if (!productsContainer) return;
-
-                productsContainer.innerHTML = featuredProducts.map((product, index) => `
-            <article class="collection-item reveal-on-scroll" style="--delay: ${0.1 + index * 0.1}s">
-                ${product.isBestseller ? '<div class="collection-item-badge bestseller">Bestseller</div>' : ''}
-                ${product.isNew ? '<div class="collection-item-badge new">New</div>' : ''}
-                <div class="collection-item-image">
-                    <img src="${product.images[0]}" 
-                         alt="${product.name}" 
-                         loading="lazy">
-                </div>
-                <div class="collection-item-content">
-                    <h3 class="collection-item-title">${product.name}</h3>
-                    <p class="collection-item-price">₹${product.price}</p>
-                </div>
-            </article>
-        `).join('');
-
-                // Initialize animations
-                setTimeout(() => {
-                    document.querySelectorAll('.reveal-on-scroll').forEach(el => {
-                        el.classList.add('is-visible');
-                    });
-                }, 100);
-
-            } catch (error) {
-                console.error('Error loading products:', error);
-                document.getElementById('featured-products').innerHTML = `
-            <div class="text-center text-gray-500">
-                Unable to load products at this time.
-            </div>
-        `;
-            }
-        });
-    </script>
+    
+    <script src="script.js"></script>
 </body>
 
 </html>
