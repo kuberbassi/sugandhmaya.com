@@ -349,22 +349,46 @@ const pages = {
             return;
         }
 
-        // Update product page content
-        document.getElementById('product-name').textContent = product.name;
-        document.getElementById('product-name-breadcrumb').textContent = product.name;
-        document.getElementById('product-category').textContent = product.category;
-        document.getElementById('product-description').textContent = product.description;
+        // --- DOM Elements ---
+        const productNameEl = document.getElementById('product-name');
+        const breadcrumbEl = document.getElementById('product-name-breadcrumb');
+        const categoryEl = document.getElementById('product-category');
+        const descriptionEl = document.getElementById('product-description');
+        const priceEl = document.getElementById('product-price');
+        const productForm = document.getElementById('product-form');
+        const galleryContainer = document.querySelector('.product-gallery');
 
-        // Set initial selected variant
+        // --- State ---
         let selectedVariant = product.variants[0];
-        let currentImageIndex = 0; // New state variable
+        let currentImageIndex = 0;
 
-        // Function to render options (scent or size)
+        // --- UI Update Functions ---
+        const updateMainImage = (index) => {
+            const images = selectedVariant.images;
+            if (index < 0 || index >= images.length) return;
+
+            const newImageSrc = images[index];
+            document.getElementById('main-product-image').src = newImageSrc;
+            
+            const thumbnailImages = document.querySelectorAll('.thumbnail-image');
+            thumbnailImages.forEach((img, i) => img.classList.toggle('active', i === index));
+            currentImageIndex = index;
+        };
+
+        const updateVariantUI = (variant) => {
+            priceEl.textContent = `₹${variant.price}`;
+            const thumbnailGrid = document.getElementById('thumbnail-grid');
+            if (thumbnailGrid) {
+                thumbnailGrid.innerHTML = variant.images.map(image =>
+                    `<img src="${image}" class="thumbnail-image" data-src="${image}" alt="Product thumbnail">`
+                ).join('');
+            }
+            updateMainImage(0); // Set the first image for the new variant
+        };
+
         const renderOptions = (containerId, options, label, name) => {
             const container = document.getElementById(containerId);
             if (!container) return;
-
-            // Show or hide the container based on options length
             container.classList.toggle('hidden', options.length <= 1);
             if (options.length <= 1) return;
 
@@ -373,97 +397,71 @@ const pages = {
                 html += `
                 <label>
                     <input type="radio" name="${name}" value="${opt}" ${index === 0 ? 'checked' : ''}>
-                    <span class="size-box cursor-pointer p-3 bg-white rounded-xl shadow-sm hover:bg-gray-100 transition-colors duration-200">
-                        ${opt}
-                    </span>
-                </label>
-            `;
+                    <span class="size-box cursor-pointer p-3 bg-white rounded-xl shadow-sm hover:bg-gray-100 transition-colors duration-200">${opt}</span>
+                </label>`;
             });
             html += '</div>';
             container.innerHTML = html;
         };
 
-        // Function to update UI based on selected variant
-        const updateVariantUI = (variant) => {
-            document.getElementById('product-price').textContent = `₹${variant.price}`;
-
-            const mainImage = document.getElementById('main-product-image');
-            const thumbnailGrid = document.getElementById('thumbnail-grid');
-
-            if (mainImage) {
-                mainImage.src = variant.images[0];
-            }
-
-            if (thumbnailGrid) {
-                thumbnailGrid.innerHTML = variant.images.map(image => `
-                <img src="${image}" class="thumbnail-image" data-src="${image}" alt="Product thumbnail">
-            `).join('');
-
-                const firstThumbnail = thumbnailGrid.querySelector('.thumbnail-image');
-                if (firstThumbnail) {
-                    firstThumbnail.classList.add('active');
-                }
-            }
-            currentImageIndex = 0; // Reset index when variant changes
-        };
-
-        // Function to update the main image and active thumbnail
-        const updateMainImage = (index) => {
-            const thumbnailImages = document.querySelectorAll('.thumbnail-image');
-            if (index < 0 || index >= thumbnailImages.length) return;
-
-            const newImageSrc = thumbnailImages[index].dataset.src;
-            document.getElementById('main-product-image').src = newImageSrc;
-
-            thumbnailImages.forEach(t => t.classList.remove('active'));
-            thumbnailImages[index].classList.add('active');
-            currentImageIndex = index;
-        };
-
-        // Initial rendering of options and UI
+        // --- Initial Page Setup ---
+        productNameEl.textContent = product.name;
+        breadcrumbEl.textContent = product.name;
+        categoryEl.textContent = product.category;
+        descriptionEl.textContent = product.description;
         renderOptions('scent-options', product.scents, 'Scent', 'scent');
         renderOptions('size-options', product.variants.map(v => v.name), 'Size', 'size');
         updateVariantUI(selectedVariant);
 
-        // Event listeners for options and quantity
-        document.getElementById('product-form').addEventListener('change', e => {
-            if (e.target.name === 'size') {
-                selectedVariant = product.variants.find(v => v.name === e.target.value);
-                if (selectedVariant) {
-                    updateVariantUI(selectedVariant);
+        // --- Event Listeners ---
+
+        // Listener for the GALLERY (thumbnails and arrows)
+        if (galleryContainer) {
+            galleryContainer.addEventListener('click', e => {
+                // Handle thumbnail clicks
+                const thumbnail = e.target.closest('.thumbnail-image');
+                if (thumbnail) {
+                    const clickedIndex = Array.from(galleryContainer.querySelectorAll('.thumbnail-image')).indexOf(thumbnail);
+                    updateMainImage(clickedIndex);
                 }
-            }
-        });
 
-        document.getElementById('product-form').addEventListener('click', e => {
-            const thumbnail = e.target.closest('.thumbnail-image');
-            if (thumbnail) {
-                // This finds which thumbnail was clicked (e.g., the 1st, 2nd, etc.)
-                const clickedIndex = Array.from(document.querySelectorAll('.thumbnail-image')).indexOf(thumbnail);
-                // This updates the main image to show the one you clicked
-                updateMainImage(clickedIndex);
-                return;
-            }
+                // Handle arrow clicks
+                const images = selectedVariant.images;
+                if (e.target.closest('.prev-arrow')) {
+                    const newIndex = (currentImageIndex - 1 + images.length) % images.length;
+                    updateMainImage(newIndex);
+                }
+                if (e.target.closest('.next-arrow')) {
+                    const newIndex = (currentImageIndex + 1) % images.length;
+                    updateMainImage(newIndex);
+                }
+            });
+        }
+        
+        // Listener for the FORM (variant changes, quantity, add to cart)
+        if (productForm) {
+            productForm.addEventListener('change', e => {
+                if (e.target.name === 'size') {
+                    selectedVariant = product.variants.find(v => v.name === e.target.value);
+                    if (selectedVariant) updateVariantUI(selectedVariant);
+                }
+            });
 
-            const decreaseBtn = e.target.closest('#decrease-quantity');
-            const increaseBtn = e.target.closest('#increase-quantity');
-            const quantityInput = document.getElementById('quantity-input');
-
-            if (decreaseBtn && parseInt(quantityInput.value) > 1) {
-                quantityInput.value = parseInt(quantityInput.value) - 1;
-            } else if (increaseBtn) {
-                quantityInput.value = parseInt(quantityInput.value) + 1;
-            }
-
-            const addToCartBtn = e.target.closest('#add-to-cart-product');
-            if (addToCartBtn) {
-                const quantity = parseInt(quantityInput.value);
-                const scent = document.querySelector('input[name="scent"]:checked')?.value || product.scents[0];
-                const size = document.querySelector('input[name="size"]:checked')?.value || product.variants[0].name;
-                const cartItemId = `${product.id}_${size}_${scent}`;
-                cartActions.add({ cartItemId, productId: product.id, size, scent, quantity });
-            }
-        });
+            productForm.addEventListener('click', e => {
+                const quantityInput = document.getElementById('quantity-input');
+                if (e.target.closest('#decrease-quantity') && parseInt(quantityInput.value) > 1) {
+                    quantityInput.value = parseInt(quantityInput.value) - 1;
+                } else if (e.target.closest('#increase-quantity')) {
+                    quantityInput.value = parseInt(quantityInput.value) + 1;
+                } else if (e.target.closest('#add-to-cart-product')) {
+                    const quantity = parseInt(quantityInput.value);
+                    const scent = productForm.querySelector('input[name="scent"]:checked')?.value || product.scents[0];
+                    const size = productForm.querySelector('input[name="size"]:checked')?.value || product.variants[0].name;
+                    const cartItemId = `${product.id}_${size}_${scent}`;
+                    cartActions.add({ cartItemId, productId: product.id, size, scent, quantity });
+                }
+            });
+        }
 
         // Accordion functionality
         document.querySelectorAll('.accordion-header').forEach(header => {
@@ -471,14 +469,10 @@ const pages = {
                 const item = header.closest('.accordion-item');
                 const content = item.querySelector('.accordion-content');
                 item.classList.toggle('active');
-
-                if (item.classList.contains('active')) {
-                    content.style.maxHeight = content.scrollHeight + 'px';
-                } else {
-                    content.style.maxHeight = '0';
-                }
+                content.style.maxHeight = item.classList.contains('active') ? content.scrollHeight + 'px' : '0';
             });
         });
+    
 
         // Image gallery navigation logic
         const prevArrow = document.querySelector('.prev-arrow');
