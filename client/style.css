@@ -1398,7 +1398,7 @@ button.btn-secondary:hover {
     flex-wrap: nowrap;
     justify-content: flex-start;
     gap: 1rem;
-    padding-bottom: 0.5rem;
+    padding: 0.5rem;
     overflow-x: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -2059,7 +2059,7 @@ body.cart-open {
 .product-gallery {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    /* gap: 1.5rem; */
 }
 
 .main-image-container {
@@ -2267,15 +2267,24 @@ body.cart-open {
     width: 100%;   /* Takes the full width to align text within it */
     text-align: left;
 }
+/* --- DEFINITIVE THUMBNAIL FIX --- */
+
 .thumbnail-image {
     display: block;
     width: 80px;
     height: 80px;
-    padding: 4px; /* Adds a little space around the image */
-    background-color: white; /* Ensures a clean background */
+    padding: 4px;
+    background-color: white;
     border: 2px solid transparent;
     border-radius: 8px;
     cursor: pointer;
-    object-fit: contain; /* This is the key: prevents cropping */
+    /* This !important rule will force the browser to apply the style */
+    object-fit: contain !important;
     transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.thumbnail-image:hover,
+.thumbnail-image.active {
+    border-color: var(--brand-accent);
+    transform: scale(1.05);
 }
