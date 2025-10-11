@@ -231,26 +231,6 @@ const cartActions = {
     }
 };
 
-// Delegate cart panel button clicks (works immediately after updateCartUI re-renders)
-document.addEventListener('click', (e) => {
-    const decrease = e.target.closest('.cart-decrease');
-    const increase = e.target.closest('.cart-increase');
-    const remove = e.target.closest('.cart-remove');
-
-    if (decrease) {
-        cartActions.updateQuantity(decrease.dataset.id, -1);
-    }
-    if (increase) {
-        cartActions.updateQuantity(increase.dataset.id, +1);
-    }
-    if (remove) {
-        cartActions.remove(remove.dataset.id);
-    }
-});
-
-// client/script.js
-
-// ... (rest of the code before pages.shop)
 
 // --- 5. PAGE-SPECIFIC RENDER FUNCTIONS ---
 const pages = {
@@ -369,7 +349,7 @@ const pages = {
 
             const newImageSrc = images[index];
             document.getElementById('main-product-image').src = newImageSrc;
-            
+
             const thumbnailImages = document.querySelectorAll('.thumbnail-image');
             thumbnailImages.forEach((img, i) => img.classList.toggle('active', i === index));
             currentImageIndex = index;
@@ -437,7 +417,7 @@ const pages = {
                 }
             });
         }
-        
+
         // Listener for the FORM (variant changes, quantity, add to cart)
         if (productForm) {
             productForm.addEventListener('change', e => {
@@ -472,7 +452,7 @@ const pages = {
                 content.style.maxHeight = item.classList.contains('active') ? content.scrollHeight + 'px' : '0';
             });
         });
-    
+
 
         // Image gallery navigation logic
         const prevArrow = document.querySelector('.prev-arrow');
@@ -746,8 +726,26 @@ function setupGlobalListeners() {
         }
     });
 
-    // Close cart when clicking outside
+    // In the setupGlobalListeners function, REPLACE the event listener with this:
     document.addEventListener('click', (e) => {
+        // Handle cart item controls
+        if (e.target.closest('.cart-decrease')) {
+            e.stopPropagation(); // Prevents panel from closing
+            const id = e.target.closest('.cart-decrease').dataset.id;
+            cartActions.updateQuantity(id, -1);
+        }
+        if (e.target.closest('.cart-increase')) {
+            e.stopPropagation(); // Prevents panel from closing
+            const id = e.target.closest('.cart-increase').dataset.id;
+            cartActions.updateQuantity(id, 1);
+        }
+        if (e.target.closest('.cart-remove')) {
+            e.stopPropagation(); // Prevents panel from closing
+            const id = e.target.closest('.cart-remove').dataset.id;
+            cartActions.remove(id);
+        }
+
+        // Handle closing cart when clicking outside
         const cartPanel = document.getElementById('cart-panel');
         const cartButton = document.getElementById('open-cart-button');
         if (cartPanel?.classList.contains('open') &&

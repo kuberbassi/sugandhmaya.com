@@ -1637,6 +1637,7 @@ body.cart-open {
     align-items: center;
     padding: 1.5rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    gap: 1rem; /* Add this line for spacing */
 }
 
 /* --- CHECKOUT STYLING --- */
