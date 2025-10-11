@@ -2605,3 +2605,72 @@ body.cart-open {
         display: none; 
     }
 }
+/* --- CORRECTED RESPONSIVE HEADER STYLES --- */
+
+/* For tablets and mobile devices (screens smaller than 768px) */
+@media (max-width: 767px) {
+    /* Hide the container for the desktop navigation links */
+    #main-header .hidden.md\\:flex {
+        display: none;
+    }
+
+    /* Ensure the hamburger button is visible */
+    #hamburger-button {
+        display: block;
+    }
+
+    /* Adjust header padding for smaller screens */
+    #main-header {
+        padding: 1rem 1.5rem;
+    }
+
+    /* --- Grid and Layout Fixes for this size --- */
+    
+    .hero-section .grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        text-align: center;
+    }
+
+    .hero-text-content {
+        margin: 0 auto;
+    }
+    
+    .hero-media-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+        gap: 1rem;
+    }
+
+    .media-item-1, .media-item-2, .media-item-3 {
+        grid-row: auto;
+        grid-column: auto;
+        height: 300px;
+    }
+
+    .values-grid,
+    #our-promise .grid,
+    .core-values-section .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* For small mobile phones (screens smaller than 640px) */
+@media (max-width: 639px) {
+    /* Optional: Hide the hero image grid on very small screens for a cleaner look */
+    .hero-media-grid {
+        display: none;
+    }
+
+    .hero-title {
+        font-size: 2.75rem;
+    }
+
+    #collection-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    #cart-panel {
+        max-width: 100%;
+    }
+}
