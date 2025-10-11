@@ -384,68 +384,104 @@ const pages = {
     },
     checkout() {
         const form = document.getElementById('checkout-form');
-        if (!form) return;
+        const summaryItemsContainer = document.getElementById('summary-items');
+        const summaryTotalEl = document.getElementById('summary-total');
+        const countrySelect = document.getElementById('country');
+        const stateSelect = document.getElementById('state');
+        const phoneInput = document.getElementById('phone');
+        const otpModal = document.getElementById('otp-modal');
+        const placeOrderBtn = document.getElementById('place-order-button');
+        let countryData = []; // To store fetched country data
 
-        const countrySelect = document.getElementById('country-select');
-        const stateSelect = document.getElementById('state-select');
+        // 1. Render the Order Summary from localStorage
+        const renderCheckoutSummary = () => {
+            if (state.cart.length === 0) {
+                summaryItemsContainer.innerHTML = '<p class="text-gray-500">Your cart is empty.</p>';
+                placeOrderBtn.disabled = true;
+                placeOrderBtn.style.opacity = '0.5';
+                return;
+            }
 
-        // Load country data
-        fetch('https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/countries%2Bstates.json')
-            .then(response => response.json())
-            .then(data => {
-                // Populate countries
-                countrySelect.innerHTML = `
-                <option value="">Select Country</option>
-                ${data.map(country =>
-                    `<option value="${country.iso2}">${country.name}</option>`
-                ).join('')}
-                `;
+            const total = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            summaryItemsContainer.innerHTML = state.cart.map(item => `
+                <div class="flex justify-between items-center text-sm">
+                    <div>
+                        <p class="font-bold">${item.productName}</p>
+                        <p class="text-gray-600">${item.size} &times; ${item.quantity}</p>
+                    </div>
+                    <p class="font-medium">₹${(item.price * item.quantity).toFixed(2)}</p>
+                </div>
+            `).join('');
+            summaryTotalEl.textContent = `₹${total.toFixed(2)}`;
+        };
 
-                // Handle country change
-                countrySelect.addEventListener('change', function () {
-                    const country = data.find(c => c.iso2 === this.value);
-                    if (!country) {
-                        stateSelect.innerHTML = '<option value="">Select State</option>';
-                        stateSelect.disabled = true;
-                        return;
-                    }
+        // 2. Initialize Phone Input with Country Codes
+        const iti = window.intlTelInput(phoneInput, {
+            initialCountry: "in",
+            separateDialCode: true,
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+        });
 
-                    stateSelect.innerHTML = `
-                        <option value="">Select State</option>
-                        ${country.states.map(state =>
-                        `<option value="${state.state_code}">${state.name}</option>`
-                    ).join('')}
-                    `;
-                    stateSelect.disabled = false;
-                });
-            });
+        // 3. Fetch and Handle Country/State Dropdowns (Reliable Method)
+        async function initializeLocations() {
+            try {
+                const response = await fetch('https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/countries%2Bstates.json');
+                countryData = await response.json();
 
+                countrySelect.innerHTML = '<option value="">Select Country</option>' +
+                    countryData.map(c => `<option value="${c.iso2}">${c.name}</option>`).join('');
+
+                countrySelect.value = 'IN'; // Default to India
+                countrySelect.dispatchEvent(new Event('change'));
+            } catch (error) {
+                console.error("Failed to load country data:", error);
+            }
+        }
+
+        countrySelect.addEventListener('change', () => {
+            const selectedCountry = countryData.find(c => c.iso2 === countrySelect.value);
+            if (selectedCountry && selectedCountry.states.length > 0) {
+                stateSelect.innerHTML = '<option value="">Select State</option>' +
+                    selectedCountry.states.map(s => `<option value="${s.state_code}">${s.name}</option>`).join('');
+                stateSelect.disabled = false;
+            } else {
+                stateSelect.innerHTML = '<option value="">No states available</option>';
+                stateSelect.disabled = true;
+            }
+        });
+
+        // 4. Handle the Order Submission and OTP Flow
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            if (!form.checkValidity()) {
+                utils.showToast("Please fill all required fields.");
+                return;
+            }
             const formData = new FormData(form);
-            const email = formData.get('email');
+            const customerData = Object.fromEntries(formData);
+            customerData.phone = iti.getNumber();
 
-            const otpSent = await orderSystem.sendOTP(email);
-            if (!otpSent) return;
-
-            const otpModal = document.getElementById('otp-modal');
-            otpModal.style.display = 'flex';
+            const otpSent = await orderSystem.sendOTP(customerData.email);
+            if (otpSent) {
+                otpModal.style.display = 'flex';
+            }
 
             document.getElementById('verify-otp-button').onclick = async () => {
                 const otp = document.getElementById('otp-input').value;
-                const verified = await orderSystem.verifyOTP(email, otp);
-
+                const verified = await orderSystem.verifyOTP(customerData.email, otp);
                 if (verified) {
-                    const orderData = {
-                        items: state.cart,
-                        customer: Object.fromEntries(formData),
-                        total: state.cart.reduce((sum, item) =>
-                            sum + (item.price * item.quantity), 0)
-                    };
-                    await orderSystem.placeOrder(orderData);
+                    await orderSystem.placeOrder({ customer: customerData, items: state.cart });
                 }
             };
         });
+
+        document.getElementById('cancel-otp-button').addEventListener('click', () => {
+            otpModal.style.display = 'none';
+        });
+
+        // Initial render
+        renderCheckoutSummary();
+        initializeLocations();
     },
     confirmation() {
         const order = JSON.parse(localStorage.getItem(config.storageKeys.latestOrder));
