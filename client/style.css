@@ -2289,7 +2289,8 @@ body.cart-open {
     border-color: var(--brand-accent);
     transform: scale(1.05);
 }
-/* --- CHECKOUT PAGE STYLING --- */
+/* --- CHECKOUT PAGE STYLING (Corrected) --- */
+
 .checkout-page .form-group {
     margin-bottom: 0;
 }
@@ -2302,23 +2303,27 @@ body.cart-open {
     display: block;
 }
 
+/* General styles for all form inputs/selects */
 .checkout-page .form-input {
-    appearance: none; /* Removes default OS styling */
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right 0.5rem center;
-    background-repeat: no-repeat;
-    background-size: 1.5em 1.5em;
-    padding-right: 2.5rem;
     display: block;
     width: 100%;
     padding: 0.75rem 1rem;
     border: 1px solid #d1d5db;
     border-radius: 6px;
     transition: border-color 0.2s, box-shadow 0.2s;
+    background-color: white;
 }
 
+/* Remove custom arrow from TEXT inputs */
 .checkout-page input.form-input {
-    background-image: none; /* Input fields don't need a dropdown arrow */
+    background-image: none;
+}
+
+/* Restore native appearance for SELECT dropdowns to ensure they are visible */
+.checkout-page select.form-input {
+    appearance: auto;
+    background-image: none;
+    padding-right: 1rem; /* Reset padding */
 }
 
 .checkout-page .form-input:focus {
@@ -2333,6 +2338,7 @@ body.cart-open {
     opacity: 0.7;
 }
 
+/* Styles for the phone number input library */
 .iti {
     width: 100%;
 }
@@ -2340,6 +2346,7 @@ body.cart-open {
     border-right: 1px solid #d1d5db;
 }
 
+/* Layout styles */
 .checkout-summary-section { padding: 4rem 2rem; }
 .summary-container { width: 100%; max-width: 450px; margin: 2rem auto; }
 .summary-divider { height: 1px; background-color: rgba(0,0,0,0.1); margin: 1.5rem 0; }

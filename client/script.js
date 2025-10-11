@@ -386,71 +386,34 @@ const pages = {
         const form = document.getElementById('checkout-form');
         const summaryItemsContainer = document.getElementById('summary-items');
         const summaryTotalEl = document.getElementById('summary-total');
-        const countrySelect = document.getElementById('country');
-        const stateSelect = document.getElementById('state');
         const phoneInput = document.getElementById('phone');
         const otpModal = document.getElementById('otp-modal');
         const placeOrderBtn = document.getElementById('place-order-button');
-        let countryData = []; // To store fetched country data
 
-        // 1. Render the Order Summary from localStorage
         const renderCheckoutSummary = () => {
             if (state.cart.length === 0) {
                 summaryItemsContainer.innerHTML = '<p class="text-gray-500">Your cart is empty.</p>';
-                placeOrderBtn.disabled = true;
-                placeOrderBtn.style.opacity = '0.5';
+                if (placeOrderBtn) {
+                    placeOrderBtn.disabled = true;
+                    placeOrderBtn.style.opacity = '0.5';
+                }
                 return;
             }
-
             const total = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
             summaryItemsContainer.innerHTML = state.cart.map(item => `
                 <div class="flex justify-between items-center text-sm">
-                    <div>
-                        <p class="font-bold">${item.productName}</p>
-                        <p class="text-gray-600">${item.size} &times; ${item.quantity}</p>
-                    </div>
+                    <div><p class="font-bold">${item.productName}</p><p class="text-gray-600">${item.size} &times; ${item.quantity}</p></div>
                     <p class="font-medium">₹${(item.price * item.quantity).toFixed(2)}</p>
-                </div>
-            `).join('');
+                </div>`).join('');
             summaryTotalEl.textContent = `₹${total.toFixed(2)}`;
         };
 
-        // 2. Initialize Phone Input with Country Codes
         const iti = window.intlTelInput(phoneInput, {
             initialCountry: "in",
             separateDialCode: true,
             utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
         });
 
-        // 3. Fetch and Handle Country/State Dropdowns (Reliable Method)
-        async function initializeLocations() {
-            try {
-                const response = await fetch('https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/countries%2Bstates.json');
-                countryData = await response.json();
-
-                countrySelect.innerHTML = '<option value="">Select Country</option>' +
-                    countryData.map(c => `<option value="${c.iso2}">${c.name}</option>`).join('');
-
-                countrySelect.value = 'IN'; // Default to India
-                countrySelect.dispatchEvent(new Event('change'));
-            } catch (error) {
-                console.error("Failed to load country data:", error);
-            }
-        }
-
-        countrySelect.addEventListener('change', () => {
-            const selectedCountry = countryData.find(c => c.iso2 === countrySelect.value);
-            if (selectedCountry && selectedCountry.states.length > 0) {
-                stateSelect.innerHTML = '<option value="">Select State</option>' +
-                    selectedCountry.states.map(s => `<option value="${s.state_code}">${s.name}</option>`).join('');
-                stateSelect.disabled = false;
-            } else {
-                stateSelect.innerHTML = '<option value="">No states available</option>';
-                stateSelect.disabled = true;
-            }
-        });
-
-        // 4. Handle the Order Submission and OTP Flow
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!form.checkValidity()) {
@@ -460,66 +423,74 @@ const pages = {
             const formData = new FormData(form);
             const customerData = Object.fromEntries(formData);
             customerData.phone = iti.getNumber();
-
-            const otpSent = await orderSystem.sendOTP(customerData.email);
-            if (otpSent) {
+            if (await orderSystem.sendOTP(customerData.email)) {
                 otpModal.style.display = 'flex';
             }
-
-            document.getElementById('verify-otp-button').onclick = async () => {
-                const otp = document.getElementById('otp-input').value;
-                const verified = await orderSystem.verifyOTP(customerData.email, otp);
-                if (verified) {
-                    await orderSystem.placeOrder({ customer: customerData, items: state.cart });
-                }
-            };
         });
+
+        document.getElementById('verify-otp-button').onclick = async () => {
+            const formData = new FormData(form);
+            const customerData = Object.fromEntries(formData);
+            customerData.phone = iti.getNumber();
+            const otp = document.getElementById('otp-input').value;
+            if (await orderSystem.verifyOTP(customerData.email, otp)) {
+                await orderSystem.placeOrder({ customer: customerData, items: state.cart });
+            }
+        };
 
         document.getElementById('cancel-otp-button').addEventListener('click', () => {
             otpModal.style.display = 'none';
         });
 
-        // Initial render
+        // Initial render call
         renderCheckoutSummary();
-        initializeLocations();
     },
     confirmation() {
         const order = JSON.parse(localStorage.getItem(config.storageKeys.latestOrder));
-        if (!order) {
-            window.location.href = '/';
+        const container = document.getElementById('confirmation-container');
+
+        if (!order || !container) {
+            window.location.href = '/'; // Redirect home if no order data is found
             return;
         }
 
-        const container = document.getElementById('confirmation-details');
-        if (!container) return;
-
+        // Dynamically build the confirmation receipt
         container.innerHTML = `
-            <div class="order-receipt p-6 bg-white rounded-lg shadow-lg">
-                <h2 class="text-2xl font-medium mb-4">Order #${order.id}</h2>
-                <div class="mb-4">
-                    <p>Thank you for your order! A confirmation email has been sent to ${order.customer.email}</p>
-                </div>
+            <div class="flex items-center justify-center mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="12" cy="12" r="10" class="text-green-100" stroke="none" fill="currentColor"></circle>
+                    <path d="M9 12.5l1.8 1.8L15 10" stroke="white" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-serif font-bold text-brand-dark mb-4">Order Placed Successfully!</h1>
+            <p class="text-lg text-gray-600">Thank you, ${order.customer.name}. Your order receipt has been sent to ${order.customer.email}.</p>
+            
+            <div id="confirmation-details" class="mt-8 text-left bg-gray-50 p-6 rounded-md border border-gray-100 space-y-2">
+                <p><strong>Order ID:</strong> #${order._id.toString().slice(-6).toUpperCase()}</p>
                 <div class="order-items border-t border-b py-4 my-4">
                     ${order.items.map(item => `
-                        <div class="flex justify-between py-2">
+                        <div class="flex justify-between py-2 text-sm">
                             <div>
-                                ${item.productName} × ${item.quantity}
-                                <div class="text-sm text-gray-500">
-                                    Size: ${item.size} • Scent: ${item.scent}
-                                </div>
+                                <p class="font-bold">${item.productName}</p>
+                                <p class="text-gray-500">${item.size} &times; ${item.quantity}</p>
                             </div>
-                            <div>₹${(item.price * item.quantity).toFixed(2)}</div>
+                            <div class="font-medium">₹${(item.price * item.quantity).toFixed(2)}</div>
                         </div>
                     `).join('')}
                 </div>
-                <div class="text-right text-xl font-medium">
-                    Total: ₹${order.total.toFixed(2)}
-                </div>
-                <button onclick="window.print()" class="btn mt-6">
-                    Print Receipt
-                </button>
+                <div class="text-right text-xl font-bold">Total: ₹${order.total.toFixed(2)}</div>
+            </div>
+
+            <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+                <a href="index.html" class="btn">Continue Shopping</a>
+                <button onclick="window.print()" class="btn btn-secondary">Print Receipt</button>
             </div>
         `;
+
+        // IMPORTANT: Clear the cart after a successful order
+        state.cart = [];
+        utils.saveCart();
+        localStorage.removeItem(config.storageKeys.latestOrder); // Clean up order data
     }
 };
 
@@ -657,40 +628,21 @@ async function initializeApp() {
 
 function setupGlobalListeners() {
     document.addEventListener('click', (e) => {
-        const openCartButton = e.target.closest('#open-cart-button');
-        const closeCartButton = e.target.closest('#close-cart-button');
-        const cartItemAction = e.target.closest('.cart-item button');
-        const cartPanel = document.getElementById('cart-panel');
-
-        if (openCartButton) {
-            e.stopPropagation();
+        if (e.target.closest('#open-cart-button')) {
             utils.openCart();
-            return;
-        }
-
-        if (closeCartButton) {
+        } else if (e.target.closest('#close-cart-button')) {
             utils.closeCart();
-            return;
-        }
-
-        if (cartItemAction) {
-            e.stopPropagation();
-            const cartItem = cartItemAction.closest('.cart-item');
-            const id = cartItem.dataset.id;
-
-            if (cartItemAction.matches('.cart-increase')) {
-                cartActions.updateQuantity(id, 1);
-            } else if (cartItemAction.matches('.cart-decrease')) {
-                cartActions.updateQuantity(id, -1);
-            } else if (cartItemAction.matches('.cart-remove')) {
-                cartActions.remove(id);
+        } else if (e.target.closest('.cart-item')) {
+            e.stopPropagation(); // This is key to keep the cart open
+            const id = e.target.closest('.cart-item').dataset.id;
+            if (e.target.closest('.cart-increase')) cartActions.updateQuantity(id, 1);
+            if (e.target.closest('.cart-decrease')) cartActions.updateQuantity(id, -1);
+            if (e.target.closest('.cart-remove')) cartActions.remove(id);
+        } else {
+            const cartPanel = document.getElementById('cart-panel');
+            if (cartPanel?.classList.contains('open') && !e.target.closest('#cart-panel')) {
+                utils.closeCart();
             }
-            return;
-        }
-
-        if (cartPanel && cartPanel.classList.contains('open') &&
-            !cartPanel.contains(e.target) && !document.getElementById('open-cart-button').contains(e.target)) {
-            utils.closeCart();
         }
     });
 }

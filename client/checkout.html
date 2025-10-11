@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,11 +9,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
 </head>
+
 <body class="checkout-page">
     <div id="header-container"></div>
 
@@ -29,38 +33,33 @@
                         <label for="full-name">Full name</label>
                         <input id="full-name" name="name" class="form-input" required />
                     </div>
-
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input id="email" name="email" type="email" class="form-input" required />
                     </div>
-                    
                     <div class="form-group">
                         <label for="phone">Phone</label>
                         <input id="phone" name="phone" type="tel" class="form-input" required />
                     </div>
-
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="form-group">
                             <label for="country">Country</label>
-                            <select id="country" name="country" class="form-input" required></select>
+                            <input id="country" name="country" type="text" class="form-input" required />
                         </div>
                         <div class="form-group">
                             <label for="state">State</label>
-                            <select id="state" name="state" class="form-input" required disabled></select>
+                            <input id="state" name="state" type="text" class="form-input" required />
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label for="address">Address</label>
-                        <input id="address" name="address" class="form-input" placeholder="Street address, apartment, etc." required />
+                        <input id="address" name="address" class="form-input"
+                            placeholder="Street address, apartment, etc." required />
                     </div>
-                    
                     <div class="form-group">
                         <label for="pin">PIN / ZIP Code</label>
                         <input id="pin" name="pin" class="form-input" required />
                     </div>
-
                     <div class="form-group pt-4">
                         <button type="submit" id="place-order-button" class="btn w-full">Place Order</button>
                     </div>
@@ -71,8 +70,7 @@
         <section class="checkout-summary-section">
             <div class="summary-container">
                 <h2 class="font-serif text-2xl mb-6">Order Summary</h2>
-                <div id="summary-items" class="space-y-4 mb-4">
-                    </div>
+                <div id="summary-items" class="space-y-4 mb-4"></div>
                 <div class="summary-divider"></div>
                 <div class="flex justify-between mt-4 text-lg font-bold">
                     <span>Total</span>
@@ -82,12 +80,14 @@
         </section>
     </div>
 
-    <div id="otp-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] hidden items-center justify-center p-4">
+    <div id="otp-modal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] hidden items-center justify-center p-4">
         <div class="bg-white p-8 rounded-lg shadow-xl max-w-sm w-full text-center">
             <h3 class="text-2xl font-serif font-bold mb-4">Verify Your Order</h3>
             <p class="text-brand-text/80 mb-6">A 6-digit verification code has been sent to your email.</p>
             <div class="form-group">
-                <input id="otp-input" maxlength="6" class="form-input text-center tracking-[0.5em] text-2xl" placeholder="------" />
+                <input id="otp-input" maxlength="6" class="form-input text-center tracking-[0.5em] text-2xl"
+                    placeholder="------" />
             </div>
             <div class="mt-8 flex gap-4 justify-center">
                 <button id="verify-otp-button" class="btn">Verify & Complete Order</button>
@@ -98,7 +98,9 @@
 
     <div id="footer-container"></div>
     <div id="toast-container" class="fixed bottom-0 left-0 w-full p-8 pointer-events-none z-[200]"></div>
-    
+
+    <script src="https://cdn.jsdelivr.net/npm/country-state-city@3.2.1/dist/country-state-city.min.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>
