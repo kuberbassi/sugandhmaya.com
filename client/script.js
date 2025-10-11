@@ -450,47 +450,43 @@ const pages = {
         const container = document.getElementById('confirmation-container');
 
         if (!order || !container) {
-            window.location.href = '/'; // Redirect home if no order data is found
+            window.location.href = '/'; // Redirect home if no order data
             return;
         }
 
-        // Dynamically build the confirmation receipt
         container.innerHTML = `
-            <div class="flex items-center justify-center mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <circle cx="12" cy="12" r="10" class="text-green-100" stroke="none" fill="currentColor"></circle>
-                    <path d="M9 12.5l1.8 1.8L15 10" stroke="white" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-            </div>
-            <h1 class="text-3xl md:text-4xl font-serif font-bold text-brand-dark mb-4">Order Placed Successfully!</h1>
-            <p class="text-lg text-gray-600">Thank you, ${order.customer.name}. Your order receipt has been sent to ${order.customer.email}.</p>
-            
-            <div id="confirmation-details" class="mt-8 text-left bg-gray-50 p-6 rounded-md border border-gray-100 space-y-2">
-                <p><strong>Order ID:</strong> #${order._id.toString().slice(-6).toUpperCase()}</p>
-                <div class="order-items border-t border-b py-4 my-4">
-                    ${order.items.map(item => `
-                        <div class="flex justify-between py-2 text-sm">
-                            <div>
-                                <p class="font-bold">${item.productName}</p>
-                                <p class="text-gray-500">${item.size} &times; ${item.quantity}</p>
-                            </div>
-                            <div class="font-medium">₹${(item.price * item.quantity).toFixed(2)}</div>
+        <div class="flex items-center justify-center mb-6">
+            <svg class="w-20 h-20 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10" class="text-green-100" stroke="none" fill="currentColor"></circle><path d="M9 12.5l1.8 1.8L15 10" stroke="white" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-serif font-bold text-brand-dark mb-4">Order Placed Successfully!</h1>
+        <p class="text-lg text-gray-600">Thank you, ${order.customer.name}. Your order receipt has been sent to ${order.customer.email}.</p>
+        
+        <div id="confirmation-details" class="mt-8 text-left bg-gray-50 p-6 rounded-md border border-gray-100 space-y-2">
+            <p><strong>Order ID:</strong> #${order._id.toString().slice(-6).toUpperCase()}</p>
+            <div class="order-items border-t border-b py-4 my-4">
+                ${order.items.map(item => `
+                    <div class="flex justify-between py-2 text-sm">
+                        <div>
+                            <p class="font-bold">${item.name}</p>
+                            <p class="text-gray-500">${item.size} &times; ${item.quantity}</p>
                         </div>
-                    `).join('')}
-                </div>
-                <div class="text-right text-xl font-bold">Total: ₹${order.total.toFixed(2)}</div>
+                        <div class="font-medium">₹${(item.price * item.quantity).toFixed(2)}</div>
+                    </div>
+                `).join('')}
             </div>
+            <div class="text-right text-xl font-bold">Total: ₹${order.total.toFixed(2)}</div>
+        </div>
 
-            <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4">
-                <a href="index.html" class="btn">Continue Shopping</a>
-                <button onclick="window.print()" class="btn btn-secondary">Print Receipt</button>
-            </div>
-        `;
+        <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+            <a href="index.html" class="btn">Continue Shopping</a>
+            <button onclick="window.print()" class="btn btn-secondary">Print Receipt</button>
+        </div>
+    `;
 
-        // IMPORTANT: Clear the cart after a successful order
+        // IMPORTANT: Clear cart and local storage after displaying the confirmation
         state.cart = [];
         utils.saveCart();
-        localStorage.removeItem(config.storageKeys.latestOrder); // Clean up order data
+        localStorage.removeItem(config.storageKeys.latestOrder);
     }
 };
 
@@ -587,30 +583,32 @@ const orderSystem = {
 
 // --- 6. INITIALIZATION & EVENT LISTENERS ---
 async function initializeApp() {
+    // 1. Load shared components and essential data first.
     await Promise.all([loadHeader(), loadFooter()]);
     await utils.fetchProducts();
 
+    // 2. Set up global event listeners that apply to all pages.
     setupGlobalListeners();
 
-    if (document.body.classList.contains("home-page")) pages.home();
-    if (document.body.classList.contains("shop-page")) pages.shop();
-    if (document.querySelector(".product-page-main")) pages.product();
-    if (document.body.classList.contains("checkout-page")) pages.checkout();
-    if (document.querySelector("#confirmation-details")) pages.confirmation();
+    // 3. Determine the current page and run its specific logic.
+    const body = document.body;
+    if (body.classList.contains("home-page")) {
+        pages.home();
+    } else if (body.classList.contains("shop-page")) {
+        pages.shop();
+    } else if (document.querySelector(".product-page-main")) {
+        pages.product();
+    } else if (body.classList.contains("checkout-page")) {
+        pages.checkout();
+    } else if (body.classList.contains("confirmation-page")) { // This correctly detects the confirmation page
+        pages.confirmation();
+    }
 
+    // 4. Update UI elements and set up observers common across all pages.
     utils.updateCartUI();
     utils.setupScrollObserver();
+    utils.setupScrollAnimations(); // Ensure scroll animations are initialized
 
-    document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => {
-            document.querySelectorAll('.reveal-on-scroll, .hero-title, .main-content-area, #collection-grid')
-                .forEach(el => {
-                    el.style.opacity = '1';
-                    el.style.visibility = 'visible';
-                    el.style.transform = 'none';
-                });
-        }, 100);
-    });
 
     window.addEventListener('scroll', () => {
         const header = document.getElementById('main-header');

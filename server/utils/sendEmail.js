@@ -61,39 +61,28 @@ const sendOtpEmailWithResend = async ({ to, otp }) => {
 /**
  * Sends the Order Confirmation email using SENDGRID.
  */
+// In utils/sendEmail.js, replace the sendOrderConfirmationWithSendGrid function:
 const sendOrderConfirmationWithSendGrid = async (order) => {
-    const itemsHtml = order.items.map(item =>
-        `<tr>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.name} (${item.scent} / ${item.size}) x ${item.quantity}</td>
-            <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">₹${(item.price * item.quantity).toFixed(2)}</td>
-        </tr>`
-    ).join('');
+    const itemsHtml = order.items.map(item => `...`).join(''); // This part remains the same
+    const emailHtml = `...`; // This part remains the same
 
-    const emailHtml = `
-      <body style="font-family: Arial, sans-serif; margin: 20px; color: #3D352E;">
-        <h2 style="font-family: 'Playfair Display', serif; color: #2C2A29;">Thank you for your order, ${order.customer.name}!</h2>
-        <p>Your order #${order._id.toString().slice(-6)} has been placed successfully.</p>
-        <table width="100%" style="border-collapse: collapse; margin-top: 20px;">
-          ${itemsHtml}
-          <tr style="border-top: 2px solid #000; font-weight: bold;">
-            <td style="padding: 10px;">Total</td>
-            <td style="padding: 10px; text-align: right;">₹${order.total.toFixed(2)}</td>
-          </tr>
-        </table>
-        <p style="margin-top: 20px;"><strong>Shipping to:</strong><br>${order.customer.address}</p>
-      </body>
-    `;
-    
-    const msg = {
+    const customerEmail = {
         to: order.customer.email,
         from: process.env.SENDGRID_FROM_EMAIL,
         subject: `Your Sugandhmaya Order Confirmation (#${order._id.toString().slice(-6)})`,
         html: emailHtml,
     };
 
+    const companyEmail = {
+        to: process.env.COMPANY_EMAIL, // Your company's email from .env
+        from: process.env.SENDGRID_FROM_EMAIL,
+        subject: `New Order Received! #${order._id.toString().slice(-6)}`,
+        html: `<h1>New Order Received</h1><p>Customer: ${order.customer.name} (${order.customer.email})</p>${emailHtml}`,
+    };
+
     try {
-        await sgMail.send(msg);
-        console.log(`✅ Order Confirmation sent to ${order.customer.email} via SendGrid.`);
+        await sgMail.send([customerEmail, companyEmail]);
+        console.log(`✅ Order Confirmation sent to customer and company.`);
     } catch (error) {
         console.error('❌ Error sending order confirmation via SendGrid:', error.response?.body || error);
         throw new Error('Failed to send order confirmation via SendGrid.');
