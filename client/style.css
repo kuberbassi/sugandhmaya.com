@@ -2494,3 +2494,114 @@ body.cart-open {
 @media (max-width: 639px) { .show-on-mobile { display: block; } }
 @media (min-width: 640px) and (max-width: 1023px) { .show-on-tablet { display: block; } }
 @media (min-width: 1024px) { .show-on-desktop { display: block; } }
+/* --- MOBILE NAVIGATION STYLES --- */
+.mobile-nav-link {
+    display: block;
+    padding: 1rem;
+    font-size: 1.5rem;
+    font-family: var(--font-heading);
+    color: var(--brand-dark);
+    text-align: center;
+    transition: color 0.3s ease;
+}
+
+.mobile-nav-link:hover {
+    color: var(--brand-accent);
+}
+
+/* --- GRID RESPONSIVENESS FIXES --- */
+
+/* For Tablets */
+@media (max-width: 1023px) {
+    .hero-media-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+    
+    .media-item-1, .media-item-2, .media-item-3 {
+        grid-row: auto;
+        grid-column: auto;
+        height: 300px;
+    }
+
+    .values-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* For Mobile Devices */
+@media (max-width: 767px) {
+    /* Hide desktop nav and show hamburger */
+    #main-header .hidden.md\\:flex {
+        display: none;
+    }
+    
+    #hamburger-button {
+        display: block;
+    }
+
+    .hero-media-grid {
+        display: none; /* Hides the grid on small mobile for a cleaner look */
+    }
+}
+/* --- MOBILE NAVIGATION & RESPONSIVE FIXES --- */
+
+/* Styles for the links inside the mobile menu */
+.mobile-nav-link {
+    display: block;
+    padding: 1rem;
+    font-size: 1.75rem; /* Larger font for mobile */
+    font-family: var(--font-heading);
+    color: var(--brand-dark);
+    text-align: center;
+    transition: color 0.3s ease;
+}
+
+.mobile-nav-link:hover {
+    color: var(--brand-accent);
+}
+
+/* On tablets and smaller devices (< 768px) */
+@media (max-width: 767px) {
+    /* Hide the desktop navigation links */
+    #main-header .hidden.md\\:flex {
+        display: none;
+    }
+    
+    /* Show the hamburger button */
+    #hamburger-button {
+        display: block;
+    }
+
+    /* Hero section grid fix for tablets */
+    .hero-media-grid {
+        grid-template-columns: 1fr; /* Stack the items in a single column */
+        height: auto;
+        gap: 1rem;
+    }
+    
+    .media-item-1, .media-item-2, .media-item-3 {
+        grid-row: auto; /* Reset grid placement */
+        grid-column: auto;
+        height: 300px; /* Give them a consistent height */
+    }
+
+    /* Core values grid fix */
+    .values-grid {
+        grid-template-columns: 1fr; /* Stack into a single column */
+        gap: 2rem;
+    }
+}
+
+/* On small mobile phones (< 640px) */
+@media (max-width: 639px) {
+    /* Center the logo since the nav links are gone */
+    #main-header .flex.items-center.justify-between {
+        justify-content: space-between;
+    }
+    
+    /* Hide the hero image grid completely on very small screens */
+    .hero-media-grid {
+        display: none; 
+    }
+}

@@ -1,40 +1,51 @@
 <header id="main-header">
     <div class="container mx-auto px-6">
         <nav class="flex items-center justify-between">
-            <!-- Modified home link to encompass both logo and text -->
             <a href="/index.html" class="flex items-center brand-name">
                 <img src="./images/Sugandhmaya-icon.webp" alt="Sugandhmaya" class="w-12 h-12">
                 <span class="ml-3 text-xl font-bold">SUGANDHMAYA</span>
             </a>
 
-            <div class="flex items-center space-x-8">
-                <!-- Removed Home link -->
+            <div class="hidden md:flex items-center space-x-8">
                 <a href="/shop.html" class="nav-link">Shop</a>
                 <a href="/index.html#collection" class="nav-link">Collection</a>
                 <a href="/index.html#our-promise" class="nav-link">Our Promise</a>
                 <a href="/index.html#contact" class="nav-link">Contact</a>
+            </div>
 
+            <div class="flex items-center">
                 <button class="cart-button" id="open-cart-button" aria-label="Open cart">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
                     <span class="cart-count" data-cart-count>0</span>
+                </button>
+
+                <button id="hamburger-button" class="md:hidden ml-4 p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                    </svg>
                 </button>
             </div>
         </nav>
     </div>
+
+    <div id="mobile-menu" class="hidden md:hidden fixed inset-0 bg-brand-background z-40">
+        <div class="flex flex-col items-center justify-center h-full space-y-4">
+            <a href="/shop.html" class="mobile-nav-link">Shop</a>
+            <a href="/index.html#collection" class="mobile-nav-link">Collection</a>
+            <a href="/index.html#our-promise" class="mobile-nav-link">Our Promise</a>
+            <a href="/index.html#contact" class="mobile-nav-link">Contact</a>
+        </div>
+    </div>
 </header>
 
-<!-- Cart Panel -->
 <div id="cart-panel-overlay">
     <div id="cart-panel">
         <div class="cart-panel-header">
-            <h2 class="text-xl font-medium" style="padding: 20px; text-align: center; ">Your Cart</h2>
+            <h2 class="text-xl font-medium" style="padding: 20px; text-align: center;">Your Cart</h2>
             <button class="cart-close-button" id="close-cart-button" style="position: absolute; top: 10px; right: 10px;">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>

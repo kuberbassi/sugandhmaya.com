@@ -432,7 +432,7 @@ const pages = {
 
             const formData = new FormData(form);
             const customerData = Object.fromEntries(formData);
-            
+
             if (await orderSystem.sendOTP(customerData.email)) {
                 otpModal.style.display = 'flex';
             }
@@ -450,17 +450,17 @@ const pages = {
             const otp = otpInput.value;
 
             const isVerified = await orderSystem.verifyOTP(customerData.email, otp);
-            
+
             if (isVerified) {
                 verifyOtpBtn.textContent = 'Placing Order...';
                 await orderSystem.placeOrder({ customer: customerData, items: state.cart });
             } else {
-                 // Re-enable the button if verification fails
+                // Re-enable the button if verification fails
                 verifyOtpBtn.disabled = false;
                 verifyOtpBtn.textContent = 'Verify & Complete Order';
             }
         });
-        
+
         document.getElementById('cancel-otp-button').addEventListener('click', () => {
             otpModal.style.display = 'none';
         });
@@ -648,13 +648,29 @@ async function initializeApp() {
 }
 
 function setupGlobalListeners() {
+    const hamburgerButton = document.getElementById('hamburger-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    // This check ensures the code doesn't run before the header is loaded
+    if (hamburgerButton && mobileMenu) {
+        hamburgerButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // This makes the menu close when a user clicks a link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+    }
     document.addEventListener('click', (e) => {
         if (e.target.closest('#open-cart-button')) {
             utils.openCart();
         } else if (e.target.closest('#close-cart-button')) {
             utils.closeCart();
         } else if (e.target.closest('.cart-item')) {
-            e.stopPropagation(); // This is key to keep the cart open
+            e.stopPropagation(); 
             const id = e.target.closest('.cart-item').dataset.id;
             if (e.target.closest('.cart-increase')) cartActions.updateQuantity(id, 1);
             if (e.target.closest('.cart-decrease')) cartActions.updateQuantity(id, -1);
