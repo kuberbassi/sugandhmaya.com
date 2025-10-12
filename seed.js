@@ -155,14 +155,14 @@ const products = [
                 id: 'oudh-premium-40',
                 name: 'Premium Box',
                 sticks: 40,
-                price: 336,
+                price: 450,
                 images: images_40_sticks
             },
             {
                 id: 'oudh-premium-20',
                 name: 'Travel Pack',
                 sticks: 20,
-                price: 89,
+                price: 113,
                 images: images_20_sticks
             }
         ],
