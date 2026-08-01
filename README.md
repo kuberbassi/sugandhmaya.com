@@ -48,11 +48,11 @@ Run the API and Vite frontend together:
 npm run dev
 ```
 
-- Frontend: `http://localhost:5175`
+- Frontend: `http://127.0.0.1:5176`
 - API: `http://localhost:5000/api`
 - Health check: `http://localhost:5000/api/health`
 
-The Vite port is intentionally strict so duplicate development servers fail clearly instead of creating stale module sessions on ports 5176 and beyond.
+The Vite host and port are intentionally fixed so another local project cannot intercept Sugandhmaya requests through a competing `localhost` IPv4/IPv6 binding.
 
 ## Useful commands
 

@@ -3,6 +3,20 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ShopContext } from './ContextStore';
 const PRODUCT_CACHE_KEY = 'sugandhmaya-products-v1';
 const PRODUCT_CACHE_TTL = 30 * 60 * 1000;
+let productsRequest;
+
+const requestProducts = () => {
+    if (!productsRequest) {
+        productsRequest = fetch('/api/products').then(response => {
+            if (!response.ok) throw new Error(`Products request failed (${response.status})`);
+            return response.json();
+        }).catch(error => {
+            productsRequest = undefined;
+            throw error;
+        });
+    }
+    return productsRequest;
+};
 
 const getCachedProducts = () => {
     try {
@@ -33,11 +47,7 @@ export const ShopProvider = ({ children }) => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                // In production this will point to the same origin /api/products
-                // For dev, we might need a proxy or full URL if backend is on 5000
-                const response = await fetch('/api/products');
-                if (!response.ok) throw new Error(`Products request failed (${response.status})`);
-                const nextProducts = await response.json();
+                const nextProducts = await requestProducts();
                 setProducts(nextProducts);
                 setProductsStatus('ready');
                 setProductsError('');
