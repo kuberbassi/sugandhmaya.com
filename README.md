@@ -1,127 +1,107 @@
-# sugandhmaya.com E-commerce Platform
+# Sugandhmaya
 
-This repository contains the source code for **sugandhmaya.com**, the official e-commerce website for the Sugandhmaya brand. It's a full-stack application featuring a static frontend and a Node.js backend, designed to provide a seamless shopping experience for artisanal puja essentials.
+The production storefront for Sugandhmaya, a handcrafted Indian incense brand. The application combines a responsive React catalogue and checkout experience with an Express API for products, OTP verification, orders, and transactional email.
 
-## About The Project
+## Stack
 
-Sugandhmaya is a complete e-commerce solution built to be elegant, fast, and secure. The platform allows users to browse products, add items to their cart, and complete their purchases through a secure, two-factor authentication process using an OTP sent to their email.
+- React 19, React Router and Vite
+- Express and Node.js
+- MongoDB with Mongoose
+- Resend for OTP delivery
+- SendGrid for order confirmations
+- Vercel for the SPA and serverless API
 
-The backend manages products, orders, and email notifications, while the frontend provides a clean, responsive, and user-friendly interface.
+## Features
 
-### Key Features
+- Responsive product catalogue and product galleries
+- Persistent cart with quantity and variant controls
+- Email OTP verification before order placement
+- Server-authoritative pricing and order validation
+- MongoDB catalogue with a bundled read-only product fallback
+- Lazy-loaded routes with stale-chunk recovery and an application error boundary
+- Accessible reduced-motion behavior and mobile navigation
 
-* **Product Catalog**: Dynamically displays products from a MongoDB database.
-* **Shopping Cart**: Fully persistent cart functionality using local storage.
-* **Secure Checkout**: An OTP-based verification system ensures secure order placement.
-* **Transactional Emails**: Integrates with Resend for sending OTPs and SendGrid for beautiful, detailed order confirmation emails.
-* **RESTful API**: A Node.js and Express-based backend serves product data and handles orders.
-* **Static Frontend**: Built with pure HTML, CSS, and vanilla JavaScript for speed and simplicity.
+## Local development
 
-## Technologies Used
+Requirements: Node.js 20 or newer and npm.
 
-This project is built with a modern, lightweight stack:
-
-* **Frontend**:
-    * HTML5
-    * CSS3 with Tailwind CSS for styling
-    * Vanilla JavaScript for client-side logic
-
-* **Backend**:
-    * [Node.js](https://nodejs.org/)
-    * [Express.js](https://expressjs.com/)
-    * [MongoDB](https://www.mongodb.com/) with [Mongoose](https://mongoosejs.com/) for data modeling
-
-* **Services**:
-    * [Resend](https://resend.com/) for OTP emails
-    * [SendGrid](https://sendgrid.com/) for order confirmation emails
-    * [Vercel](https://vercel.com/) for deployment
-
-## Getting Started
-
-To get a local copy up and running, follow these simple steps.
-
-### Prerequisites
-
-You'll need to have the following software installed on your machine:
-* [Node.js](https://nodejs.org/en/download/) (which includes npm)
-* [MongoDB](https://www.mongodb.com/try/download/community)
-
-### Installation
-
-1.  **Clone the repository:**
-    ```sh
-    git clone [https://github.com/your-username/sugandhmaya.com.git](https://github.com/your-username/sugandhmaya.com.git)
-    cd sugandhmaya.com
-    ```
-
-2.  **Install NPM packages:**
-    ```sh
-    npm install
-    ```
-
-3.  **Set up environment variables:**
-    Create a `.env` file inside the `server/` directory and add the following variables with your credentials:
-    ```env
-    PORT=5000
-    MONGO_URI=your_mongodb_connection_string
-    RESEND_API_KEY=your_resend_api_key
-    RESEND_FROM_EMAIL=your_verified_resend_from_email
-    SENDGRID_API_KEY=your_sendgrid_api_key
-    SENDGRID_FROM_EMAIL=your_verified_sendgrid_from_email
-    COMPANY_EMAIL=your_email_for_receiving_order_notifications
-    ```
-
-### Running the Application
-
-1.  **Start the server:**
-    To run the server in development mode with automatic restarts, use:
-    ```sh
-    npm run dev
-    ```
-    To start the server for production, use:
-    ```sh
-    npm run start
-    ```
-    The server will be running on `http://localhost:5000` by default.
-
-2.  **Seed the database (Optional):**
-    To populate the database with initial product data from `seed.js`, run:
-    ```sh
-    npm run seed
-    ```
-
-## Project Structure
-
-The project is organized into two main parts: the `client` and the `server`.
-```sh
-├── client/              # All frontend files
-│   ├── images/          # Product images, logos, and assets
-│   ├── _footer.html     # Reusable footer component
-│   ├── _header.html     # Reusable header component
-│   ├── checkout.html
-│   ├── confirmation.html
-│   ├── index.html
-│   ├── product.html
-│   ├── shop.html
-│   ├── script.js        # Main JavaScript file for the frontend
-│   └── style.css        # Main stylesheet
-│
-├── server/              # All backend files
-│   ├── models/          # Mongoose schemas (Product, Order)
-│   │   ├── order.js
-│   │   └── product.js
-│   ├── utils/           # Utility functions
-│   │   └── sendEmail.js # Email sending logic
-│   ├── .env             # Environment variables (needs to be created)
-│   └── db.js            # MongoDB connection logic
-│
-├── .gitignore
-├── package.json
-├── package-lock.json
-├── README.md
-├── seed.js              # Script to populate the database
-└── server.js            # Main server entry point
+```powershell
+npm install
+npm ci --prefix client
 ```
+
+Create `server/.env`:
+
+```env
+PORT=5000
+MONGO_URI=mongodb+srv://...
+RESEND_API_KEY=...
+RESEND_FROM_EMAIL=verified@example.com
+SENDGRID_API_KEY=...
+SENDGRID_FROM_EMAIL=verified@example.com
+COMPANY_EMAIL=orders@example.com
+```
+
+Run the API and Vite frontend together:
+
+```powershell
+npm run dev
+```
+
+- Frontend: `http://localhost:5175`
+- API: `http://localhost:5000/api`
+- Health check: `http://localhost:5000/api/health`
+
+The Vite port is intentionally strict so duplicate development servers fail clearly instead of creating stale module sessions on ports 5176 and beyond.
+
+## Useful commands
+
+```powershell
+npm run lint
+npm run build
+npm run seed
+npm start
+```
+
+`npm run seed` replaces the MongoDB product catalogue with the canonical products in `server/data/products.js`.
+
+## Deployment
+
+The repository is configured for Vercel:
+
+- `client/dist` is the static Vite output.
+- `api/index.js` exposes the Express application as a Vercel Function.
+- `/api/*` routes to the function.
+- Other non-file routes fall back to the React application.
+- Hashed assets receive immutable caching headers.
+
+Configure all variables from `server/.env` in the Vercel project settings. Never commit that file.
+
+## Project structure
+
+```text
+api/                  Vercel function entrypoint
+client/
+  public/             Images, robots.txt and sitemap.xml
+  src/
+    components/       Shared interface components
+    context/          Catalogue and cart state
+    pages/            Route-level screens
+server/
+  data/               Canonical product data and local development fallback
+  models/             Mongoose schemas
+  utils/              Transactional email integration
+server.js             Express application and local server entrypoint
+vercel.json           Build, routing and caching configuration
+```
+
+## Reliability notes
+
+- Product browsing remains available through bundled catalogue data when MongoDB cannot be reached.
+- Order totals are always recalculated on the server.
+- `/api/health` reports database, product-source, ordering and email readiness.
+- Local fallback orders are ignored by Git and must not be treated as durable production storage.
+
 ## License
 
-This is a proprietary and confidential project. Unauthorized copying of the files in this repository, via any medium, is strictly prohibited.
+Proprietary. See [LICENSE.md](LICENSE.md).

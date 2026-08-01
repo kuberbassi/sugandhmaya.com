@@ -1,5 +1,6 @@
 # Environment variables
 server/.env
+server/data/orders.local.json
 
 # Node modules
 node_modules/

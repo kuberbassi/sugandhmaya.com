@@ -3,13 +3,14 @@ require('dotenv').config({ path: './server/.env' });
 const { Resend } = require('resend');
 const sgMail = require('@sendgrid/mail');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+if (process.env.SENDGRID_API_KEY) sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 /**
  * Sends the OTP email using RESEND.
  */
 const sendOtpEmailWithResend = async ({ to, otp }) => {
+    if (!resend || !process.env.RESEND_FROM_EMAIL) throw new Error('Resend is not configured.');
     const emailHtml = `
       <!DOCTYPE html><html><head><style> @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;700&display=swap'); </style></head><body style="margin: 0; padding: 0; background-color: #F8F4EE; font-family: 'Inter', sans-serif;"><table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 40px auto; border-spacing: 0;"><tr><td align="center" style="padding: 20px 0;"><h1 style="font-family: 'Playfair Display', serif; font-size: 32px; color: #2C2A29; margin: 0;">SUGANDHMAYA</h1></td></tr><tr><td bgcolor="#ffffff" style="padding: 40px 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);"><h2 style="font-family: 'Playfair Display', serif; font-size: 24px; color: #2C2A29; margin: 0 0 20px;">Your Verification Code</h2><p style="font-size: 16px; color: #3D352E; line-height: 1.6;">Please use the following code to complete your order. This code will expire in 5 minutes.</p><div style="margin: 30px 0; text-align: center;"><p style="font-size: 36px; font-weight: 700; color: #E5A44E; letter-spacing: 10px; padding: 15px; background-color: #F8F4EE; border-radius: 8px;">${otp}</p></div></td></tr></table></body></html>`;
     try {
@@ -28,6 +29,7 @@ const sendOtpEmailWithResend = async ({ to, otp }) => {
  * Sends the Order Confirmation email using SENDGRID to both customer and company.
  */
 const sendOrderConfirmationWithSendGrid = async (order) => {
+    if (!process.env.SENDGRID_API_KEY || !process.env.SENDGRID_FROM_EMAIL || !process.env.COMPANY_EMAIL) throw new Error('SendGrid is not configured.');
     const orderId = order._id.toString().slice(-6).toUpperCase();
     const itemsHtml = order.items.map(item => `
         <tr style="border-bottom: 1px solid #eee;"><td style="padding: 15px 10px; vertical-align: top;"><p style="margin: 0; font-weight: bold; color: #2C2A29;">${item.name}</p><p style="margin: 5px 0 0; font-size: 14px; color: #555;">${item.size} / ${item.scent}</p></td><td style="padding: 15px 10px; text-align: right; vertical-align: top;"><p style="margin: 0; font-weight: bold; color: #2C2A29;">₹${(item.quantity * item.price).toFixed(2)}</p><p style="margin: 5px 0 0; font-size: 14px; color: #555;">(${item.quantity} x ₹${item.price.toFixed(2)})</p></td></tr>
