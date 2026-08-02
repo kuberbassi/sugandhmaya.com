@@ -1,127 +1,94 @@
-# sugandhmaya.com E-commerce Platform
+# Sugandhmaya Storefront
 
-This repository contains the source code for **sugandhmaya.com**, the official e-commerce website for the Sugandhmaya brand. It's a full-stack application featuring a static frontend and a Node.js backend, designed to provide a seamless shopping experience for artisanal puja essentials.
+Production storefront for Sugandhmaya, a handcrafted Indian incense brand. It combines a responsive React shopping experience with a small Express API and a Supabase-backed catalogue.
 
-## About The Project
+## Highlights
 
-Sugandhmaya is a complete e-commerce solution built to be elegant, fast, and secure. The platform allows users to browse products, add items to their cart, and complete their purchases through a secure, two-factor authentication process using an OTP sent to their email.
+- React 19, React Router and Vite
+- Express API for products, OTP verification and orders
+- Supabase Postgres catalogue with Row Level Security
+- Server-authoritative pricing and order validation
+- Resend OTP and SendGrid order-email integrations
+- Local catalogue and order fallbacks for reliable development
+- Lazy-loaded routes, accessible motion and responsive layouts
 
-The backend manages products, orders, and email notifications, while the frontend provides a clean, responsive, and user-friendly interface.
+## Quick start
 
-### Key Features
+Requirements: Node.js 20 or newer and npm.
 
-* **Product Catalog**: Dynamically displays products from a MongoDB database.
-* **Shopping Cart**: Fully persistent cart functionality using local storage.
-* **Secure Checkout**: An OTP-based verification system ensures secure order placement.
-* **Transactional Emails**: Integrates with Resend for sending OTPs and SendGrid for beautiful, detailed order confirmation emails.
-* **RESTful API**: A Node.js and Express-based backend serves product data and handles orders.
-* **Static Frontend**: Built with pure HTML, CSS, and vanilla JavaScript for speed and simplicity.
-
-## Technologies Used
-
-This project is built with a modern, lightweight stack:
-
-* **Frontend**:
-    * HTML5
-    * CSS3 with Tailwind CSS for styling
-    * Vanilla JavaScript for client-side logic
-
-* **Backend**:
-    * [Node.js](https://nodejs.org/)
-    * [Express.js](https://expressjs.com/)
-    * [MongoDB](https://www.mongodb.com/) with [Mongoose](https://mongoosejs.com/) for data modeling
-
-* **Services**:
-    * [Resend](https://resend.com/) for OTP emails
-    * [SendGrid](https://sendgrid.com/) for order confirmation emails
-    * [Vercel](https://vercel.com/) for deployment
-
-## Getting Started
-
-To get a local copy up and running, follow these simple steps.
-
-### Prerequisites
-
-You'll need to have the following software installed on your machine:
-* [Node.js](https://nodejs.org/en/download/) (which includes npm)
-* [MongoDB](https://www.mongodb.com/try/download/community)
-
-### Installation
-
-1.  **Clone the repository:**
-    ```sh
-    git clone [https://github.com/your-username/sugandhmaya.com.git](https://github.com/your-username/sugandhmaya.com.git)
-    cd sugandhmaya.com
-    ```
-
-2.  **Install NPM packages:**
-    ```sh
-    npm install
-    ```
-
-3.  **Set up environment variables:**
-    Create a `.env` file inside the `server/` directory and add the following variables with your credentials:
-    ```env
-    PORT=5000
-    MONGO_URI=your_mongodb_connection_string
-    RESEND_API_KEY=your_resend_api_key
-    RESEND_FROM_EMAIL=your_verified_resend_from_email
-    SENDGRID_API_KEY=your_sendgrid_api_key
-    SENDGRID_FROM_EMAIL=your_verified_sendgrid_from_email
-    COMPANY_EMAIL=your_email_for_receiving_order_notifications
-    ```
-
-### Running the Application
-
-1.  **Start the server:**
-    To run the server in development mode with automatic restarts, use:
-    ```sh
-    npm run dev
-    ```
-    To start the server for production, use:
-    ```sh
-    npm run start
-    ```
-    The server will be running on `http://localhost:5000` by default.
-
-2.  **Seed the database (Optional):**
-    To populate the database with initial product data from `seed.js`, run:
-    ```sh
-    npm run seed
-    ```
-
-## Project Structure
-
-The project is organized into two main parts: the `client` and the `server`.
-```sh
-├── client/              # All frontend files
-│   ├── images/          # Product images, logos, and assets
-│   ├── _footer.html     # Reusable footer component
-│   ├── _header.html     # Reusable header component
-│   ├── checkout.html
-│   ├── confirmation.html
-│   ├── index.html
-│   ├── product.html
-│   ├── shop.html
-│   ├── script.js        # Main JavaScript file for the frontend
-│   └── style.css        # Main stylesheet
-│
-├── server/              # All backend files
-│   ├── models/          # Mongoose schemas (Product, Order)
-│   │   ├── order.js
-│   │   └── product.js
-│   ├── utils/           # Utility functions
-│   │   └── sendEmail.js # Email sending logic
-│   ├── .env             # Environment variables (needs to be created)
-│   └── db.js            # MongoDB connection logic
-│
-├── .gitignore
-├── package.json
-├── package-lock.json
-├── README.md
-├── seed.js              # Script to populate the database
-└── server.js            # Main server entry point
+```powershell
+npm ci
+npm ci --prefix client
+Copy-Item server/.env.example server/.env
+npm run dev
 ```
+
+Local services:
+
+- Storefront: `http://127.0.0.1:5176`
+- API: `http://127.0.0.1:5000/api`
+- Health: `http://127.0.0.1:5000/api/health`
+
+The shop remains usable with bundled catalogue data when Supabase is not configured or temporarily unavailable.
+
+## Environment
+
+Configure server-only values in `server/.env`. Never expose `SUPABASE_SECRET_KEY` in React or commit the local environment file.
+
+```env
+PORT=5000
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_PUBLISHABLE_KEY=sb_publishable_your_key
+SUPABASE_SECRET_KEY=sb_secret_your_key
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=
+SENDGRID_API_KEY=
+SENDGRID_FROM_EMAIL=
+COMPANY_EMAIL=
+```
+
+See [Database setup](docs/DATABASE.md) and [Deployment](docs/DEPLOYMENT.md) for the complete configuration.
+
+## Commands
+
+```powershell
+npm run dev        # API and frontend development servers
+npm run lint       # React lint checks
+npm run build      # Production client build
+npm run check:api  # API health and catalogue smoke test
+npm run check      # Lint and production build
+npm run seed       # Upsert the canonical catalogue into Supabase
+npm start          # Start the production Express server
+```
+
+## Repository structure
+
+```text
+api/                    Vercel serverless entrypoint
+client/
+  public/media/         Named brand, product, texture and video assets
+  src/components/       Shared interface components
+  src/context/          Catalogue and cart state
+  src/pages/            Route-level screens
+  src/utils/            Small formatting helpers
+docs/                   Database and deployment guides
+scripts/                Catalogue seed and API verification scripts
+server/
+  data/                 Canonical catalogue and local order fallback
+  services/             Supabase and transactional-email integrations
+supabase/catalog.sql    Protected schema and initial catalogue seed
+server.js               Express application and local entrypoint
+vercel.json             Build, routing and cache configuration
+```
+
+## Reliability and security
+
+- Product requests use a short server cache and fall back to canonical local data.
+- Order prices are recalculated from the server catalogue.
+- Public Supabase access is read-only; order rows require the server secret key.
+- `/api/health` reports catalogue, order-storage and email readiness.
+- Local fallback orders are ignored by Git and are not production storage.
+
 ## License
 
-This is a proprietary and confidential project. Unauthorized copying of the files in this repository, via any medium, is strictly prohibited.
+Proprietary. See [LICENSE.md](LICENSE.md).

@@ -1,21 +1,18 @@
 // server.js
 require('dotenv').config({ path: './server/.env' });
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 const otpGenerator = require('otp-generator');
 
-const connectDB = require('./server/db');
-const { sendOtpEmailWithResend, sendOrderConfirmationWithSendGrid } = require('./server/utils/sendEmail');
-const Product = require('./server/models/product');
-const Order = require('./server/models/order');
-
-connectDB();
+const { sendOtpEmailWithResend, sendOrderConfirmationWithSendGrid } = require('./server/services/emailService');
+const { getProducts, saveOrder, isCatalogConfigured, isOrderStorageConfigured } = require('./server/services/database');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const otpStore = {};
+const productCache = { data: null, expiresAt: 0 };
+const PRODUCT_CACHE_TTL = 5 * 60 * 1000;
 
 app.use(cors());
 app.use(express.json());
@@ -24,9 +21,30 @@ const apiRouter = express.Router();
 
 // --- API ROUTES ---
 
+apiRouter.get('/health', (req, res) => {
+    res.status(200).json({
+        success: true,
+        database: isCatalogConfigured() ? 'supabase-configured' : 'local-fallback',
+        productSource: isCatalogConfigured() ? 'supabase' : 'local-fallback',
+        ordering: isOrderStorageConfigured() ? 'supabase' : 'local-fallback',
+        email: {
+            otp: Boolean(process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL),
+            confirmation: Boolean(process.env.SENDGRID_API_KEY && process.env.SENDGRID_FROM_EMAIL && process.env.COMPANY_EMAIL)
+        }
+    });
+});
+
 apiRouter.get('/products', async (req, res) => {
     try {
-        const products = await Product.find({});
+        res.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=86400');
+        if (productCache.data && productCache.expiresAt > Date.now()) {
+            return res.status(200).json(productCache.data);
+        }
+
+        const { products, source } = await getProducts();
+        productCache.data = products;
+        productCache.expiresAt = Date.now() + PRODUCT_CACHE_TTL;
+        res.set('X-Product-Source', source);
         res.status(200).json(products);
     } catch (error) {
         console.error("Failed to fetch products:", error);
@@ -35,9 +53,9 @@ apiRouter.get('/products', async (req, res) => {
 });
 
 apiRouter.post('/send-otp', async (req, res) => {
-    const { email } = req.body;
-    if (!email) {
-        return res.status(400).json({ success: false, message: 'Email is required.' });
+    const email = String(req.body.email || '').trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return res.status(400).json({ success: false, message: 'A valid email is required.' });
     }
     const otp = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false, lowerCaseAlphabets: false });
     otpStore[email] = { otp, expires: Date.now() + 5 * 60 * 1000 };
@@ -50,7 +68,8 @@ apiRouter.post('/send-otp', async (req, res) => {
 });
 
 apiRouter.post('/verify-otp', (req, res) => {
-    const { email, otp } = req.body;
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const otp = String(req.body.otp || '').trim();
     const storedOtpData = otpStore[email];
     if (storedOtpData && storedOtpData.otp === otp && Date.now() < storedOtpData.expires) {
         delete otpStore[email];
@@ -64,12 +83,18 @@ apiRouter.post('/orders', async (req, res) => {
     try {
         const { customer, items: cartItems } = req.body;
 
-        if (!customer || !cartItems || cartItems.length === 0) {
+        if (!customer || !Array.isArray(cartItems) || cartItems.length === 0) {
             return res.status(400).json({ success: false, message: 'Missing order data.' });
         }
-        
+
+        const requiredCustomerFields = ['name', 'email', 'phone', 'country', 'state', 'address', 'pin'];
+        if (requiredCustomerFields.some(field => !String(customer[field] || '').trim())) {
+            return res.status(400).json({ success: false, message: 'Please complete all shipping information.' });
+        }
+
         const productIds = cartItems.map(i => i.productId);
-        const productsFromDB = await Product.find({ 'id': { $in: productIds } });
+        const { products: catalogue } = await getProducts();
+        const productsFromDB = catalogue.filter(product => productIds.includes(product.id));
 
         let total = 0;
         const orderItems = [];
@@ -83,19 +108,23 @@ apiRouter.post('/orders', async (req, res) => {
             if (!variant) {
                 throw new Error(`Invalid Order: The selected size '${item.size}' for '${product.name}' is not available.`);
             }
-            total += variant.price * item.quantity;
+            const quantity = Number(item.quantity);
+            if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
+                throw new Error(`Invalid Order: Invalid quantity for '${product.name}'.`);
+            }
+            total += variant.price * quantity;
             orderItems.push({
                 productId: item.productId,
                 name: product.name,
                 scent: item.scent,
                 size: item.size,
-                quantity: item.quantity,
+                quantity,
                 price: variant.price
             });
         }
 
-        const newOrder = new Order({ customer, items: orderItems, total });
-        const savedOrder = await newOrder.save();
+        const orderData = { customer, items: orderItems, total };
+        const savedOrder = await saveOrder(orderData);
 
         // **MODIFICATION START**
         // The order is saved. Now, TRY to send the email, but don't fail the whole request if this step fails.
@@ -108,7 +137,7 @@ apiRouter.post('/orders', async (req, res) => {
         // **MODIFICATION END**
 
         // Send the successful response to the client regardless of email status.
-        res.status(201).json({ success: true, message: 'Order placed successfully!', order: savedOrder });
+        res.status(201).json({ success: true, message: 'Order placed successfully!', order: savedOrder, storage: savedOrder.storage || 'supabase' });
 
     } catch (error) {
         console.error("Order placement failed:", error.message);
@@ -122,18 +151,21 @@ apiRouter.post('/orders', async (req, res) => {
 
 app.use('/api', apiRouter);
 
-const clientPath = path.join(__dirname, 'client');
+
+// Serve static files from the React app
+const clientPath = path.join(__dirname, 'client', 'dist');
 app.use(express.static(clientPath));
 
 app.get('*', (req, res) => {
-    const filePath = path.join(clientPath, req.path);
     if (path.extname(req.path).length > 0) {
-        res.sendFile(filePath);
-    } else {
-        res.sendFile(path.join(clientPath, 'index.html'));
+        return res.status(404).send('Asset not found');
     }
+    res.sendFile(path.join(clientPath, 'index.html'));
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server is running on http://localhost:${PORT}`);
-});
+
+if (require.main === module) {
+    app.listen(PORT, () => console.log(`Server is running on http://localhost:${PORT}`));
+}
+
+module.exports = app;
