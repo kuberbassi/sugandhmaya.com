@@ -68,7 +68,13 @@ const Home = () => {
         <section id="our-promise" className="promise-section">
             <div className="container promise-layout">
                 <div className="promise-content"><p className="eyebrow">Our philosophy</p><h2>Old wisdom.<br />New expression.</h2><p>Sugandhmaya means “filled with fragrance.” We honour that idea with products that feel timeless, look considered, and belong naturally in modern homes.</p><Link to="/shop" className="btn btn-light">Discover the collection <ArrowRight /></Link></div>
-                <div className="brand-emblem"><img src="/images/Sugandhmaya.webp" alt="Sugandhmaya brand emblem" loading="lazy" /><span>Purposefully made<br />in New Delhi</span></div>
+                <div className="brand-emblem">
+                    <video className="brand-emblem-video" autoPlay muted loop playsInline preload="metadata" poster="/images/Sugandhmaya.webp" aria-label="Animated Sugandhmaya emblem">
+                        <source src="/videos/sugandhmaya-logo.webm" type="video/webm" />
+                        <source src="/videos/sugandhmaya-logo.mp4" type="video/mp4" />
+                    </video>
+                    <span className="brand-seal">Purposefully made<br />in New Delhi</span>
+                </div>
             </div>
         </section>
 
