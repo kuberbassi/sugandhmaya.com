@@ -28,7 +28,7 @@
       ]
     },
     {
-      "source": "/images/:path*",
+      "source": "/media/:path*",
       "headers": [
         {
           "key": "Cache-Control",

@@ -5,7 +5,7 @@ const Footer = () => (
     <footer className="main-footer">
         <div className="container footer-grid">
             <div className="footer-brand">
-                <img src="/images/Sugandhmaya-icon.webp" alt="" />
+                <img src="/media/brand/logo-mark.webp" alt="" />
                 <div><strong>SUGANDHMAYA</strong><span>The art of ritual</span></div>
                 <p>Pure, purposeful fragrance for slower mornings and sacred everyday moments.</p>
             </div>

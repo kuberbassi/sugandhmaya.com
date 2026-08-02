@@ -1,4 +1,4 @@
-// server/utils/sendEmail.js
+// Transactional email providers used by the checkout API.
 require('dotenv').config({ path: './server/.env' });
 const { Resend } = require('resend');
 const sgMail = require('@sendgrid/mail');
@@ -39,7 +39,7 @@ const sendOrderConfirmationWithSendGrid = async (order) => {
     const emailHtmlForCustomer = `
     <!DOCTYPE html><html><head><style> @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;700&display=swap'); </style></head><body style="margin: 0; padding: 0; background-color: #F8F4EE; font-family: 'DM Sans', sans-serif;"><table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 40px auto; border-spacing: 0;">
     <tr><td align="center" style="padding: 20px 0;">
-        <img src="https://sugandhmaya.com/images/Sugandhmaya-icon.webp" alt="Sugandhmaya Logo" width="60" style="display: block; margin: 0 auto;">
+        <img src="https://sugandhmaya.com/media/brand/logo-mark.webp" alt="Sugandhmaya Logo" width="60" style="display: block; margin: 0 auto;">
         <h1 style="font-family: 'Playfair Display', serif; font-size: 24px; color: #2C2A29; margin: 10px 0 0 0; font-weight: 700;">SUGANDHMAYA</h1>
     </td></tr>
     <tr><td bgcolor="#ffffff" style="padding: 40px 30px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.07);">
@@ -62,7 +62,7 @@ const sendOrderConfirmationWithSendGrid = async (order) => {
     const emailHtmlForCompany = `
     <!DOCTYPE html><html><head><style> @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;700&display=swap'); </style></head><body style="margin: 0; padding: 0; background-color: #f4f7f6; font-family: 'DM Sans', sans-serif;"><table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 40px auto; border-spacing: 0;">
     <tr><td align="center" style="padding: 20px 0;">
-        <img src="https://sugandhmaya.com/images/Sugandhmaya-icon.webp" alt="Sugandhmaya Logo" width="60" style="display: block; margin: 0 auto;">
+        <img src="https://sugandhmaya.com/media/brand/logo-mark.webp" alt="Sugandhmaya Logo" width="60" style="display: block; margin: 0 auto;">
         <h1 style="font-family: 'Playfair Display', serif; font-size: 24px; color: #2C2A29; margin: 10px 0 0 0; font-weight: 700;">SUGANDHMAYA</h1>
     </td></tr>
     <tr><td bgcolor="#ffffff" style="padding: 40px 30px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.07);">

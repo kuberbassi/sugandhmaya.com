@@ -30,14 +30,14 @@ const Home = () => {
                     <div className="hero-trust"><span>Natural ingredients</span><span>Handcrafted in India</span><span>Mindful fragrance</span></div>
                 </div>
                 <div className="hero-media-grid" aria-label="Sugandhmaya incense collection">
-                    <figure className="hero-image hero-image-main"><img src="/images/products/sugandhmaya_chandan_agarbatti/12-stick-box-agarbatti.webp" alt="Sugandhmaya incense glowing through smoke" fetchPriority="high" /><figcaption>Slow down. Light within.</figcaption></figure>
+                    <figure className="hero-image hero-image-main"><img src="/media/products/hero-smoke.webp" alt="Sugandhmaya incense glowing through smoke" fetchPriority="high" /><figcaption>Slow down. Light within.</figcaption></figure>
                     <figure className="hero-image hero-image-secondary hero-video-frame">
-                        <video autoPlay muted loop playsInline preload="metadata" poster="/images/products/sugandhmaya_chandan_agarbatti/40-stick-box-agarbatti.webp" aria-label="Sugandhmaya incense ritual">
-                            <source src="/videos/agarbatti-ritual.webm" type="video/webm" />
-                            <source src="/videos/agarbatti-ritual.mp4" type="video/mp4" />
+                        <video autoPlay muted loop playsInline preload="metadata" poster="/media/products/hero-ritual.webp" aria-label="Sugandhmaya incense ritual">
+                            <source src="/media/videos/agarbatti-ritual.webm" type="video/webm" />
+                            <source src="/media/videos/agarbatti-ritual.mp4" type="video/mp4" />
                         </video>
                     </figure>
-                    <div className="hero-product-float"><img src="/images/products/sugandhmaya_chandan_agarbatti/1.webp" alt="Sugandhmaya premium agarbatti" /><span className="media-badge product-badge">Premium agarbatti</span></div>
+                    <div className="hero-product-float"><img src="/media/products/product-cover.webp" alt="Sugandhmaya premium agarbatti" /><span className="media-badge product-badge">Premium agarbatti</span></div>
                 </div>
             </div>
         </section>
@@ -54,7 +54,7 @@ const Home = () => {
 
         <section className="experience-section">
             <div className="container experience-grid">
-                <div className="experience-image"><img src="/images/products/sugandhmaya_chandan_agarbatti/5.webp" alt="Incense smoke rising in a calm space" loading="lazy" /><span>Pause · Breathe · Begin</span></div>
+                <div className="experience-image"><img src="/media/products/ritual-lifestyle.webp" alt="Incense smoke rising in a calm space" loading="lazy" /><span>Pause · Breathe · Begin</span></div>
                 <div className="experience-copy"><p className="eyebrow">The everyday ritual</p><h2>A quieter room.<br />A clearer mind.</h2><p>Light one stick at the threshold of your day. Let its fragrance mark a moment to arrive, breathe, and begin with intention.</p><ol><li><span>01</span>Choose a quiet corner</li><li><span>02</span>Light and gently extinguish the flame</li><li><span>03</span>Let the fragrance hold the moment</li></ol><Link to="/shop" className="text-link">Choose your ritual <ArrowRight /></Link></div>
             </div>
         </section>
@@ -69,9 +69,9 @@ const Home = () => {
             <div className="container promise-layout">
                 <div className="promise-content"><p className="eyebrow">Our philosophy</p><h2>Old wisdom.<br />New expression.</h2><p>Sugandhmaya means “filled with fragrance.” We honour that idea with products that feel timeless, look considered, and belong naturally in modern homes.</p><Link to="/shop" className="btn btn-light">Discover the collection <ArrowRight /></Link></div>
                 <div className="brand-emblem">
-                    <video className="brand-emblem-video" autoPlay muted loop playsInline preload="metadata" poster="/images/Sugandhmaya.webp" aria-label="Animated Sugandhmaya emblem">
-                        <source src="/videos/sugandhmaya-logo.webm" type="video/webm" />
-                        <source src="/videos/sugandhmaya-logo.mp4" type="video/mp4" />
+                    <video className="brand-emblem-video" autoPlay muted loop playsInline preload="metadata" poster="/media/brand/logo-lockup.webp" aria-label="Animated Sugandhmaya emblem">
+                        <source src="/media/videos/sugandhmaya-logo.webm" type="video/webm" />
+                        <source src="/media/videos/sugandhmaya-logo.mp4" type="video/mp4" />
                     </video>
                     <span className="brand-seal">Purposefully made<br />in New Delhi</span>
                 </div>

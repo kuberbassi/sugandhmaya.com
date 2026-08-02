@@ -1,17 +1,19 @@
 const premiumImages = [
-    '/images/products/sugandhmaya_chandan_agarbatti/1.webp',
-    '/images/products/sugandhmaya_chandan_agarbatti/2.webp',
-    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
-    '/images/products/sugandhmaya_chandan_agarbatti/6.webp',
-    '/images/products/sugandhmaya_chandan_agarbatti/12-stick-box-agarbatti.webp',
-    '/images/products/sugandhmaya_chandan_agarbatti/40-stick-box-agarbatti.webp'
+    '/media/products/product-cover.webp',
+    '/media/products/product-back.webp',
+    '/media/products/incense-sticks.webp',
+    '/media/products/product-ritual.webp',
+    '/media/products/hero-smoke.webp',
+    '/media/products/hero-ritual.webp'
 ];
 
+const sharedCoverImage = '/media/products/product-cover.webp';
+
 const travelImages = [
-    '/images/products/sugandhmaya_chandan_agarbatti/4.webp',
-    '/images/products/sugandhmaya_chandan_agarbatti/5.webp',
-    '/images/products/sugandhmaya_chandan_agarbatti/3.webp',
-    '/images/products/sugandhmaya_chandan_agarbatti/6.webp'
+    '/media/products/product-cover.webp',
+    '/media/products/ritual-lifestyle.webp',
+    '/media/products/incense-sticks.webp',
+    '/media/products/product-ritual.webp'
 ];
 
 const productDetails = [
@@ -35,7 +37,7 @@ const products = productDetails.map(([id, name, scent, premiumPrice, travelPrice
         { id: `${id}-20`, name: 'Travel Pack', sticks: 20, price: travelPrice, images: rotateImages(travelImages, index) }
     ],
     description,
-    featuredImage: premiumImages[index % premiumImages.length]
+    featuredImage: sharedCoverImage
 }));
 
 module.exports = products;

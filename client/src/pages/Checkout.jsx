@@ -60,7 +60,7 @@ const Checkout = () => {
         <div className="checkout-layout-grid">
             <section className="checkout-form-section">
                 <div className="form-container">
-                    <Link to="/" className="checkout-heading"><img src="/images/Sugandhmaya-icon.webp" alt="" /><h1>Shipping Information</h1></Link>
+                    <Link to="/" className="checkout-heading"><img src="/media/brand/logo-mark.webp" alt="" /><h1>Shipping Information</h1></Link>
                     <form onSubmit={sendOtp} className="checkout-form">
                         <label className="form-group">Full name<input name="name" autoComplete="name" required value={form.name} onChange={changeField} /></label>
                         <label className="form-group">Email<input name="email" type="email" autoComplete="email" required value={form.email} onChange={changeField} /></label>

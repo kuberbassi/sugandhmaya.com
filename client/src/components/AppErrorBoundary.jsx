@@ -13,7 +13,7 @@ class AppErrorBoundary extends Component {
     render() {
         if (!this.state.error) return this.props.children;
         return <main className="error-page"><section className="error-card">
-            <img src="/images/Sugandhmaya-icon.webp" alt="" />
+            <img src="/media/brand/logo-mark.webp" alt="" />
             <p className="eyebrow">A brief pause</p><h1>This page needs a fresh start.</h1>
             <p>Your cart is safe. Refresh to reconnect with the latest version of Sugandhmaya.</p>
             <div className="error-actions"><button className="btn" onClick={() => window.location.reload()}>Refresh page</button><a className="text-link" href="/">Return home</a></div>

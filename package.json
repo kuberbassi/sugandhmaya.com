@@ -8,17 +8,17 @@
     "dev": "node dev.js",
     "dev:server": "nodemon server.js",
     "dev:client": "npm --prefix client run dev",
-    "seed": "node seed.js",
+    "seed": "node scripts/seed-catalog.js",
     "build": "npm ci --prefix client && npm run build --prefix client",
     "lint": "npm run lint --prefix client",
-    "check": "npm run lint && npm run build"
+    "check": "npm run lint && npm run build",
+    "check:api": "node scripts/smoke-api.js"
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.3",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "mongoose": "^8.0.2",
     "otp-generator": "^4.0.1",
     "resend": "^3.2.0"
   },

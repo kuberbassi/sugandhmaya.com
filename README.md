@@ -1,106 +1,93 @@
-# Sugandhmaya
+# Sugandhmaya Storefront
 
-The production storefront for Sugandhmaya, a handcrafted Indian incense brand. The application combines a responsive React catalogue and checkout experience with an Express API for products, OTP verification, orders, and transactional email.
+Production storefront for Sugandhmaya, a handcrafted Indian incense brand. It combines a responsive React shopping experience with a small Express API and a Supabase-backed catalogue.
 
-## Stack
+## Highlights
 
 - React 19, React Router and Vite
-- Express and Node.js
-- MongoDB with Mongoose
-- Resend for OTP delivery
-- SendGrid for order confirmations
-- Vercel for the SPA and serverless API
-
-## Features
-
-- Responsive product catalogue and product galleries
-- Persistent cart with quantity and variant controls
-- Email OTP verification before order placement
+- Express API for products, OTP verification and orders
+- Supabase Postgres catalogue with Row Level Security
 - Server-authoritative pricing and order validation
-- MongoDB catalogue with a bundled read-only product fallback
-- Lazy-loaded routes with stale-chunk recovery and an application error boundary
-- Accessible reduced-motion behavior and mobile navigation
+- Resend OTP and SendGrid order-email integrations
+- Local catalogue and order fallbacks for reliable development
+- Lazy-loaded routes, accessible motion and responsive layouts
 
-## Local development
+## Quick start
 
 Requirements: Node.js 20 or newer and npm.
 
 ```powershell
-npm install
+npm ci
 npm ci --prefix client
-```
-
-Create `server/.env`:
-
-```env
-PORT=5000
-MONGO_URI=mongodb+srv://...
-RESEND_API_KEY=...
-RESEND_FROM_EMAIL=verified@example.com
-SENDGRID_API_KEY=...
-SENDGRID_FROM_EMAIL=verified@example.com
-COMPANY_EMAIL=orders@example.com
-```
-
-Run the API and Vite frontend together:
-
-```powershell
+Copy-Item server/.env.example server/.env
 npm run dev
 ```
 
-- Frontend: `http://127.0.0.1:5176`
-- API: `http://localhost:5000/api`
-- Health check: `http://localhost:5000/api/health`
+Local services:
 
-The Vite host and port are intentionally fixed so another local project cannot intercept Sugandhmaya requests through a competing `localhost` IPv4/IPv6 binding.
+- Storefront: `http://127.0.0.1:5176`
+- API: `http://127.0.0.1:5000/api`
+- Health: `http://127.0.0.1:5000/api/health`
 
-## Useful commands
+The shop remains usable with bundled catalogue data when Supabase is not configured or temporarily unavailable.
+
+## Environment
+
+Configure server-only values in `server/.env`. Never expose `SUPABASE_SECRET_KEY` in React or commit the local environment file.
+
+```env
+PORT=5000
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_PUBLISHABLE_KEY=sb_publishable_your_key
+SUPABASE_SECRET_KEY=sb_secret_your_key
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=
+SENDGRID_API_KEY=
+SENDGRID_FROM_EMAIL=
+COMPANY_EMAIL=
+```
+
+See [Database setup](docs/DATABASE.md) and [Deployment](docs/DEPLOYMENT.md) for the complete configuration.
+
+## Commands
 
 ```powershell
-npm run lint
-npm run build
-npm run seed
-npm start
+npm run dev        # API and frontend development servers
+npm run lint       # React lint checks
+npm run build      # Production client build
+npm run check:api  # API health and catalogue smoke test
+npm run check      # Lint and production build
+npm run seed       # Upsert the canonical catalogue into Supabase
+npm start          # Start the production Express server
 ```
 
-`npm run seed` replaces the MongoDB product catalogue with the canonical products in `server/data/products.js`.
-
-## Deployment
-
-The repository is configured for Vercel:
-
-- `client/dist` is the static Vite output.
-- `api/index.js` exposes the Express application as a Vercel Function.
-- `/api/*` routes to the function.
-- Other non-file routes fall back to the React application.
-- Hashed assets receive immutable caching headers.
-
-Configure all variables from `server/.env` in the Vercel project settings. Never commit that file.
-
-## Project structure
+## Repository structure
 
 ```text
-api/                  Vercel function entrypoint
+api/                    Vercel serverless entrypoint
 client/
-  public/             Images, robots.txt and sitemap.xml
-  src/
-    components/       Shared interface components
-    context/          Catalogue and cart state
-    pages/            Route-level screens
+  public/media/         Named brand, product, texture and video assets
+  src/components/       Shared interface components
+  src/context/          Catalogue and cart state
+  src/pages/            Route-level screens
+  src/utils/            Small formatting helpers
+docs/                   Database and deployment guides
+scripts/                Catalogue seed and API verification scripts
 server/
-  data/               Canonical product data and local development fallback
-  models/             Mongoose schemas
-  utils/              Transactional email integration
-server.js             Express application and local server entrypoint
-vercel.json           Build, routing and caching configuration
+  data/                 Canonical catalogue and local order fallback
+  services/             Supabase and transactional-email integrations
+supabase/catalog.sql    Protected schema and initial catalogue seed
+server.js               Express application and local entrypoint
+vercel.json             Build, routing and cache configuration
 ```
 
-## Reliability notes
+## Reliability and security
 
-- Product browsing remains available through bundled catalogue data when MongoDB cannot be reached.
-- Order totals are always recalculated on the server.
-- `/api/health` reports database, product-source, ordering and email readiness.
-- Local fallback orders are ignored by Git and must not be treated as durable production storage.
+- Product requests use a short server cache and fall back to canonical local data.
+- Order prices are recalculated from the server catalogue.
+- Public Supabase access is read-only; order rows require the server secret key.
+- `/api/health` reports catalogue, order-storage and email readiness.
+- Local fallback orders are ignored by Git and are not production storage.
 
 ## License
 

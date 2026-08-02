@@ -30,7 +30,7 @@ const Header = () => {
             <div className="container header-container">
                 <nav className="header-nav" aria-label="Main navigation">
                     <Link to="/" className="brand-name" aria-label="Sugandhmaya home">
-                        <img src="/images/Sugandhmaya-icon.webp" alt="" className="header-logo" />
+                        <img src="/media/brand/logo-mark.webp" alt="" className="header-logo" />
                         <span><strong>SUGANDHMAYA</strong><small>The art of ritual</small></span>
                     </Link>
                     <div className="nav-links">

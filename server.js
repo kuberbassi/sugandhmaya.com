@@ -5,15 +5,8 @@ const cors = require('cors');
 const path = require('path');
 const otpGenerator = require('otp-generator');
 
-const connectDB = require('./server/db');
-const { isDatabaseReady } = require('./server/db');
-const { sendOtpEmailWithResend, sendOrderConfirmationWithSendGrid } = require('./server/utils/sendEmail');
-const Product = require('./server/models/product');
-const Order = require('./server/models/order');
-const fallbackProducts = require('./server/data/products');
-const { saveLocalOrder } = require('./server/data/orderStore');
-
-connectDB();
+const { sendOtpEmailWithResend, sendOrderConfirmationWithSendGrid } = require('./server/services/emailService');
+const { getProducts, saveOrder, isCatalogConfigured, isOrderStorageConfigured } = require('./server/services/database');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -31,9 +24,9 @@ const apiRouter = express.Router();
 apiRouter.get('/health', (req, res) => {
     res.status(200).json({
         success: true,
-        database: isDatabaseReady() ? 'connected' : 'offline',
-        productSource: isDatabaseReady() ? 'mongodb' : 'local-fallback',
-        ordering: 'available',
+        database: isCatalogConfigured() ? 'supabase-configured' : 'local-fallback',
+        productSource: isCatalogConfigured() ? 'supabase' : 'local-fallback',
+        ordering: isOrderStorageConfigured() ? 'supabase' : 'local-fallback',
         email: {
             otp: Boolean(process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL),
             confirmation: Boolean(process.env.SENDGRID_API_KEY && process.env.SENDGRID_FROM_EMAIL && process.env.COMPANY_EMAIL)
@@ -48,14 +41,10 @@ apiRouter.get('/products', async (req, res) => {
             return res.status(200).json(productCache.data);
         }
 
-        if (!isDatabaseReady()) {
-            res.set('X-Product-Source', 'local-fallback');
-            return res.status(200).json(fallbackProducts);
-        }
-
-        const products = await Product.find({}).lean().exec();
+        const { products, source } = await getProducts();
         productCache.data = products;
         productCache.expiresAt = Date.now() + PRODUCT_CACHE_TTL;
+        res.set('X-Product-Source', source);
         res.status(200).json(products);
     } catch (error) {
         console.error("Failed to fetch products:", error);
@@ -104,9 +93,8 @@ apiRouter.post('/orders', async (req, res) => {
         }
 
         const productIds = cartItems.map(i => i.productId);
-        const productsFromDB = isDatabaseReady()
-            ? await Product.find({ 'id': { $in: productIds } }).lean().exec()
-            : fallbackProducts.filter(product => productIds.includes(product.id));
+        const { products: catalogue } = await getProducts();
+        const productsFromDB = catalogue.filter(product => productIds.includes(product.id));
 
         let total = 0;
         const orderItems = [];
@@ -136,9 +124,7 @@ apiRouter.post('/orders', async (req, res) => {
         }
 
         const orderData = { customer, items: orderItems, total };
-        const savedOrder = isDatabaseReady()
-            ? await new Order(orderData).save()
-            : await saveLocalOrder(orderData);
+        const savedOrder = await saveOrder(orderData);
 
         // **MODIFICATION START**
         // The order is saved. Now, TRY to send the email, but don't fail the whole request if this step fails.
@@ -151,7 +137,7 @@ apiRouter.post('/orders', async (req, res) => {
         // **MODIFICATION END**
 
         // Send the successful response to the client regardless of email status.
-        res.status(201).json({ success: true, message: 'Order placed successfully!', order: savedOrder, storage: isDatabaseReady() ? 'mongodb' : 'local-fallback' });
+        res.status(201).json({ success: true, message: 'Order placed successfully!', order: savedOrder, storage: savedOrder.storage || 'supabase' });
 
     } catch (error) {
         console.error("Order placement failed:", error.message);
