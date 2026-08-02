@@ -31,7 +31,12 @@ const Home = () => {
                 </div>
                 <div className="hero-media-grid" aria-label="Sugandhmaya incense collection">
                     <figure className="hero-image hero-image-main"><img src="/images/products/sugandhmaya_chandan_agarbatti/12-stick-box-agarbatti.webp" alt="Sugandhmaya incense glowing through smoke" fetchPriority="high" /><figcaption>Slow down. Light within.</figcaption></figure>
-                    <figure className="hero-image hero-image-secondary"><img src="/images/products/sugandhmaya_chandan_agarbatti/40-stick-box-agarbatti.webp" alt="A peaceful Sugandhmaya incense ritual" /><span className="media-badge image-index">02 / 03</span></figure>
+                    <figure className="hero-image hero-image-secondary hero-video-frame">
+                        <video autoPlay muted loop playsInline preload="metadata" poster="/images/products/sugandhmaya_chandan_agarbatti/40-stick-box-agarbatti.webp" aria-label="Sugandhmaya incense ritual">
+                            <source src="/videos/agarbatti-ritual.webm" type="video/webm" />
+                            <source src="/videos/agarbatti-ritual.mp4" type="video/mp4" />
+                        </video>
+                    </figure>
                     <div className="hero-product-float"><img src="/images/products/sugandhmaya_chandan_agarbatti/1.webp" alt="Sugandhmaya premium agarbatti" /><span className="media-badge product-badge">Premium agarbatti</span></div>
                 </div>
             </div>
