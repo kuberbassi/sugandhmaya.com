@@ -1,30 +1,33 @@
-# Deployment
+# Deployment Guide
 
-The project is configured for Vercel with a Vite static frontend and an Express serverless function.
+This repository is optimized for deployment on Vercel or any Node.js environment.
 
-## Vercel settings
+## Vercel Deployment
 
-- Build command: `npm run build`
-- Output directory: `client/dist`
-- API entrypoint: `api/index.js`
-- Node.js: 20 or newer
+1. Import the repository into Vercel.
+2. The included [`vercel.json`](../vercel.json) automatically handles static building and API rewrites:
+   - Output directory: `client/dist`
+   - Serverless entrypoint: `api/index.js` (delegates to `server.js`)
+3. Add Environment Variables in your Vercel Project Settings:
+   - `SUPABASE_URL`
+   - `SUPABASE_PUBLISHABLE_KEY`
+   - `SUPABASE_SECRET_KEY`
+   - `RESEND_API_KEY`
+   - `RESEND_FROM_EMAIL`
+   - `SENDGRID_API_KEY`
+   - `SENDGRID_FROM_EMAIL`
+   - `COMPANY_EMAIL`
 
-Add every variable from `server/.env.example` to the Vercel project. `SUPABASE_SECRET_KEY`, email provider keys and sender configuration must remain server-only.
+## Local Production Testing
 
-## Pre-deployment checklist
+To build the client and test the API contract locally:
 
 ```powershell
-npm ci
-npm ci --prefix client
-npm run lint
-npm run check:api
-npm run build
+npm run check
 ```
 
-After deployment, verify:
+To run the local production server:
 
-1. `/api/health` reports the expected integrations.
-2. `/api/products` returns six products from Supabase.
-3. Shop and product routes load directly without a 404.
-4. OTP delivery, checkout validation and order confirmation work with production sender domains.
-5. `/media/*` responses include the configured cache policy.
+```powershell
+npm start
+```

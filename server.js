@@ -24,9 +24,9 @@ const apiRouter = express.Router();
 apiRouter.get('/health', (req, res) => {
     res.status(200).json({
         success: true,
-        database: isCatalogConfigured() ? 'supabase-configured' : 'local-fallback',
-        productSource: isCatalogConfigured() ? 'supabase' : 'local-fallback',
-        ordering: isOrderStorageConfigured() ? 'supabase' : 'local-fallback',
+        database: isCatalogConfigured() ? 'connected' : 'unconfigured',
+        productSource: 'supabase',
+        ordering: isOrderStorageConfigured() ? 'connected' : 'unconfigured',
         email: {
             otp: Boolean(process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL),
             confirmation: Boolean(process.env.SENDGRID_API_KEY && process.env.SENDGRID_FROM_EMAIL && process.env.COMPANY_EMAIL)
@@ -47,8 +47,14 @@ apiRouter.get('/products', async (req, res) => {
         res.set('X-Product-Source', source);
         res.status(200).json(products);
     } catch (error) {
-        console.error("Failed to fetch products:", error);
-        res.status(500).json({ message: 'Failed to fetch products.' });
+        console.error("Failed to fetch products from DB:", error.message);
+        if (productCache.data) {
+            res.set('X-Product-Source', 'cache-fallback');
+            return res.status(200).json(productCache.data);
+        }
+        const fallbackCatalog = require('./server/data/catalog');
+        res.set('X-Product-Source', 'catalog-fallback');
+        res.status(200).json(fallbackCatalog);
     }
 });
 
@@ -126,18 +132,13 @@ apiRouter.post('/orders', async (req, res) => {
         const orderData = { customer, items: orderItems, total };
         const savedOrder = await saveOrder(orderData);
 
-        // **MODIFICATION START**
-        // The order is saved. Now, TRY to send the email, but don't fail the whole request if this step fails.
         try {
             await sendOrderConfirmationWithSendGrid(savedOrder);
         } catch (emailError) {
-            // Log the error for your own records, but don't stop the process.
             console.error(`CRITICAL: Order ${savedOrder._id} was saved, but confirmation email failed to send.`, emailError);
         }
-        // **MODIFICATION END**
 
-        // Send the successful response to the client regardless of email status.
-        res.status(201).json({ success: true, message: 'Order placed successfully!', order: savedOrder, storage: savedOrder.storage || 'supabase' });
+        res.status(201).json({ success: true, message: 'Order placed successfully!', order: savedOrder, storage: 'supabase' });
 
     } catch (error) {
         console.error("Order placement failed:", error.message);

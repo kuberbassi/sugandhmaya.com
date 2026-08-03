@@ -1,30 +1,35 @@
-# Database setup
+# Database & Catalogue Setup
 
-Sugandhmaya uses Supabase Postgres for the product catalogue and persistent orders. The API automatically uses the bundled catalogue when Supabase is unavailable.
+Sugandhmaya uses Supabase Postgres for canonical product catalogue storage and persistent customer order management.
 
-## Create the schema
+## Schema Creation
 
-1. Create a Supabase project in the intended organization.
-2. Run [`supabase/catalog.sql`](../supabase/catalog.sql) through the Supabase SQL editor or migration tooling.
-3. Copy the project URL, publishable key and server secret key into `server/.env`.
-4. Run `npm run check:api` and confirm that `productSource` reports `supabase`.
+1. Log into your [Supabase Dashboard](https://supabase.com/dashboard).
+2. Create a new project or select an existing project.
+3. Open the **SQL Editor** and execute the contents of [`supabase/catalog.sql`](../supabase/catalog.sql).
 
-The SQL enables RLS on both tables. Anonymous and authenticated clients may only read `products`; `orders` has no public policy and is written only by the Express server with `SUPABASE_SECRET_KEY`.
+The SQL script creates:
+- `public.products` with Row-Level Security (RLS) policies allowing public read access for anonymous and authenticated users, and full access for the `service_role`.
+- `public.orders` with RLS restricted strictly to `service_role`.
 
-## Update catalogue data
+## Seeding the Catalogue
 
-Edit `server/data/catalog.js`, then run:
+To seed or update the catalogue data in your Supabase database from [`server/data/catalog.js`](../server/data/catalog.js):
 
 ```powershell
 npm run seed
 ```
 
-The seed is idempotent and updates products by their stable text ID. All storefront cards intentionally use `/media/products/product-cover.webp`; scents, variants and prices remain product-specific.
+This populates all 6 products (Rose, Mogra, Oudh Regular, Chandan, Orchid, Oudh Premium) with their names, categories, scents, descriptions, pricing, and variant gallery image mappings.
 
-## Required environment variables
+## Environment Configuration
 
-- `SUPABASE_URL`: project API URL
-- `SUPABASE_PUBLISHABLE_KEY`: read-only catalogue access
-- `SUPABASE_SECRET_KEY`: server-only order writes and catalogue seeding
+Configure the following variables in `server/.env`:
 
-Never place the secret key in `client/`, a `VITE_*` variable, browser storage, or committed files.
+```env
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_PUBLISHABLE_KEY=your-anon-publishable-key
+SUPABASE_SECRET_KEY=your-service-role-key
+```
+
+Never expose `SUPABASE_SECRET_KEY` in frontend client code or public repositories.
