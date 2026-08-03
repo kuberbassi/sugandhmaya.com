@@ -1,93 +1,68 @@
 # Sugandhmaya Storefront
 
-Production storefront for Sugandhmaya, a handcrafted Indian incense brand. It combines a responsive React shopping experience with a small Express API and a Supabase-backed catalogue.
+Production storefront for **Sugandhmaya**, a handcrafted Indian incense brand. It combines a high-performance React shopping experience with an Express API backed by Supabase Postgres.
 
-## Highlights
+## Architecture & Highlights
 
-- React 19, React Router and Vite
-- Express API for products, OTP verification and orders
-- Supabase Postgres catalogue with Row Level Security
-- Server-authoritative pricing and order validation
-- Resend OTP and SendGrid order-email integrations
-- Local catalogue and order fallbacks for reliable development
-- Lazy-loaded routes, accessible motion and responsive layouts
+- **Frontend**: React 19, React Router v7, and Vite with custom design tokens.
+- **Backend API**: Express.js API for products, OTP verification, and order processing.
+- **Database**: Supabase Postgres with Row-Level Security (RLS) policies.
+- **Transact Emails**: Resend API for OTP verification and SendGrid for order receipts.
+- **Automated Seeding & Smoke Testing**: Idempotent seeding script (`npm run seed`) and API contract verification (`npm run check:api`).
 
-## Quick start
+## Quick Start
 
-Requirements: Node.js 20 or newer and npm.
+Requirements: Node.js 20+ and npm.
 
-```powershell
-npm ci
-npm ci --prefix client
-Copy-Item server/.env.example server/.env
-npm run dev
-```
+1. **Install Dependencies**:
+   ```powershell
+   npm install
+   npm install --prefix client
+   ```
 
-Local services:
+2. **Configure Environment**:
+   Copy `server/.env.example` to `server/.env` and configure your Supabase, Resend, and SendGrid credentials.
 
-- Storefront: `http://127.0.0.1:5176`
-- API: `http://127.0.0.1:5000/api`
-- Health: `http://127.0.0.1:5000/api/health`
+3. **Run Development Servers**:
+   ```powershell
+   npm run dev
+   ```
+   - Storefront: `http://localhost:5173` (or Vite dev port)
+   - Express API: `http://localhost:5000/api`
 
-The shop remains usable with bundled catalogue data when Supabase is not configured or temporarily unavailable.
-
-## Environment
-
-Configure server-only values in `server/.env`. Never expose `SUPABASE_SECRET_KEY` in React or commit the local environment file.
-
-```env
-PORT=5000
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_PUBLISHABLE_KEY=sb_publishable_your_key
-SUPABASE_SECRET_KEY=sb_secret_your_key
-RESEND_API_KEY=
-RESEND_FROM_EMAIL=
-SENDGRID_API_KEY=
-SENDGRID_FROM_EMAIL=
-COMPANY_EMAIL=
-```
-
-See [Database setup](docs/DATABASE.md) and [Deployment](docs/DEPLOYMENT.md) for the complete configuration.
-
-## Commands
-
-```powershell
-npm run dev        # API and frontend development servers
-npm run lint       # React lint checks
-npm run build      # Production client build
-npm run check:api  # API health and catalogue smoke test
-npm run check      # Lint and production build
-npm run seed       # Upsert the canonical catalogue into Supabase
-npm start          # Start the production Express server
-```
-
-## Repository structure
+## Repository Structure
 
 ```text
 api/                    Vercel serverless entrypoint
 client/
-  public/media/         Named brand, product, texture and video assets
-  src/components/       Shared interface components
-  src/context/          Catalogue and cart state
-  src/pages/            Route-level screens
-  src/utils/            Small formatting helpers
-docs/                   Database and deployment guides
-scripts/                Catalogue seed and API verification scripts
+  public/media/         Brand, product assets, and videos
+  src/components/       Reusable UI components
+  src/context/          ShopContext and state store
+  src/pages/            Route pages (Home, Shop, Product, Checkout)
+docs/                   Database and deployment documentation
+scripts/                Catalogue seeding and API verification scripts
 server/
-  data/                 Canonical catalogue and local order fallback
-  services/             Supabase and transactional-email integrations
-supabase/catalog.sql    Protected schema and initial catalogue seed
-server.js               Express application and local entrypoint
-vercel.json             Build, routing and cache configuration
+  data/                 Canonical product catalog definition
+  services/             Database and email integration services
+supabase/catalog.sql    Database schema and initial SQL seed
+server.js               Express application entrypoint
+vercel.json             Vercel deployment configuration
 ```
 
-## Reliability and security
+## Available Scripts
 
-- Product requests use a short server cache and fall back to canonical local data.
-- Order prices are recalculated from the server catalogue.
-- Public Supabase access is read-only; order rows require the server secret key.
-- `/api/health` reports catalogue, order-storage and email readiness.
-- Local fallback orders are ignored by Git and are not production storage.
+| Command | Action |
+| :--- | :--- |
+| `npm run dev` | Starts Express API (`nodemon`) and Vite frontend (`npm run dev --prefix client`) |
+| `npm run seed` | Seeds product catalog and image mappings into Supabase Postgres |
+| `npm run check:api` | Runs API contract smoke test |
+| `npm run check` | Runs frontend linter and production build |
+| `npm start` | Starts Express production server |
+
+## Documentation
+
+- [Database Setup & Schema](docs/DATABASE.md)
+- [Deployment Guide](docs/DEPLOYMENT.md)
 
 ## License
 

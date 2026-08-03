@@ -2,15 +2,12 @@ const premiumImages = [
     '/media/products/product-cover.webp',
     '/media/products/product-back.webp',
     '/media/products/incense-sticks.webp',
-    '/media/products/product-ritual.webp',
-    '/media/products/hero-smoke.webp',
-    '/media/products/hero-ritual.webp'
+    '/media/products/product-ritual.webp'
 ];
 
 const sharedCoverImage = '/media/products/product-cover.webp';
 
 const travelImages = [
-    '/media/products/product-cover.webp',
     '/media/products/ritual-lifestyle.webp',
     '/media/products/incense-sticks.webp',
     '/media/products/product-ritual.webp'
@@ -25,19 +22,20 @@ const productDetails = [
     ['oudh-premium', 'Oudh Premium Agarbatti', 'Oudh - Premium', 450, 113, 'A rich and exotic blend of premium oudh.']
 ];
 
-const rotateImages = (images, offset) => [...images.slice(offset % images.length), ...images.slice(0, offset % images.length)];
-
-const products = productDetails.map(([id, name, scent, premiumPrice, travelPrice, description], index) => ({
+const products = productDetails.map(([id, name, scent, premiumPrice, travelPrice, description]) => ({
     id,
     name,
     category: 'Agarbatti',
     scents: [scent],
     variants: [
-        { id: `${id}-40`, name: 'Premium Box', sticks: 40, price: premiumPrice, images: rotateImages(premiumImages, index) },
-        { id: `${id}-20`, name: 'Travel Pack', sticks: 20, price: travelPrice, images: rotateImages(travelImages, index) }
+        { id: `${id}-40`, name: 'Premium Box', sticks: 40, price: premiumPrice, images: premiumImages },
+        { id: `${id}-20`, name: 'Travel Pack', sticks: 20, price: travelPrice, images: travelImages }
     ],
     description,
     featuredImage: sharedCoverImage
 }));
 
 module.exports = products;
+
+
+

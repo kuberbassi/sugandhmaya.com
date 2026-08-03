@@ -37,7 +37,7 @@ const Home = () => {
                             <source src="/media/videos/agarbatti-ritual.mp4" type="video/mp4" />
                         </video>
                     </figure>
-                    <div className="hero-product-float"><img src="/media/products/product-cover.webp" alt="Sugandhmaya premium agarbatti" /><span className="media-badge product-badge">Premium agarbatti</span></div>
+                    <div className="hero-product-float"><img src="/media/products/hero-ritual.webp" alt="Sugandhmaya premium agarbatti" /><span className="media-badge product-badge">Premium agarbatti</span></div>
                 </div>
             </div>
         </section>

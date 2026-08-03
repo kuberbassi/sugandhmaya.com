@@ -5,12 +5,22 @@ const PRODUCT_CACHE_KEY = 'sugandhmaya-products-v1';
 const PRODUCT_CACHE_TTL = 30 * 60 * 1000;
 let productsRequest;
 
+const fetchWithRetry = async (url, retries = 3, delay = 1000) => {
+    for (let i = 0; i < retries; i++) {
+        try {
+            const response = await fetch(url);
+            if (response.ok) return await response.json();
+        } catch (err) {
+            if (i === retries - 1) throw err;
+        }
+        await new Promise(res => setTimeout(res, delay * (i + 1)));
+    }
+    throw new Error('Products request failed after retries');
+};
+
 const requestProducts = () => {
     if (!productsRequest) {
-        productsRequest = fetch('/api/products').then(response => {
-            if (!response.ok) throw new Error(`Products request failed (${response.status})`);
-            return response.json();
-        }).catch(error => {
+        productsRequest = fetchWithRetry('/api/products').catch(error => {
             productsRequest = undefined;
             throw error;
         });

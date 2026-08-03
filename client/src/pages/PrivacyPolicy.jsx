@@ -3,7 +3,7 @@ const PrivacyPolicy = () => (
         <div className="policy-container">
             <h1>Privacy Policy</h1>
             <div className="policy-content">
-                <p><strong>Last Updated: 11th October 2025</strong></p>
+                <p><strong>Last Updated: {new Date().getFullYear()}</strong></p>
                 <p>Your privacy is important to us. This policy explains what information Sugandhmaya collects, why we collect it, and how we protect it.</p>
                 <h2>1. Information We Collect</h2>
                 <p>When you place an order, we collect the contact and delivery information needed to process and fulfil it, including your name, email address, phone number and shipping address.</p>

@@ -1,8 +1,9 @@
-require('dotenv').config({ path: './server/.env' });
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../server/.env') });
 const products = require('../server/data/catalog');
 
 const url = String(process.env.SUPABASE_URL || '').replace(/\/$/, '');
-const key = process.env.SUPABASE_SECRET_KEY;
+const key = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const rows = products.map((product, index) => ({
     id: product.id,
@@ -17,7 +18,7 @@ const rows = products.map((product, index) => ({
 }));
 
 const seedDatabase = async () => {
-    if (!url || !key) throw new Error('SUPABASE_URL and SUPABASE_SECRET_KEY are required in server/.env.');
+    if (!url || !key) throw new Error('SUPABASE_URL and SUPABASE_SECRET_KEY (or SUPABASE_SERVICE_ROLE_KEY) are required in server/.env.');
     const response = await fetch(`${url}/rest/v1/products?on_conflict=id`, {
         method: 'POST',
         headers: {
@@ -36,3 +37,4 @@ seedDatabase().catch(error => {
     console.error(error.message);
     process.exitCode = 1;
 });
+
