@@ -14,8 +14,10 @@ Production storefront for **Sugandhmaya**, a handcrafted Indian incense brand. I
 
 Requirements: Node.js 20+ and npm.
 
-1. **Install Dependencies**:
+1. **Clone & Install Dependencies**:
    ```powershell
+   git clone https://github.com/kuberbassi/sugandhmaya.com.git
+   cd sugandhmaya.com
    npm install
    npm install --prefix client
    ```
